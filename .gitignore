@@ -3,3 +3,5 @@
 *.so
 *.root
 *.pyc
+*.pdf
+*.cxx
