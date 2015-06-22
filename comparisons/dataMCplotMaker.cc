@@ -570,6 +570,12 @@ void dataMCplotMaker(TH1F* Data, std::vector <TH1F*> Backgrounds, std::vector <s
     Signals[i]->SetMarkerStyle(markerStyle[i%7]);
   }
 
+  // std::vector<TString> bgEvtCounts;
+  // for(unsigned int i = 0; i < Backgrounds.size(); i++) {
+  //   TString numEntriesStr = Form("%i", (int)Backgrounds[i]->GetEntries());
+  //   bgEvtCounts.push_back(numEntriesStr);
+  // }
+
   //Legend
   TLegend *leg;
   if ((Backgrounds.size()+Signals.size() == 1 || Backgrounds.size()+Signals.size() == 2) && noData) leg = new TLegend(0.7+legendRight,0.79+legendUp,0.92+legendRight,0.87+legendUp); 
@@ -577,6 +583,8 @@ void dataMCplotMaker(TH1F* Data, std::vector <TH1F*> Backgrounds, std::vector <s
   else leg = new TLegend(0.7+legendRight,0.59+legendUp,0.92+legendRight,0.87+legendUp);
   leg->SetTextSize(legendTextSize);
   if (noData == false) leg->AddEntry(Data, dataName.c_str(), "lp");
+  // if (!dots) for (int i = Titles.size()-1; i > -1; i--) leg->AddEntry(Backgrounds[i], Titles[i].c_str()+bgEvtCounts[i], "f");
+  // if (dots) for (int i = Titles.size()-1; i > -1; i--) leg->AddEntry(Backgrounds[i], Titles[i].c_str()+bgEvtCounts[i], "LPE");
   if (!dots) for (int i = Titles.size()-1; i > -1; i--) leg->AddEntry(Backgrounds[i], Titles[i].c_str(), "f");
   if (dots) for (int i = Titles.size()-1; i > -1; i--) leg->AddEntry(Backgrounds[i], Titles[i].c_str(), "LPE");
   if (use_signals) for (int i = SignalTitles.size()-1; i > -1; i--) leg->AddEntry(Signals[i], SignalTitles[i].c_str(), "P");
