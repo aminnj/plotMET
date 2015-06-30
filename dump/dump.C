@@ -1,5 +1,5 @@
 {
-    TFile *file = new TFile("../ntuple.root");
+    TFile *file = new TFile("../../ntuple2.root");
     TTree *tree = (TTree*)file->Get("Events");
     TCanvas *c1 = new TCanvas("c1");
     for(int i = 0; i < tree->GetListOfAliases()->LastIndex(); i++) {
