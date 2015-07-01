@@ -39,6 +39,9 @@ int ScanChain( TChain* chain) {
     TH2F* h2D_pfCaloMet_caloMet = new TH2F("h2D_pfCaloMet_caloMet","", 20,0,200, 20,0,200);
     TH2F* h2D_caloMet_pfMet = new TH2F("h2D_caloMet_pfMet","", 20,0,200, 20,0,200);
 
+    // other 2d plots
+    TH2F* h2D_jetPt_caloMet = new TH2F("h2D_jetPt_caloMet","", 20,0,200, 20,0,200);
+
     // filters
     std::vector<std::string> titlesFilters;
     titlesFilters.push_back(" NO filter");
@@ -104,12 +107,11 @@ int ScanChain( TChain* chain) {
         float dPhiCaloMet = deltaPhi(leadingJetPhi, evt_metPhi());
 
         if(dPhiCaloMet < M_PI) h1D_jetCaloMetPhi->Fill(dPhiCaloMet);
-        // h1D_jetCaloMetPhi->Fill(leadingJetPhi+M_PI);
 
         h2D_pfCaloMet_pfMet->Fill(pfCaloMet_met(), pfMet_met());
         h2D_pfCaloMet_caloMet->Fill(pfCaloMet_met(), evt_met());
         h2D_caloMet_pfMet->Fill(evt_met(), pfMet_met());
-
+        h2D_jetPt_caloMet->Fill(leadingJetPt, evt_met());
 
         if ( !evt_cscTightHaloFilter() ) continue; // XXX
 
@@ -118,7 +120,7 @@ int ScanChain( TChain* chain) {
         h1D_caloMet_halo->Fill(evt_met());
         if(dPhiCaloMet < M_PI) h1D_jetCaloMetPhi_halo->Fill(dPhiCaloMet);
 
-        if (  hcalnoise_HasBadRBXTS4TS5() ) continue; // XXX
+        if ( !hcalnoise_passTightNoiseFilter() ) continue; // XXX
 
         h1D_pfCaloMet_halonoise->Fill(pfCaloMet_met());
         h1D_pfMet->Fill(pfMet_met());
@@ -141,9 +143,10 @@ int ScanChain( TChain* chain) {
     dataMCplotMaker(null, h1D_jetCaloMetPhi_filters_vec, titlesFilters, "", "", common+"  --overrideHeader #Delta#phi(j,caloMet) (cumulative filters) --outputName h1D_jetCaloMetPhi_filters.pdf");
 
 
-    drawHist2D(h2D_pfCaloMet_pfMet,"h2D_pfCaloMet_pfMet.pdf",    "--logscale --title pfCaloMet vs pfMet --xlabel pfCaloMet_met --ylabel pfMet_met");
-    drawHist2D(h2D_pfCaloMet_caloMet,"h2D_pfCaloMet_caloMet.pdf","--logscale --xlabel pfCaloMet vs caloMet --xlabel pfCaloMet_met --ylabel caloMet");
-    drawHist2D(h2D_caloMet_pfMet,"h2D_caloMet_pfMet.pdf","--logscale --xlabel caloMet vs pfMet --xlabel  caloMet --ylabel pfMet");
+    drawHist2D(h2D_pfCaloMet_pfMet,"h2D_pfCaloMet_pfMet.pdf",    "--logscale --title pfMet vs pfCaloMet --xlabel pfCaloMet_met --ylabel pfMet_met");
+    drawHist2D(h2D_pfCaloMet_caloMet,"h2D_pfCaloMet_caloMet.pdf","--logscale --title caloMet vs pfCaloMet --xlabel pfCaloMet_met --ylabel caloMet");
+    drawHist2D(h2D_caloMet_pfMet,"h2D_caloMet_pfMet.pdf","--logscale --title pfMet vs caloMet --xlabel  caloMet --ylabel pfMet");
+    drawHist2D(h2D_jetPt_caloMet,"h2D_jetPt_caloMet.pdf","--logscale --title leading jet pT vs caloMet --xlabel  caloMet --ylabel jetPt");
 
 
 
