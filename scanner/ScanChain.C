@@ -1,3 +1,4 @@
+#pragma GCC diagnostic ignored "-Wsign-compare"
 #include <iostream>
 #include <vector>
 #include "TBenchmark.h"
@@ -14,18 +15,67 @@
 using namespace std;
 using namespace tas;
 
+float deltaPhi(float phi1, float phi2){
+    float dPhi = phi1 - phi2;
+    while (dPhi  >  TMath::Pi()) dPhi -= 2*TMath::Pi();
+    while (dPhi <= -TMath::Pi()) dPhi += 2*TMath::Pi();
+    return fabs(dPhi);
+}
+
 int ScanChain( TChain* chain) {
     TH1F* null = new TH1F("","",1,0,1);
 
-    // met
-    std::vector<TH1F*> hists;
-    std::vector<std::string> titles;
-    titles.push_back("pfCaloMet");
-    titles.push_back("caloMet");
+    // comparison of METs
+    std::vector<std::string> titlesMet;
+    titlesMet.push_back("pfCaloMet");
+    titlesMet.push_back("pfMet");
+    titlesMet.push_back("caloMet");
+
+    std::vector<TH1F*> h1D_met_vec;
     TH1F *h1D_pfCaloMet = new TH1F("h1D_pfCaloMet", "", 20,0,200);
+    TH1F *h1D_pfMet = new TH1F("h1D_pfMet", "", 20,0,200);
     TH1F *h1D_caloMet = new TH1F("h1D_caloMet", "", 20,0,200);
-    hists.push_back(h1D_pfCaloMet);
-    hists.push_back(h1D_caloMet);
+    h1D_met_vec.push_back(h1D_pfCaloMet);
+    h1D_met_vec.push_back(h1D_pfMet);
+    h1D_met_vec.push_back(h1D_caloMet);
+
+    // filters
+    std::vector<std::string> titlesFilters;
+    titlesFilters.push_back(" NO filter");
+    titlesFilters.push_back("+cscTightHalo");
+    titlesFilters.push_back("+hcalNoise");
+    titlesFilters.push_back("+hbheRun2Tight");
+
+    // caloMet with filters layered
+    std::vector<TH1F*> h1D_caloMet_filters_vec;
+    TH1F *h1D_caloMet_halo = new TH1F("h1D_caloMet_halo", "", 20,0,200);
+    TH1F *h1D_caloMet_halonoise = new TH1F("h1D_caloMet_halonoise", "", 20,0,200);
+    TH1F *h1D_caloMet_halonoisehbhe = new TH1F("h1D_caloMet_halonoisehbhe", "", 20,0,200);
+    h1D_caloMet_filters_vec.push_back(h1D_caloMet);
+    h1D_caloMet_filters_vec.push_back(h1D_caloMet_halo);
+    h1D_caloMet_filters_vec.push_back(h1D_caloMet_halonoise);
+    h1D_caloMet_filters_vec.push_back(h1D_caloMet_halonoisehbhe);
+
+    // pfCaloMet with filters layered
+    std::vector<TH1F*> h1D_pfCaloMet_filters_vec;
+    TH1F *h1D_pfCaloMet_halo = new TH1F("h1D_pfCaloMet_halo", "", 20,0,200);
+    TH1F *h1D_pfCaloMet_halonoise = new TH1F("h1D_pfCaloMet_halonoise", "", 20,0,200);
+    TH1F *h1D_pfCaloMet_halonoisehbhe = new TH1F("h1D_pfCaloMet_halonoisehbhe", "", 20,0,200);
+    h1D_pfCaloMet_filters_vec.push_back(h1D_pfCaloMet);
+    h1D_pfCaloMet_filters_vec.push_back(h1D_pfCaloMet_halo);
+    h1D_pfCaloMet_filters_vec.push_back(h1D_pfCaloMet_halonoise);
+    h1D_pfCaloMet_filters_vec.push_back(h1D_pfCaloMet_halonoisehbhe);
+
+    // dPhi(leading jet,caloMet)
+    std::vector<TH1F*> h1D_jetCaloMetPhi_filters_vec;
+    TH1F *h1D_jetCaloMetPhi               = new TH1F("h1D_jetCaloMetPhi", "",               30,0,3.3);
+    TH1F *h1D_jetCaloMetPhi_halo          = new TH1F("h1D_jetCaloMetPhi_halo", "",          30,0,3.3);
+    TH1F *h1D_jetCaloMetPhi_halonoise     = new TH1F("h1D_jetCaloMetPhi_halonoise", "",     30,0,3.3);
+    TH1F *h1D_jetCaloMetPhi_halonoisehbhe = new TH1F("h1D_jetCaloMetPhi_halonoisehbhe", "", 30,0,3.3);
+    h1D_jetCaloMetPhi_filters_vec.push_back(h1D_jetCaloMetPhi);
+    h1D_jetCaloMetPhi_filters_vec.push_back(h1D_jetCaloMetPhi_halo);
+    h1D_jetCaloMetPhi_filters_vec.push_back(h1D_jetCaloMetPhi_halonoise);
+    h1D_jetCaloMetPhi_filters_vec.push_back(h1D_jetCaloMetPhi_halonoisehbhe);
 
     unsigned int nEventsTotal = 0;
     unsigned int nEventsChain = chain->GetEntries();
@@ -36,13 +86,55 @@ int ScanChain( TChain* chain) {
         ++nEventsTotal;
         CMS3::progress( nEventsTotal, nEventsChain );
 
-        h1D_pfCaloMet->Fill(pfCaloMet_met(), 2.0);
-        h1D_caloMet->Fill(evt_met(), 2.0);
+        h1D_pfCaloMet->Fill(pfCaloMet_met());
+        h1D_pfMet->Fill(pfMet_met());
+        h1D_caloMet->Fill(evt_met());
+
+        float leadingJetPhi = 999.0;
+        float leadingJetPt = -999.0;
+        for(int iJet = 0; iJet < calojets_pt().size(); iJet++) {
+            if (calojets_pt().at(iJet) > leadingJetPt) {
+                leadingJetPt = calojets_pt().at(iJet);
+                leadingJetPhi = calojets_phi().at(iJet);
+            }
+        }
+
+        float dPhiCaloMet = deltaPhi(leadingJetPhi, evt_metPhi());
+
+        h1D_jetCaloMetPhi->Fill(dPhiCaloMet);
+
+
+        if ( !evt_cscTightHaloFilter() ) continue; // XXX
+
+        h1D_pfCaloMet_halo->Fill(pfCaloMet_met());
+        h1D_pfMet->Fill(pfMet_met());
+        h1D_caloMet_halo->Fill(evt_met());
+        h1D_jetCaloMetPhi_halo->Fill(dPhiCaloMet);
+
+        if (  hcalnoise_HasBadRBXTS4TS5() ) continue; // XXX
+
+        h1D_pfCaloMet_halonoise->Fill(pfCaloMet_met());
+        h1D_pfMet->Fill(pfMet_met());
+        h1D_caloMet_halonoise->Fill(evt_met());
+        h1D_jetCaloMetPhi_halonoise->Fill(dPhiCaloMet);
+
+        if ( !evt_hbheFilterRun2Tight() ) continue; // XXX
+
+        h1D_pfCaloMet_halonoisehbhe->Fill(pfCaloMet_met());
+        h1D_pfMet->Fill(pfMet_met());
+        h1D_caloMet_halonoisehbhe->Fill(evt_met());
+        h1D_jetCaloMetPhi_halonoisehbhe->Fill(dPhiCaloMet);
 
     }
 
-    std::string common = "--noStack --drawDots --xAxisOverride [GeV] --type ";
-    dataMCplotMaker(null, hists, titles, "", "", common+" --overrideHeader MET --outputName met.pdf");
+    std::string common = "--noStack --noFill --drawDots --xAxisOverride [GeV] --type --preserveBackgroundOrder --legendTextSize 0.03 --legendRight -0.05";
+    dataMCplotMaker(null, h1D_met_vec, titlesMet, "", "", common+" --overrideHeader MET --outputName h1D_met.pdf");
+
+    dataMCplotMaker(null, h1D_caloMet_filters_vec, titlesFilters, "", "", common+" --overrideHeader caloMet (cumulative filters) --outputName h1D_caloMet_filters.pdf");
+
+    dataMCplotMaker(null, h1D_pfCaloMet_filters_vec, titlesFilters, "", "", common+" --overrideHeader pfCaloMet (cumulative filters) --outputName h1D_pfCaloMet_filters.pdf");
+
+    dataMCplotMaker(null, h1D_jetCaloMetPhi_filters_vec, titlesFilters, "", "", common+"  --overrideHeader #Delta#phi(j,caloMet) (cumulative filters) --outputName h1D_jetCaloMetPhi_filters.pdf");
 
     return 0;
 }

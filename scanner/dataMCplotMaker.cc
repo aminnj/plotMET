@@ -622,8 +622,10 @@ void dataMCplotMaker(TH1F* Data, std::vector <TH1F*> Backgrounds, std::vector <s
   leg->SetTextSize(legendTextSize);
   if (noData == false) leg->AddEntry(Data, dataName.c_str(), "lp");
   if (showPercentage) for (int i = Titles.size()-1; i > -1; i--) Titles[i] =  Form("%s [%i%%]", Titles[i].c_str(), percent[i]);
-  if (!dots) for (int i = Titles.size()-1; i > -1; i--) leg->AddEntry(Backgrounds[i], Titles[i].c_str(), "f");
-  if (dots) for (int i = Titles.size()-1; i > -1; i--) leg->AddEntry(Backgrounds[i], Titles[i].c_str(), "LPE");
+  // if (!dots) for (int i = Titles.size()-1; i > -1; i--) leg->AddEntry(Backgrounds[i], Titles[i].c_str(), "f");
+  // if (dots) for (int i = Titles.size()-1; i > -1; i--) leg->AddEntry(Backgrounds[i], Titles[i].c_str(), "LPE");
+  if (!dots) for (int i = 0; i < Titles.size(); i++) leg->AddEntry(Backgrounds[i], Titles[i].c_str(), "f");
+  if (dots) for (int i = 0; i < Titles.size(); i++) leg->AddEntry(Backgrounds[i], Titles[i].c_str(), "LPE");
   if (use_signals) for (int i = SignalTitles.size()-1; i > -1; i--) leg->AddEntry(Signals[i], SignalTitles[i].c_str(), "P");
   leg->SetFillStyle(0);
   leg->SetBorderSize(0);

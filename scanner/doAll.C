@@ -4,6 +4,6 @@
   gROOT->ProcessLine(".L ScanChain.C+");
 
   TChain *ch = new TChain("Events"); 
-  ch->Add("../../ntuple.root");
+  ch->Add("../../ntuple2.root");
   ScanChain(ch); 
 }
