@@ -1,91 +1,48 @@
-// Usage:
-// > root -b doAll.C
-
-// C++
 #include <iostream>
 #include <vector>
-
-// ROOT
 #include "TBenchmark.h"
 #include "TChain.h"
 #include "TDirectory.h"
 #include "TFile.h"
-#include "TROOT.h"
 #include "TTreeCache.h"
+#include "TROOT.h"
+#include "TCanvas.h"
 
-// CMS3
 #include "CMS3.cc"
+#include "dataMCplotMaker.h"
 
 using namespace std;
 using namespace tas;
 
-int ScanChain( TChain* chain, bool fast = true, int nEvents = -1, string skimFilePrefix = "test") {
+int ScanChain( TChain* chain) {
+    TH1F* null = new TH1F("","",1,0,1);
 
-  // Benchmark
-  TBenchmark *bmark = new TBenchmark();
-  bmark->Start("benchmark");
+    // met
+    std::vector<TH1F*> hists;
+    std::vector<std::string> titles;
+    titles.push_back("pfCaloMet");
+    titles.push_back("caloMet");
+    TH1F *h1D_pfCaloMet = new TH1F("h1D_pfCaloMet", "", 20,0,200);
+    TH1F *h1D_caloMet = new TH1F("h1D_caloMet", "", 20,0,200);
+    hists.push_back(h1D_pfCaloMet);
+    hists.push_back(h1D_caloMet);
 
-  // Example Histograms
-  TDirectory *rootdir = gDirectory->GetDirectory("Rint:");
-  TH1F *samplehisto = new TH1F("samplehisto", "Example histogram", 200,0,200);
-  samplehisto->SetDirectory(rootdir);
+    unsigned int nEventsTotal = 0;
+    unsigned int nEventsChain = chain->GetEntries();
 
-  // Loop over events to Analyze
-  unsigned int nEventsTotal = 0;
-  unsigned int nEventsChain = chain->GetEntries();
-  if( nEvents >= 0 ) nEventsChain = nEvents;
-  TObjArray *listOfFiles = chain->GetListOfFiles();
-  TIter fileIter(listOfFiles);
-  TFile *currentFile = 0;
+    cms3.Init(chain);
+    for( unsigned int event = 0; event < nEventsChain; ++event) {
+        cms3.GetEntry(event);
+        ++nEventsTotal;
+        CMS3::progress( nEventsTotal, nEventsChain );
 
-  // File Loop
-  while ( (currentFile = (TFile*)fileIter.Next()) ) {
-
-    // Get File Content
-    TFile *file = new TFile( currentFile->GetTitle() );
-    TTree *tree = (TTree*)file->Get("Events");
-    if(fast) TTreeCache::SetLearnEntries(10);
-    if(fast) tree->SetCacheSize(128*1024*1024);
-    cms3.Init(tree);
-    
-    // Loop over Events in current file
-    if( nEventsTotal >= nEventsChain ) continue;
-    unsigned int nEventsTree = tree->GetEntriesFast();
-    for( unsigned int event = 0; event < nEventsTree; ++event) {
-    
-      // Get Event Content
-      if( nEventsTotal >= nEventsChain ) continue;
-      if(fast) tree->LoadTree(event);
-      cms3.GetEntry(event);
-      ++nEventsTotal;
-    
-      // Progress
-      CMS3::progress( nEventsTotal, nEventsChain );
-
-      // Analysis Code
+        h1D_pfCaloMet->Fill(pfCaloMet_met(), 2.0);
+        h1D_caloMet->Fill(evt_met(), 2.0);
 
     }
-  
-    // Clean Up
-    delete tree;
-    file->Close();
-    delete file;
-  }
-  if ( nEventsChain != nEventsTotal ) {
-    cout << Form( "ERROR: number of events from files (%d) is not equal to total number of events (%d)", nEventsChain, nEventsTotal ) << endl;
-  }
-  
-  // Example Histograms
-  samplehisto->Draw();
-  
-  // return
-  bmark->Stop("benchmark");
-  cout << endl;
-  cout << nEventsTotal << " Events Processed" << endl;
-  cout << "------------------------------" << endl;
-  cout << "CPU  Time:	" << Form( "%.01f", bmark->GetCpuTime("benchmark")  ) << endl;
-  cout << "Real Time:	" << Form( "%.01f", bmark->GetRealTime("benchmark") ) << endl;
-  cout << endl;
-  delete bmark;
-  return 0;
+
+    std::string common = "--noStack --drawDots --xAxisOverride [GeV] --type ";
+    dataMCplotMaker(null, hists, titles, "", "", common+" --overrideHeader MET --outputName met.pdf");
+
+    return 0;
 }
