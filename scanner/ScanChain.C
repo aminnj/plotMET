@@ -25,19 +25,25 @@ int ScanChain( TChain* chain) {
     titlesMet.push_back("pfCaloMet");
     titlesMet.push_back("pfMet");
     titlesMet.push_back("caloMet");
+    titlesMet.push_back("pfClusterMet");
 
     std::vector<TH1F*> h1D_met_vec;
     TH1F *h1D_pfCaloMet = new TH1F("h1D_pfCaloMet", "", 20,0,200);
     TH1F *h1D_pfMet = new TH1F("h1D_pfMet", "", 20,0,200);
     TH1F *h1D_caloMet = new TH1F("h1D_caloMet", "", 20,0,200);
+    TH1F *h1D_pfClusterMet = new TH1F("h1D_pfClusterMet", "", 20,0,200);
     h1D_met_vec.push_back(h1D_pfCaloMet);
     h1D_met_vec.push_back(h1D_pfMet);
     h1D_met_vec.push_back(h1D_caloMet);
+    h1D_met_vec.push_back(h1D_pfClusterMet);
 
     // 2d plots of met
     TH2F* h2D_pfCaloMet_pfMet = new TH2F("h2D_pfCaloMet_pfMet","", 20,0,200, 20,0,200);
     TH2F* h2D_pfCaloMet_caloMet = new TH2F("h2D_pfCaloMet_caloMet","", 20,0,200, 20,0,200);
     TH2F* h2D_caloMet_pfMet = new TH2F("h2D_caloMet_pfMet","", 20,0,200, 20,0,200);
+    TH2F* h2D_pfClusterMet_pfMet = new TH2F("h2D_pfClusterMet_pfMet","", 20,0,200, 20,0,200);
+    TH2F* h2D_pfClusterMet_caloMet = new TH2F("h2D_pfClusterMet_caloMet","", 20,0,200, 20,0,200);
+    TH2F* h2D_pfClusterMet_pfCaloMet = new TH2F("h2D_pfClusterMet_pfCaloMet","", 20,0,200, 20,0,200);
 
     // other 2d plots
     TH2F* h2D_jetPt_caloMet = new TH2F("h2D_jetPt_caloMet","", 20,0,200, 20,0,200);
@@ -94,6 +100,7 @@ int ScanChain( TChain* chain) {
         h1D_pfCaloMet->Fill(pfCaloMet_met());
         h1D_pfMet->Fill(pfMet_met());
         h1D_caloMet->Fill(evt_met());
+        h1D_pfClusterMet->Fill(pfcluster_met());
 
         float leadingJetPhi = 999.0;
         float leadingJetPt = -999.0;
@@ -111,6 +118,15 @@ int ScanChain( TChain* chain) {
         h2D_pfCaloMet_pfMet->Fill(pfCaloMet_met(), pfMet_met());
         h2D_pfCaloMet_caloMet->Fill(pfCaloMet_met(), evt_met());
         h2D_caloMet_pfMet->Fill(evt_met(), pfMet_met());
+
+        h2D_pfClusterMet_pfMet->Fill(pfcluster_met(),pfMet_met());
+        h2D_pfClusterMet_caloMet->Fill(pfcluster_met(),evt_met());
+        h2D_pfClusterMet_pfCaloMet->Fill(pfcluster_met(),pfCaloMet_met());
+
+        h2D_pfCaloMet_pfMet->Fill(pfCaloMet_met(), pfMet_met());
+        h2D_pfCaloMet_caloMet->Fill(pfCaloMet_met(), evt_met());
+        h2D_caloMet_pfMet->Fill(evt_met(), pfMet_met());
+
         h2D_jetPt_caloMet->Fill(leadingJetPt, evt_met());
 
         if ( !evt_cscTightHaloFilter() ) continue; // XXX
@@ -136,17 +152,21 @@ int ScanChain( TChain* chain) {
 
     }
 
-    std::string common = "--noStack --noFill --drawDots --xAxisOverride [GeV] --type --preserveBackgroundOrder --legendTextSize 0.03 --legendRight -0.05";
-    dataMCplotMaker(null, h1D_met_vec, titlesMet, "", "", common+" --overrideHeader MET --outputName h1D_met.pdf");
-    dataMCplotMaker(null, h1D_caloMet_filters_vec, titlesFilters, "", "", common+" --overrideHeader caloMet (cumulative filters) --outputName h1D_caloMet_filters.pdf");
-    dataMCplotMaker(null, h1D_pfCaloMet_filters_vec, titlesFilters, "", "", common+" --overrideHeader pfCaloMet (cumulative filters) --outputName h1D_pfCaloMet_filters.pdf");
-    dataMCplotMaker(null, h1D_jetCaloMetPhi_filters_vec, titlesFilters, "", "", common+"  --overrideHeader #Delta#phi(j,caloMet) (cumulative filters) --outputName h1D_jetCaloMetPhi_filters.pdf");
+    std::string out = "pdfs/";
+    std::string common = "--noStack --noFill --xAxisOverride [GeV] --type --preserveBackgroundOrder --legendTextSize 0.03 --legendRight -0.05";
+    dataMCplotMaker(null, h1D_met_vec, titlesMet, "", "", common+" --overrideHeader MET --outputName "+out+"h1D_met.pdf");
+    dataMCplotMaker(null, h1D_caloMet_filters_vec, titlesFilters, "", "", common+" --overrideHeader caloMet (cumulative filters) --outputName "+out+"h1D_caloMet_filters.pdf");
+    dataMCplotMaker(null, h1D_pfCaloMet_filters_vec, titlesFilters, "", "", common+" --overrideHeader pfCaloMet (cumulative filters) --outputName "+out+"h1D_pfCaloMet_filters.pdf");
+    dataMCplotMaker(null, h1D_jetCaloMetPhi_filters_vec, titlesFilters, "", "", common+"  --overrideHeader #Delta#phi(j,caloMet) (cumulative filters) --outputName "+out+"h1D_jetCaloMetPhi_filters.pdf");
 
+    drawHist2D(h2D_pfClusterMet_pfCaloMet,out+"h2D_pfClusterMet_pfCaloMet.pdf",    "--logscale --title pfCaloMet vs pfClusterMet --xlabel pfClusterMet --ylabel pfCaloMet");
+    drawHist2D(h2D_pfClusterMet_caloMet,out+"h2D_pfClusterMet_caloMet.pdf","--logscale --title caloMet vs pfClusterMet --xlabel pfClusterMet --ylabel caloMet");
+    drawHist2D(h2D_pfClusterMet_pfMet,out+"h2D_pfClusterMet_pfMet.pdf","--logscale --title pfMet vs pfClusterMet --xlabel  pfClusterMet --ylabel pfMet");
+    drawHist2D(h2D_pfCaloMet_pfMet,out+"h2D_pfCaloMet_pfMet.pdf",    "--logscale --title pfMet vs pfCaloMet --xlabel pfCaloMet_met --ylabel pfMet_met");
+    drawHist2D(h2D_pfCaloMet_caloMet,out+"h2D_pfCaloMet_caloMet.pdf","--logscale --title caloMet vs pfCaloMet --xlabel pfCaloMet_met --ylabel caloMet");
+    drawHist2D(h2D_caloMet_pfMet,out+"h2D_caloMet_pfMet.pdf","--logscale --title pfMet vs caloMet --xlabel  caloMet --ylabel pfMet");
 
-    drawHist2D(h2D_pfCaloMet_pfMet,"h2D_pfCaloMet_pfMet.pdf",    "--logscale --title pfMet vs pfCaloMet --xlabel pfCaloMet_met --ylabel pfMet_met");
-    drawHist2D(h2D_pfCaloMet_caloMet,"h2D_pfCaloMet_caloMet.pdf","--logscale --title caloMet vs pfCaloMet --xlabel pfCaloMet_met --ylabel caloMet");
-    drawHist2D(h2D_caloMet_pfMet,"h2D_caloMet_pfMet.pdf","--logscale --title pfMet vs caloMet --xlabel  caloMet --ylabel pfMet");
-    drawHist2D(h2D_jetPt_caloMet,"h2D_jetPt_caloMet.pdf","--logscale --title leading jet pT vs caloMet --xlabel  caloMet --ylabel jetPt");
+    drawHist2D(h2D_jetPt_caloMet,out+"h2D_jetPt_caloMet.pdf","--logscale --title caloMet vs leading jet pT --xlabel  jetPt --ylabel caloMet");
 
 
 
