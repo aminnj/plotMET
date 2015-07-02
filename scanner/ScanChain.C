@@ -86,6 +86,16 @@ int ScanChain( TChain* chain) {
     h1D_jetCaloMetPhi_filters_vec.push_back(h1D_jetCaloMetPhi_halonoise);
     h1D_jetCaloMetPhi_filters_vec.push_back(h1D_jetCaloMetPhi_halonoisehbhe);
 
+    // detector status
+    std::vector<TH1F*> h1D_detectorStatus_vec;
+    std::vector<std::string> titlesDCS;
+    TH1F *h1D_detectorStatus = new TH1F("h1D_detectorStatus","", 32,0,32);
+    TH1F *h1D_detectorStatus_filt = new TH1F("h1D_detectorStatus_filt","", 32,0,32);
+    h1D_detectorStatus_vec.push_back(h1D_detectorStatus);
+    h1D_detectorStatus_vec.push_back(h1D_detectorStatus_filt);
+    titlesDCS.push_back("DCS bits (no filters)");
+    titlesDCS.push_back("DCS bits (filters)");
+
     unsigned int nEventsTotal = 0;
     unsigned int nEventsChain = chain->GetEntries();
 
@@ -109,6 +119,10 @@ int ScanChain( TChain* chain) {
                 leadingJetPt = calojets_pt().at(iJet);
                 leadingJetPhi = calojets_phi().at(iJet);
             }
+        }
+
+        for(int iDet = 0; iDet < 32; iDet++) {
+            if( evt_detectorStatus() & (1 << iDet) ) h1D_detectorStatus->Fill(iDet);
         }
 
         float dPhiCaloMet = deltaPhi(leadingJetPhi, evt_metPhi());
@@ -150,6 +164,10 @@ int ScanChain( TChain* chain) {
         h1D_caloMet_halonoisehbhe->Fill(evt_met());
         if(dPhiCaloMet < M_PI) h1D_jetCaloMetPhi_halonoisehbhe->Fill(dPhiCaloMet);
 
+        for(int iDet = 0; iDet < 32; iDet++) {
+            if( evt_detectorStatus() & (1 << iDet) ) h1D_detectorStatus_filt->Fill(iDet);
+        }
+
     }
 
     std::string out = "pdfs/";
@@ -169,6 +187,8 @@ int ScanChain( TChain* chain) {
     drawHist2D(h2D_jetPt_caloMet,out+"h2D_jetPt_caloMet.pdf","--logscale --title caloMet vs leading jet pT --xlabel  jetPt --ylabel caloMet");
 
 
+    std::string binLabels = "EBp,EBm,EEp,EEm,_,HBHEa,HBHEb,HBHEc,HF,HO,_,_,RPC,DT0,DTp,DTm,CSCp,CSCm,_,_,CASTOR,_,ZDC,_,TIBTID,TOB,TECp,TECm,BPIX,FPIX,ESp,ESm";
+    dataMCplotMaker(null, h1D_detectorStatus_vec, titlesDCS, "", "", common+"  --overrideHeader DCS bits --nDivisions 216 --xAxisVerticalBinLabels --xAxisBinLabels "+binLabels+" --outputName "+out+"h1D_detectorStatus.pdf");
 
 
 
