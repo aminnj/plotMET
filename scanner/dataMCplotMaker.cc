@@ -354,6 +354,17 @@ void dataMCplotMaker(TH1F* Data, std::vector <TH1F*> Backgrounds, std::vector <s
     if (!noData) Data->SetBinContent(Data->GetNbinsX(), Data->GetBinContent(Data->GetNbinsX())+Data->GetBinContent(Data->GetNbinsX()+1) );
   }
 
+  //Do Underflow
+  if (doOverflow == 1){
+    for (unsigned int i = 0; i < Backgrounds.size(); i++){
+      Backgrounds[i]->SetBinContent(1, Backgrounds[i]->GetBinContent(1)+Backgrounds[i]->GetBinContent(0) );
+    }
+    for (unsigned int i = 0; i < Signals.size(); i++){
+      Signals[i]->SetBinContent(1, Signals[i]->GetBinContent(1)+Signals[i]->GetBinContent(0) );
+    }
+    if (!noData) Data->SetBinContent(1, Data->GetBinContent(1)+Data->GetBinContent(0) );
+  }
+
   std::vector <Color_t> Colors;
 
   //Set colors for histograms (this is my color scheme, probably needs changed for publishable plots)
@@ -571,7 +582,7 @@ void dataMCplotMaker(TH1F* Data, std::vector <TH1F*> Backgrounds, std::vector <s
   if (noData) stack->GetYaxis()->SetTitleOffset(1.4);
   if (noData && linear) stack->GetYaxis()->SetTitleOffset(1.6);
 
-  // XXX
+  //X-axis string bin labels
   TString ts = ""+xAxisBinLabels;
   TObjArray *tx = ts.Tokenize(",");
   if (xAxisBinLabels[0] != '\0') {
@@ -637,10 +648,8 @@ void dataMCplotMaker(TH1F* Data, std::vector <TH1F*> Backgrounds, std::vector <s
   leg->SetTextSize(legendTextSize);
   if (noData == false) leg->AddEntry(Data, dataName.c_str(), "lp");
   if (showPercentage) for (int i = Titles.size()-1; i > -1; i--) Titles[i] =  Form("%s [%i%%]", Titles[i].c_str(), percent[i]);
-  // if (!dots) for (int i = Titles.size()-1; i > -1; i--) leg->AddEntry(Backgrounds[i], Titles[i].c_str(), "f");
-  // if (dots) for (int i = Titles.size()-1; i > -1; i--) leg->AddEntry(Backgrounds[i], Titles[i].c_str(), "LPE");
-  if (!dots) for (int i = 0; i < Titles.size(); i++) leg->AddEntry(Backgrounds[i], Titles[i].c_str(), "f");
-  if (dots) for (int i = 0; i < Titles.size(); i++) leg->AddEntry(Backgrounds[i], Titles[i].c_str(), "LPE");
+  if (!dots) for (int i = Titles.size()-1; i > -1; i--) leg->AddEntry(Backgrounds[i], Titles[i].c_str(), "f");
+  if (dots) for (int i = Titles.size()-1; i > -1; i--) leg->AddEntry(Backgrounds[i], Titles[i].c_str(), "LPE");
   if (use_signals) for (int i = SignalTitles.size()-1; i > -1; i--) leg->AddEntry(Signals[i], SignalTitles[i].c_str(), "P");
   leg->SetFillStyle(0);
   leg->SetBorderSize(0);
@@ -678,8 +687,10 @@ void dataMCplotMaker(TH1F* Data, std::vector <TH1F*> Backgrounds, std::vector <s
   if (!noData) type_y = .96;
   tex->SetTextSize(0.028);
   if (overrideHeader[0] == '\0'){
-    if (noData) tex->DrawLatex(0.78,type_y,Form("%s fb^{-1} (%s TeV)", lumi.c_str(), energy.c_str()));
-    else tex->DrawLatex(0.76,type_y,Form("%s fb^{-1} (%s TeV)", lumi.c_str(), energy.c_str()));
+    tex->SetTextAlign(31);
+    if (noData) tex->DrawLatex(0.98,type_y,Form("%s fb^{-1} (%s TeV)", lumi.c_str(), energy.c_str()));
+    else tex->DrawLatex(0.96,type_y,Form("%s fb^{-1} (%s TeV)", lumi.c_str(), energy.c_str()));
+    tex->SetTextAlign(11);
   }
   tex->SetTextSize(0.035);
   if (noData && overrideHeader[0] == '\0'){
