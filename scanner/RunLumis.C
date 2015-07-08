@@ -50,6 +50,34 @@ int RunLumis( TChain* chain) {
             // CMS3::progress( nEventsTotal, nEventsChain );
 
             // Analysis Code
+            bool dcsFunctional = true;
+            if( ! ( evt_detectorStatus() & (1 << 0  ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 1  ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 2  ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 3  ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 5  ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 6  ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 7  ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 8  ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 9  ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 12 ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 13 ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 14 ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 15 ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 16 ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 17 ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 24 ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 25 ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 26 ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 27 ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 28 ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 29 ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 30 ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 31 ) ) ) dcsFunctional = false;
+            if( ! dcsFunctional ) continue;
+            if ( !evt_cscTightHaloFilter() ) continue; // XXX
+            if ( !hcalnoise_passTightNoiseFilter() ) continue; // XXX
+            if ( !evt_hbheFilterRun2Tight() ) continue; // XXX
 
             if(prevRun != evt_run() || prevLumi != evt_lumiBlock()) {
                 std::cout << evt_run() << " " << evt_lumiBlock() << std::endl;

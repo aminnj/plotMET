@@ -28,8 +28,8 @@ int ScanChain( TChain* chain) {
     titlesMet.push_back("pfClusterMet");
 
     float lowerMet = 0.0;
-    float upperMet = 350.0;
-    int metBins = 75;
+    float upperMet = 400.0;
+    int metBins = 80;
 
     // met with no filters
     TH1F *h1D_pfCaloMet = new TH1F("h1D_pfCaloMet", "", metBins,lowerMet,upperMet);
@@ -80,7 +80,7 @@ int ScanChain( TChain* chain) {
     h1D_pfCaloMet_filters_vec.push_back(h1D_pfCaloMet_halo);
     h1D_pfCaloMet_filters_vec.push_back(h1D_pfCaloMet_halonoise);
     h1D_pfCaloMet_filters_vec.push_back(h1D_pfCaloMet_halonoisehbhe);
-    
+
     // pfMet with filters layered
     std::vector<TH1F*> h1D_pfMet_filters_vec;
     TH1F *h1D_pfMet_halo = new TH1F("h1D_pfMet_halo", "", metBins,lowerMet,upperMet);
@@ -90,7 +90,7 @@ int ScanChain( TChain* chain) {
     h1D_pfMet_filters_vec.push_back(h1D_pfMet_halo);
     h1D_pfMet_filters_vec.push_back(h1D_pfMet_halonoise);
     h1D_pfMet_filters_vec.push_back(h1D_pfMet_halonoisehbhe);
-    
+
     // pfClusterMet with filters layered
     std::vector<TH1F*> h1D_pfClusterMet_filters_vec;
     TH1F *h1D_pfClusterMet_halo = new TH1F("h1D_pfClusterMet_halo", "", metBins,lowerMet,upperMet);
@@ -132,6 +132,7 @@ int ScanChain( TChain* chain) {
 
     unsigned int nEventsTotal = 0;
     unsigned int nEventsChain = chain->GetEntries();
+    unsigned int nEventsFiltered = 0;
 
     TObjArray *listOfFiles = chain->GetListOfFiles();
     TIter fileIter(listOfFiles);
@@ -147,9 +148,12 @@ int ScanChain( TChain* chain) {
         tree->SetCacheSize(128*1024*1024);
         cms3.Init(tree);
 
+        bool fast = false;
+
         // Loop over Events in current file
         if( nEventsTotal >= nEventsChain ) continue;
         unsigned int nEventsTree = tree->GetEntriesFast();
+
         for( unsigned int event = 0; event < nEventsTree; ++event) {
 
             // Get Event Content
@@ -166,9 +170,11 @@ int ScanChain( TChain* chain) {
             h1D_caloMet->Fill(evt_met());
             h1D_pfClusterMet->Fill(pfcluster_met());
 
-            for(int i = 0; i < twrs_eta().size(); i++)      h2D_towers_etaphi->Fill(twrs_eta().at(i), twrs_phi().at(i));
-            for(int i = 0; i < pfcluster_eta().size(); i++) h2D_pfclusters_etaphi->Fill(pfcluster_eta().at(i), pfcluster_phi().at(i));
-            for(int i = 0; i < calojets_eta().size(); i++)  h2D_calojets_etaphi->Fill(calojets_eta().at(i), calojets_phi().at(i));
+            if( !fast ) {
+                for(int i = 0; i < twrs_eta().size(); i++)      h2D_towers_etaphi->Fill(twrs_eta().at(i), twrs_phi().at(i));
+                for(int i = 0; i < pfcluster_eta().size(); i++) h2D_pfclusters_etaphi->Fill(pfcluster_eta().at(i), pfcluster_phi().at(i));
+                for(int i = 0; i < calojets_eta().size(); i++)  h2D_calojets_etaphi->Fill(calojets_eta().at(i), calojets_phi().at(i));
+            }
 
             float leadingJetPhi = 999.0;
             float leadingJetPt = -999.0;
@@ -186,19 +192,34 @@ int ScanChain( TChain* chain) {
             float dPhiCaloMet = deltaPhi(leadingJetPhi, evt_metPhi());
             if(dPhiCaloMet < M_PI) h1D_jetCaloMetPhi->Fill(dPhiCaloMet);
 
-            h2D_pfCaloMet_pfMet->Fill(pfCaloMet_met(), pfMet_met());
-            h2D_pfCaloMet_caloMet->Fill(pfCaloMet_met(), evt_met());
-            h2D_caloMet_pfMet->Fill(evt_met(), pfMet_met());
 
-            h2D_pfClusterMet_pfMet->Fill(pfcluster_met(),pfMet_met());
-            h2D_pfClusterMet_caloMet->Fill(pfcluster_met(),evt_met());
-            h2D_pfClusterMet_pfCaloMet->Fill(pfcluster_met(),pfCaloMet_met());
-
-            h2D_pfCaloMet_pfMet->Fill(pfCaloMet_met(), pfMet_met());
-            h2D_pfCaloMet_caloMet->Fill(pfCaloMet_met(), evt_met());
-            h2D_caloMet_pfMet->Fill(evt_met(), pfMet_met());
-
-            h2D_jetPt_caloMet->Fill(leadingJetPt, evt_met());
+            // require that all subsystems systems are functional
+            // don't judge the hardcoding :(
+            bool dcsFunctional = true;
+            if( ! ( evt_detectorStatus() & (1 << 0  ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 1  ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 2  ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 3  ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 5  ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 6  ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 7  ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 8  ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 9  ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 12 ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 13 ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 14 ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 15 ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 16 ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 17 ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 24 ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 25 ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 26 ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 27 ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 28 ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 29 ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 30 ) ) ) dcsFunctional = false;
+            if( ! ( evt_detectorStatus() & (1 << 31 ) ) ) dcsFunctional = false;
+            if( ! dcsFunctional ) continue;
 
             if ( !evt_cscTightHaloFilter() ) continue; // XXX
 
@@ -224,9 +245,24 @@ int ScanChain( TChain* chain) {
             h1D_pfClusterMet_halonoisehbhe->Fill(pfcluster_met());
             if(dPhiCaloMet < M_PI) h1D_jetCaloMetPhi_halonoisehbhe->Fill(dPhiCaloMet);
 
+
             for(int iDet = 0; iDet < 32; iDet++) {
                 if( evt_detectorStatus() & (1 << iDet) ) h1D_detectorStatus_filt->Fill(iDet);
             }
+
+
+            h2D_pfCaloMet_pfMet->Fill(pfCaloMet_met(), pfMet_met());
+            h2D_pfCaloMet_caloMet->Fill(pfCaloMet_met(), evt_met());
+            h2D_caloMet_pfMet->Fill(evt_met(), pfMet_met());
+            h2D_pfClusterMet_pfMet->Fill(pfcluster_met(),pfMet_met());
+            h2D_pfClusterMet_caloMet->Fill(pfcluster_met(),evt_met());
+            h2D_pfClusterMet_pfCaloMet->Fill(pfcluster_met(),pfCaloMet_met());
+            h2D_pfCaloMet_pfMet->Fill(pfCaloMet_met(), pfMet_met());
+            h2D_pfCaloMet_caloMet->Fill(pfCaloMet_met(), evt_met());
+            h2D_caloMet_pfMet->Fill(evt_met(), pfMet_met());
+            h2D_jetPt_caloMet->Fill(leadingJetPt, evt_met());
+
+            nEventsFiltered++;
 
             // also, if we're at this point, we want to check out the events in more detail
 
@@ -247,6 +283,10 @@ int ScanChain( TChain* chain) {
             if( pfcluster_met() > 60 && pfCaloMet_met() < 10 )
                 std::cout << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event() << " caloMet: " << evt_met() << " pfCaloMet: " << pfCaloMet_met() << " pfClusterMet: " << pfcluster_met() << " pfMet: " << pfMet_met() << std::endl;
 
+            // if( pfCaloMet_met() > 220 && pfMet_met() > 160 )
+            if( evt_met() > 150 )
+                std::cout << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event() << " caloMet: " << evt_met() << " pfCaloMet: " << pfCaloMet_met() << " pfClusterMet: " << pfcluster_met() << " pfMet: " << pfMet_met() << std::endl;
+
         }
 
         // Clean Up
@@ -254,6 +294,8 @@ int ScanChain( TChain* chain) {
         file->Close();
         delete file;
     }
+
+    std::cout << " nEventsChain: " << nEventsChain << " nEventsFiltered: " << nEventsFiltered << std::endl;
 
     std::string out = "pdfs/";
     std::string common = "--noStack --noFill --xAxisOverride [GeV] --type --preserveBackgroundOrder --legendTextSize 0.03 --legendRight -0.05";
