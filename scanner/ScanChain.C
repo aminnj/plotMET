@@ -13,9 +13,19 @@
 
 #include "CMS3.cc"
 #include "dataMCplotMaker.h"
+// #include "/home/users/namin/2015/met/dcscore/CORE/EventSelections.h"
 
 using namespace std;
 using namespace tas;
+
+bool haveFunctionalDCS() {
+    // defined in https://cmssdt.cern.ch/SDT/doxygen/CMSSW_6_1_1/doc/html/d1/d05/DcsStatus_8h_source.html#l00084. Ignore CASTOR and ZDC.
+    std::vector<int> detectors = { 0, 1, 2, 3, 5, 6, 7, 8, 9, 12, 13, 14, 15, 16, 17, 24, 25, 26, 27, 28, 29, 30, 31 };
+    for(unsigned int iDet = 0; iDet < detectors.size(); iDet++) {
+        if( ! ( evt_detectorStatus() & (1 << detectors[iDet]  ) ) ) return false;
+    }
+    return true;
+}
 
 int ScanChain( TChain* chain) {
     TH1F* null = new TH1F("","",1,0,1);
@@ -28,7 +38,7 @@ int ScanChain( TChain* chain) {
     titlesMet.push_back("pfClusterMet");
 
     float lowerMet = 0.0;
-    float upperMet = 400.0;
+    float upperMet = 500.0;
     int metBins = 80;
 
     // met with no filters
@@ -59,7 +69,8 @@ int ScanChain( TChain* chain) {
     titlesFilters.push_back(" NO filter");
     titlesFilters.push_back("+cscTightHalo");
     titlesFilters.push_back("+hcalNoise");
-    titlesFilters.push_back("+hbheRun2Tight");
+    // titlesFilters.push_back("+hbheRun2Tight");
+    titlesFilters.push_back("+hbheFilterRun1");
 
     // caloMet with filters layered
     std::vector<TH1F*> h1D_caloMet_filters_vec;
@@ -148,7 +159,7 @@ int ScanChain( TChain* chain) {
         tree->SetCacheSize(128*1024*1024);
         cms3.Init(tree);
 
-        bool fast = false;
+        bool fast = true;
 
         // Loop over Events in current file
         if( nEventsTotal >= nEventsChain ) continue;
@@ -195,6 +206,7 @@ int ScanChain( TChain* chain) {
 
             // require that all subsystems systems are functional
             // don't judge the hardcoding :(
+            // if ( ! haveFunctionalDCS() ) continue;
             bool dcsFunctional = true;
             if( ! ( evt_detectorStatus() & (1 << 0  ) ) ) dcsFunctional = false;
             if( ! ( evt_detectorStatus() & (1 << 1  ) ) ) dcsFunctional = false;
@@ -237,7 +249,8 @@ int ScanChain( TChain* chain) {
             h1D_pfClusterMet_halonoise->Fill(pfcluster_met());
             if(dPhiCaloMet < M_PI) h1D_jetCaloMetPhi_halonoise->Fill(dPhiCaloMet);
 
-            if ( !evt_hbheFilterRun2Tight() ) continue; // XXX
+            // if ( !evt_hbheFilterRun2Tight() ) continue; // XXX
+            if ( !evt_hbheFilterRun1() ) continue; // XXX
 
             h1D_pfCaloMet_halonoisehbhe->Fill(pfCaloMet_met());
             h1D_pfMet_halonoisehbhe->Fill(pfMet_met());
