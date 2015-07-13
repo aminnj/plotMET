@@ -238,6 +238,8 @@ void dataMCplotMaker(TH1F* Data, std::vector <TH1F*> Backgrounds, std::vector <s
   bool noOutput = false;
   bool noErrBars = false;
   bool noBlackLines = false;
+  bool histoErrors = false;
+  bool xAxisOverrideGiven = false;
 
   //Loop over options and change default settings to user-defined settings
   for (unsigned int i = 0; i < Options.size(); i++){
@@ -262,7 +264,7 @@ void dataMCplotMaker(TH1F* Data, std::vector <TH1F*> Backgrounds, std::vector <s
     else if (Options[i].find("yAxisOverride") < Options[i].length()) yAxisOverride = getString(Options[i], "yAxisOverride");
     else if (Options[i].find("xAxisLabel") < Options[i].length()) xAxisLabel = getString(Options[i], "xAxisLabel");
     else if (Options[i].find("xAxisUnit") < Options[i].length()) xAxisUnit = getString(Options[i], "xAxisUnit");
-    else if (Options[i].find("xAxisOverride") < Options[i].length()) xAxisOverride = getString(Options[i], "xAxisOverride");
+    else if (Options[i].find("xAxisOverride") < Options[i].length()){ xAxisOverride = getString(Options[i], "xAxisOverride"); xAxisOverrideGiven = true; }
     else if (Options[i].find("xAxisBinLabels") < Options[i].length()) xAxisBinLabels = getString(Options[i], "xAxisBinLabels");
     else if (Options[i].find("xAxisVerticalBinLabels") < Options[i].length()) xAxisVerticalBinLabels = 1; 
     else if (Options[i].find("dataName") < Options[i].length()) dataName = getString(Options[i], "dataName");
@@ -283,6 +285,7 @@ void dataMCplotMaker(TH1F* Data, std::vector <TH1F*> Backgrounds, std::vector <s
     else if (Options[i].find("errHistAtBottom") < Options[i].length()) errHistAtBottom = true; 
     else if (Options[i].find("noOutput") < Options[i].length()) noOutput = true; 
     else if (Options[i].find("noErrBars") < Options[i].length()) noErrBars = true; 
+    else if (Options[i].find("histoErrors") < Options[i].length()) histoErrors = true; 
     else cout << "Warning: Option not recognized!  Option: " << Options[i] << endl;
   }
 
@@ -370,25 +373,27 @@ void dataMCplotMaker(TH1F* Data, std::vector <TH1F*> Backgrounds, std::vector <s
   //Set colors for histograms (this is my color scheme, probably needs changed for publishable plots)
   if (color_input.size() == 0 && use_signals == 0 && nostack == 0){ 
     Colors.push_back(kGreen+3);   
-    Colors.push_back(kYellow-4); 
+    Colors.push_back(kBlue-10);   
     Colors.push_back(kOrange+10);
+    Colors.push_back(kYellow-4); 
     Colors.push_back(kCyan-4);
     Colors.push_back(kViolet+4);
   }
   if (color_input.size() == 0 && use_signals == 0 && nostack){ 
     Colors.push_back(kRed); 
-    Colors.push_back(kBlue);
+    Colors.push_back(kBlue-2);
     Colors.push_back(kGreen+3);   
     Colors.push_back(kBlack);
     Colors.push_back(kViolet+4);
+    Colors.push_back(kMagenta-2);
   }
   else if (color_input.size() == 0 && use_signals == 1){ 
     Colors.push_back(kGreen-3);
+    Colors.push_back(kBlue-2);
     Colors.push_back(kCyan);
     Colors.push_back(kOrange-4);
     Colors.push_back(kMagenta-8);
     Colors.push_back(kRed);
-    Colors.push_back(kBlue);
     Colors.push_back(kGreen+3);
     Colors.push_back(kYellow-7);
   }
@@ -510,7 +515,7 @@ void dataMCplotMaker(TH1F* Data, std::vector <TH1F*> Backgrounds, std::vector <s
     for (unsigned int i = 0; i < Backgrounds.size(); i++){
       Backgrounds[i]->UseCurrentStyle();
       if (!nostack) Backgrounds[i]->SetFillColor(Colors[i]);
-      if (dots) Backgrounds[i]->SetMarkerColor(Colors[i]);
+      Backgrounds[i]->SetMarkerColor(Colors[i]);
       if ( noBlackLines) Backgrounds[i]->SetLineColor(Colors[i]);
       if (!noBlackLines) Backgrounds[i]->SetLineColor(kBlack);
       if (nostack && normalize) Backgrounds[i]->Scale(1.0/Backgrounds[i]->Integral());
@@ -522,6 +527,7 @@ void dataMCplotMaker(TH1F* Data, std::vector <TH1F*> Backgrounds, std::vector <s
       Backgrounds[i]->UseCurrentStyle();
       Backgrounds[i]->SetFillColor(kWhite);
       Backgrounds[i]->SetLineColor(Colors[i]);
+      Backgrounds[i]->SetMarkerColor(Colors[i]);
       if (nostack && normalize) Backgrounds[i]->Scale(1.0/Backgrounds[i]->Integral());
       stack->Add(Backgrounds[i]);
     }
@@ -577,7 +583,7 @@ void dataMCplotMaker(TH1F* Data, std::vector <TH1F*> Backgrounds, std::vector <s
   if (xAxisLabel == "MT" || xAxisLabel == "mt" || xAxisLabel == "Mt") xAxisLabel = "M_{T}"; 
   if (xAxisOverride[0] == '\0' && showXaxisUnit == 0) stack->GetXaxis()->SetTitle(Form("%s", xAxisLabel.c_str()));
   if (xAxisOverride[0] == '\0' && showXaxisUnit == 1) stack->GetXaxis()->SetTitle(Form("%s [%s]", xAxisLabel.c_str(), xAxisUnit.c_str()));
-  if (xAxisOverride[0] != '\0') stack->GetXaxis()->SetTitle(Form("%s", xAxisOverride.c_str()));
+  if (xAxisOverride[0] != '\0' || xAxisOverrideGiven) stack->GetXaxis()->SetTitle(Form("%s", xAxisOverride.c_str()));
   if (!noData) stack->GetYaxis()->SetTitleOffset(1.5);
   if (noData) stack->GetYaxis()->SetTitleOffset(1.4);
   if (noData && linear) stack->GetYaxis()->SetTitleOffset(1.6);
@@ -601,6 +607,7 @@ void dataMCplotMaker(TH1F* Data, std::vector <TH1F*> Backgrounds, std::vector <s
       each.push_back(Backgrounds[i]->Integral());
       total += each.back();
     }
+    if(total < pow(1.0,-4.0)) { total = 1; showPercentage = 0; }
     for(unsigned int i=0; i<Backgrounds.size(); i++){
       each[i] = each[i]/total*100;
       percent.push_back((int) each[i]);
@@ -615,7 +622,8 @@ void dataMCplotMaker(TH1F* Data, std::vector <TH1F*> Backgrounds, std::vector <s
   }
 
   //Draw
-  if (!nostack && !dots) stack->Draw("hist");
+  if (!nostack && !dots && histoErrors) stack->Draw("histe");
+  if (!nostack && !dots && !histoErrors) stack->Draw("hist");
   if (dots) stack->Draw("PE"); 
   if (nostack) stack->Draw("nostack");
   THStack *stack2 = new THStack("stack2", "stack2"); 
@@ -688,8 +696,7 @@ void dataMCplotMaker(TH1F* Data, std::vector <TH1F*> Backgrounds, std::vector <s
   tex->SetTextSize(0.028);
   if (overrideHeader[0] == '\0'){
     tex->SetTextAlign(31);
-    if (noData) tex->DrawLatex(0.98,type_y,Form("%s fb^{-1} (%s TeV)", lumi.c_str(), energy.c_str()));
-    else tex->DrawLatex(0.96,type_y,Form("%s fb^{-1} (%s TeV)", lumi.c_str(), energy.c_str()));
+    tex->DrawLatex(0.96,type_y,Form("%s fb^{-1} (%s TeV)", lumi.c_str(), energy.c_str()));
     tex->SetTextAlign(11);
   }
   tex->SetTextSize(0.035);
@@ -736,7 +743,7 @@ void dataMCplotMaker(TH1F* Data, std::vector <TH1F*> Backgrounds, std::vector <s
       }
       float data_value = Data->GetBinContent(ib);
       float value = (MC_value > 0 ? data_value/MC_value : 1000);
-      err_hist->SetBinContent(ib, value);
+      if (data_value != 0 || MC_value != 0) err_hist->SetBinContent(ib, value);
       float MC_err = sqrt(MC_error_2);
       float data_err = Data->GetBinError(ib);
       if(!noErrBars) err_hist->SetBinError(ib, value * sqrt( pow(MC_err/MC_value, 2) + pow(data_err/data_value, 2) ));
@@ -754,8 +761,8 @@ void dataMCplotMaker(TH1F* Data, std::vector <TH1F*> Backgrounds, std::vector <s
     line.SetLineWidth(2);
     int maxbin = err_hist->GetXaxis()->GetNbins();
     line.DrawLine(err_hist->GetXaxis()->GetBinLowEdge(1),1,err_hist->GetXaxis()->GetBinUpEdge(maxbin),1);
-    if(noErrBars)err_hist->Draw("PSAME");
-    else err_hist->Draw("PESAME");
+    if(noErrBars)err_hist->Draw("pSAME");
+    else err_hist->Draw("pESAME");
     err_hist->GetXaxis()->SetLabelSize(0);
     err_hist->GetYaxis()->SetLabelSize(0.2);
     err_hist->GetYaxis()->SetRangeUser(0., 2.);

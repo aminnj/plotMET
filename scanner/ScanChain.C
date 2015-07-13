@@ -1,5 +1,6 @@
 #pragma GCC diagnostic ignored "-Wsign-compare"
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include "TBenchmark.h"
 #include "TChain.h"
@@ -31,8 +32,32 @@ bool hbheIsoNoiseFilter() {
     if( hcalnoise_isolatedNoiseSumEt() >=25       ) return false;
     return true;
 }
+bool passesLoosePFJetID(int pfJetIdx) {
+    float pfjet_chf_  = pfjets_chargedHadronE()[pfJetIdx] / (pfjets_undoJEC().at(pfJetIdx)*pfjets_p4()[pfJetIdx].energy());
+    float pfjet_nhf_  = pfjets_neutralHadronE()[pfJetIdx] / (pfjets_undoJEC().at(pfJetIdx)*pfjets_p4()[pfJetIdx].energy());
+    float pfjet_cef_  = pfjets_chargedEmE()[pfJetIdx] / (pfjets_undoJEC().at(pfJetIdx)*pfjets_p4()[pfJetIdx].energy());
+    float pfjet_nef_  = pfjets_neutralEmE()[pfJetIdx] / (pfjets_undoJEC().at(pfJetIdx)*pfjets_p4()[pfJetIdx].energy());
+    int   pfjet_cm_  = pfjets_chargedMultiplicity()[pfJetIdx];
+    float pfjet_eta  = fabs(pfjets_p4()[pfJetIdx].eta());
+
+    if (pfjets_pfcandIndicies()[pfJetIdx].size() < 2) return false;
+    if (pfjet_nef_ >= 0.99) return false;
+    if (pfjet_nhf_ >= 0.99) return false;
+
+    if (pfjet_eta < 2.4){
+        if (pfjet_cm_ < 1) return false;
+        if (pfjet_chf_ < 1e-6) return false;
+        if (pfjet_cef_ >= 0.99) return false;
+    }
+
+    return true;
+}
 
 int ScanChain( TChain* chain) {
+    ofstream runLumiOutput;
+    runLumiOutput.open("runLumiOutput.txt");
+    initCounter();
+
     TH1F* null = new TH1F("","",1,0,1);
 
     // comparison of METs
@@ -67,9 +92,12 @@ int ScanChain( TChain* chain) {
 
     // eta-phi of towers, pfclusters, and calojets
     float maxEta = 2.8;
-    TH2F* h2D_towers_etaphi = new TH2F("h2D_towers_etaphi","",         100,-maxEta,maxEta, 100,-3.15,3.15);
-    TH2F* h2D_pfclusters_etaphi = new TH2F("h2D_pfclusters_etaphi","", 100,-maxEta,maxEta, 100,-3.15,3.15);
-    TH2F* h2D_calojets_etaphi = new TH2F("h2D_calojets_etaphi","",     100,-maxEta,maxEta, 100,-3.15,3.15);
+    TH2F* h2D_towers_etaphi = new TH2F("h2D_towers_etaphi","",             50 ,-maxEta,maxEta, 50 ,-3.15,3.15);
+    TH2F* h2D_towers_etaphi_em = new TH2F("h2D_towers_etaphi_em","",       50 ,-maxEta,maxEta, 50 ,-3.15,3.15);
+    TH2F* h2D_towers_etaphi_had = new TH2F("h2D_towers_etaphi_had","",     50 ,-maxEta,maxEta, 50 ,-3.15,3.15);
+    TH2F* h2D_towers_etaphi_outer = new TH2F("h2D_towers_etaphi_outer","", 50 ,-maxEta,maxEta, 50 ,-3.15,3.15);
+    TH2F* h2D_pfclusters_etaphi = new TH2F("h2D_pfclusters_etaphi","",     50 ,-maxEta,maxEta, 50 ,-3.15,3.15);
+    TH2F* h2D_calojets_etaphi = new TH2F("h2D_calojets_etaphi","",         50 ,-maxEta,maxEta, 50 ,-3.15,3.15);
 
 
     // filters
@@ -77,8 +105,9 @@ int ScanChain( TChain* chain) {
     titlesFilters.push_back(" NO filter");
     titlesFilters.push_back("+cscTightHalo");
     titlesFilters.push_back("+hcalNoise");
-    titlesFilters.push_back("+hbheFilterRun1");
+    titlesFilters.push_back("+hbheFilter");
     titlesFilters.push_back("+ecalDeadCell");
+    titlesFilters.push_back("+jetID");
 
     // caloMet with filters layered
     std::vector<TH1F*> h1D_caloMet_filters_vec;
@@ -86,11 +115,13 @@ int ScanChain( TChain* chain) {
     TH1F *h1D_caloMet_halonoise = new TH1F("h1D_caloMet_halonoise", "", metBins,lowerMet,upperMet);
     TH1F *h1D_caloMet_halonoisehbhe = new TH1F("h1D_caloMet_halonoisehbhe", "", metBins,lowerMet,upperMet);
     TH1F *h1D_caloMet_halonoisehbheecal = new TH1F("h1D_caloMet_halonoisehbheecal", "", metBins,lowerMet,upperMet);
+    TH1F *h1D_caloMet_halonoisehbheecaljet = new TH1F("h1D_caloMet_halonoisehbheecaljet", "", metBins,lowerMet,upperMet);
     h1D_caloMet_filters_vec.push_back(h1D_caloMet);
     h1D_caloMet_filters_vec.push_back(h1D_caloMet_halo);
     h1D_caloMet_filters_vec.push_back(h1D_caloMet_halonoise);
     h1D_caloMet_filters_vec.push_back(h1D_caloMet_halonoisehbhe);
     h1D_caloMet_filters_vec.push_back(h1D_caloMet_halonoisehbheecal);
+    h1D_caloMet_filters_vec.push_back(h1D_caloMet_halonoisehbheecaljet);
 
     // pfCaloMet with filters layered
     std::vector<TH1F*> h1D_pfCaloMet_filters_vec;
@@ -98,11 +129,13 @@ int ScanChain( TChain* chain) {
     TH1F *h1D_pfCaloMet_halonoise = new TH1F("h1D_pfCaloMet_halonoise", "", metBins,lowerMet,upperMet);
     TH1F *h1D_pfCaloMet_halonoisehbhe = new TH1F("h1D_pfCaloMet_halonoisehbhe", "", metBins,lowerMet,upperMet);
     TH1F *h1D_pfCaloMet_halonoisehbheecal = new TH1F("h1D_pfCaloMet_halonoisehbheecal", "", metBins,lowerMet,upperMet);
+    TH1F *h1D_pfCaloMet_halonoisehbheecaljet = new TH1F("h1D_pfCaloMet_halonoisehbheecaljet", "", metBins,lowerMet,upperMet);
     h1D_pfCaloMet_filters_vec.push_back(h1D_pfCaloMet);
     h1D_pfCaloMet_filters_vec.push_back(h1D_pfCaloMet_halo);
     h1D_pfCaloMet_filters_vec.push_back(h1D_pfCaloMet_halonoise);
     h1D_pfCaloMet_filters_vec.push_back(h1D_pfCaloMet_halonoisehbhe);
     h1D_pfCaloMet_filters_vec.push_back(h1D_pfCaloMet_halonoisehbheecal);
+    h1D_pfCaloMet_filters_vec.push_back(h1D_pfCaloMet_halonoisehbheecaljet);
 
     // pfChMet with filters layered
     std::vector<TH1F*> h1D_pfChMet_filters_vec;
@@ -110,11 +143,13 @@ int ScanChain( TChain* chain) {
     TH1F *h1D_pfChMet_halonoise = new TH1F("h1D_pfChMet_halonoise", "", metBins,lowerMet,upperMet);
     TH1F *h1D_pfChMet_halonoisehbhe = new TH1F("h1D_pfChMet_halonoisehbhe", "", metBins,lowerMet,upperMet);
     TH1F *h1D_pfChMet_halonoisehbheecal = new TH1F("h1D_pfChMet_halonoisehbheecal", "", metBins,lowerMet,upperMet);
+    TH1F *h1D_pfChMet_halonoisehbheecaljet = new TH1F("h1D_pfChMet_halonoisehbheecaljet", "", metBins,lowerMet,upperMet);
     h1D_pfChMet_filters_vec.push_back(h1D_pfChMet);
     h1D_pfChMet_filters_vec.push_back(h1D_pfChMet_halo);
     h1D_pfChMet_filters_vec.push_back(h1D_pfChMet_halonoise);
     h1D_pfChMet_filters_vec.push_back(h1D_pfChMet_halonoisehbhe);
     h1D_pfChMet_filters_vec.push_back(h1D_pfChMet_halonoisehbheecal);
+    h1D_pfChMet_filters_vec.push_back(h1D_pfChMet_halonoisehbheecaljet);
 
     // pfMet with filters layered
     std::vector<TH1F*> h1D_pfMet_filters_vec;
@@ -122,11 +157,13 @@ int ScanChain( TChain* chain) {
     TH1F *h1D_pfMet_halonoise = new TH1F("h1D_pfMet_halonoise", "", metBins,lowerMet,upperMet);
     TH1F *h1D_pfMet_halonoisehbhe = new TH1F("h1D_pfMet_halonoisehbhe", "", metBins,lowerMet,upperMet);
     TH1F *h1D_pfMet_halonoisehbheecal = new TH1F("h1D_pfMet_halonoisehbheecal", "", metBins,lowerMet,upperMet);
+    TH1F *h1D_pfMet_halonoisehbheecaljet = new TH1F("h1D_pfMet_halonoisehbheecaljet", "", metBins,lowerMet,upperMet);
     h1D_pfMet_filters_vec.push_back(h1D_pfMet);
     h1D_pfMet_filters_vec.push_back(h1D_pfMet_halo);
     h1D_pfMet_filters_vec.push_back(h1D_pfMet_halonoise);
     h1D_pfMet_filters_vec.push_back(h1D_pfMet_halonoisehbhe);
     h1D_pfMet_filters_vec.push_back(h1D_pfMet_halonoisehbheecal);
+    h1D_pfMet_filters_vec.push_back(h1D_pfMet_halonoisehbheecaljet);
 
     // pfClusterMet with filters layered
     std::vector<TH1F*> h1D_pfClusterMet_filters_vec;
@@ -134,19 +171,21 @@ int ScanChain( TChain* chain) {
     TH1F *h1D_pfClusterMet_halonoise = new TH1F("h1D_pfClusterMet_halonoise", "", metBins,lowerMet,upperMet);
     TH1F *h1D_pfClusterMet_halonoisehbhe = new TH1F("h1D_pfClusterMet_halonoisehbhe", "", metBins,lowerMet,upperMet);
     TH1F *h1D_pfClusterMet_halonoisehbheecal = new TH1F("h1D_pfClusterMet_halonoisehbheecal", "", metBins,lowerMet,upperMet);
+    TH1F *h1D_pfClusterMet_halonoisehbheecaljet = new TH1F("h1D_pfClusterMet_halonoisehbheecaljet", "", metBins,lowerMet,upperMet);
     h1D_pfClusterMet_filters_vec.push_back(h1D_pfClusterMet);
     h1D_pfClusterMet_filters_vec.push_back(h1D_pfClusterMet_halo);
     h1D_pfClusterMet_filters_vec.push_back(h1D_pfClusterMet_halonoise);
     h1D_pfClusterMet_filters_vec.push_back(h1D_pfClusterMet_halonoisehbhe);
     h1D_pfClusterMet_filters_vec.push_back(h1D_pfClusterMet_halonoisehbheecal);
+    h1D_pfClusterMet_filters_vec.push_back(h1D_pfClusterMet_halonoisehbheecaljet);
 
     // all met after filters
     std::vector<TH1F*> h1D_met_vec;
-    h1D_met_vec.push_back(h1D_pfCaloMet_halonoisehbheecal);
-    h1D_met_vec.push_back(h1D_pfMet_halonoisehbheecal);
-    h1D_met_vec.push_back(h1D_caloMet_halonoisehbheecal);
-    h1D_met_vec.push_back(h1D_pfClusterMet_halonoisehbheecal);
-    h1D_met_vec.push_back(h1D_pfChMet_halonoisehbheecal);
+    h1D_met_vec.push_back(h1D_pfCaloMet_halonoisehbheecaljet);
+    h1D_met_vec.push_back(h1D_pfMet_halonoisehbheecaljet);
+    h1D_met_vec.push_back(h1D_caloMet_halonoisehbheecaljet);
+    h1D_met_vec.push_back(h1D_pfClusterMet_halonoisehbheecaljet);
+    h1D_met_vec.push_back(h1D_pfChMet_halonoisehbheecaljet);
 
 
     // dPhi(leading jet,caloMet)
@@ -156,11 +195,34 @@ int ScanChain( TChain* chain) {
     TH1F *h1D_jetCaloMetPhi_halonoise     = new TH1F("h1D_jetCaloMetPhi_halonoise", "",     70,0,3.5);
     TH1F *h1D_jetCaloMetPhi_halonoisehbhe = new TH1F("h1D_jetCaloMetPhi_halonoisehbhe", "", 70,0,3.5);
     TH1F *h1D_jetCaloMetPhi_halonoisehbheecal = new TH1F("h1D_jetCaloMetPhi_halonoisehbheecal", "", 70,0,3.5);
+    TH1F *h1D_jetCaloMetPhi_halonoisehbheecaljet = new TH1F("h1D_jetCaloMetPhi_halonoisehbheecaljet", "", 70,0,3.5);
     h1D_jetCaloMetPhi_filters_vec.push_back(h1D_jetCaloMetPhi);
     h1D_jetCaloMetPhi_filters_vec.push_back(h1D_jetCaloMetPhi_halo);
     h1D_jetCaloMetPhi_filters_vec.push_back(h1D_jetCaloMetPhi_halonoise);
     h1D_jetCaloMetPhi_filters_vec.push_back(h1D_jetCaloMetPhi_halonoisehbhe);
     h1D_jetCaloMetPhi_filters_vec.push_back(h1D_jetCaloMetPhi_halonoisehbheecal);
+    h1D_jetCaloMetPhi_filters_vec.push_back(h1D_jetCaloMetPhi_halonoisehbheecaljet);
+
+    // leading jet characterization
+    std::vector<std::string> titlesLeadingJet;
+    titlesLeadingJet.push_back("leading PF jet");
+    std::vector<TH1F*> h1D_leadingJet_chf_vec;
+    std::vector<TH1F*> h1D_leadingJet_nhf_vec;
+    std::vector<TH1F*> h1D_leadingJet_cef_vec;
+    std::vector<TH1F*> h1D_leadingJet_nef_vec;
+    std::vector<TH1F*> h1D_leadingJet_cm_vec;
+
+    TH1F *h1D_leadingJet_chf = new TH1F("h1D_leadingJet_chf", "", 50, 0, 1);
+    TH1F *h1D_leadingJet_nhf = new TH1F("h1D_leadingJet_nhf", "", 50, 0, 1);
+    TH1F *h1D_leadingJet_cef = new TH1F("h1D_leadingJet_cef", "", 50, 0, 1);
+    TH1F *h1D_leadingJet_nef = new TH1F("h1D_leadingJet_nef", "", 50, 0, 1);
+    TH1F *h1D_leadingJet_cm = new TH1F("h1D_leadingJet_cm", "", 60, 0, 60);
+
+    h1D_leadingJet_chf_vec.push_back(h1D_leadingJet_chf);
+    h1D_leadingJet_nhf_vec.push_back(h1D_leadingJet_nhf);
+    h1D_leadingJet_cef_vec.push_back(h1D_leadingJet_cef);
+    h1D_leadingJet_nef_vec.push_back(h1D_leadingJet_nef);
+    h1D_leadingJet_cm_vec.push_back(h1D_leadingJet_cm);
 
     // detector status
     std::vector<TH1F*> h1D_detectorStatus_vec;
@@ -181,6 +243,7 @@ int ScanChain( TChain* chain) {
     TFile *currentFile = 0;
 
     // File Loop
+    int prevRun = -1; int prevLumi = -1;
     while ( (currentFile = (TFile*)fileIter.Next()) ) {
 
         // Get File Content
@@ -190,7 +253,7 @@ int ScanChain( TChain* chain) {
         tree->SetCacheSize(128*1024*1024);
         cms3.Init(tree);
 
-        bool fast = false;
+        bool fast = true;
 
         // Loop over Events in current file
         if( nEventsTotal >= nEventsChain ) continue;
@@ -221,7 +284,6 @@ int ScanChain( TChain* chain) {
             float pfClusterMet = pfcluster_met();
             float pfClusterMetPhi = pfcluster_metphi();
 
-
             h1D_pfCaloMet->Fill(pfCaloMet);
             h1D_pfMet->Fill(pfMet);
             h1D_caloMet->Fill(caloMet);
@@ -229,7 +291,13 @@ int ScanChain( TChain* chain) {
             h1D_pfChMet->Fill(pfChMet);
 
             if( !fast ) {
-                for(int i = 0; i < twrs_eta().size(); i++)      h2D_towers_etaphi->Fill(twrs_eta().at(i), twrs_phi().at(i));
+                for(int i = 0; i < twrs_eta().size(); i++) {
+                    h2D_towers_etaphi->Fill(twrs_eta().at(i), twrs_phi().at(i));
+                    h2D_towers_etaphi_em->Fill(twrs_eta().at(i), twrs_phi().at(i), twrs_emEnergy().at(i));
+                    h2D_towers_etaphi_had->Fill(twrs_eta().at(i), twrs_phi().at(i), twrs_hadEnergy().at(i));
+                    h2D_towers_etaphi_outer->Fill(twrs_eta().at(i), twrs_phi().at(i), twrs_outerEnergy().at(i));
+                }   
+
                 for(int i = 0; i < pfcluster_eta().size(); i++) h2D_pfclusters_etaphi->Fill(pfcluster_eta().at(i), pfcluster_phi().at(i));
                 for(int i = 0; i < calojets_eta().size(); i++)  h2D_calojets_etaphi->Fill(calojets_eta().at(i), calojets_phi().at(i));
             }
@@ -243,6 +311,23 @@ int ScanChain( TChain* chain) {
                 }
             }
 
+            float pfJetIdx = -1;
+            float leadingPFJetPt = -1;
+            for(int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
+                if (pfjets_p4().at(iJet).pt() > leadingPFJetPt) {
+                    leadingPFJetPt = pfjets_p4().at(iJet).pt();
+                    pfJetIdx = iJet;
+                }
+            }
+            if(leadingPFJetPt > -1) {
+                cout << "filling stuff" << endl;
+                h1D_leadingJet_chf->Fill(pfjets_chargedHadronE()[pfJetIdx] / (pfjets_undoJEC().at(pfJetIdx)*pfjets_p4()[pfJetIdx].energy()));
+                h1D_leadingJet_nhf->Fill(pfjets_neutralHadronE()[pfJetIdx] / (pfjets_undoJEC().at(pfJetIdx)*pfjets_p4()[pfJetIdx].energy()));
+                h1D_leadingJet_cef->Fill(pfjets_chargedEmE()[pfJetIdx] / (pfjets_undoJEC().at(pfJetIdx)*pfjets_p4()[pfJetIdx].energy()));
+                h1D_leadingJet_nef->Fill(pfjets_neutralEmE()[pfJetIdx] / (pfjets_undoJEC().at(pfJetIdx)*pfjets_p4()[pfJetIdx].energy()));
+                h1D_leadingJet_cm->Fill(pfjets_chargedMultiplicity()[pfJetIdx]);
+            }
+
             for(int iDet = 0; iDet < 32; iDet++) {
                 if( evt_detectorStatus() & (1 << iDet) ) h1D_detectorStatus->Fill(iDet);
             }
@@ -251,13 +336,19 @@ int ScanChain( TChain* chain) {
             if(dPhiCaloMet < M_PI) h1D_jetCaloMetPhi->Fill(dPhiCaloMet);
 
 
-            // require that all subsystems systems are functional and that we have tracks
+            addToCounter("ALL");
+            // DCS AND TRACKS FILTER
             if ( ! haveFunctionalDCS() ) continue;
+            addToCounter("haveFunctionalDCS()");
             if ( ! evt_trackingFailureFilter() ) continue;
-            if ( evt_ntracks() < 4 ) continue; // should be redundant with the trackingFailureFilter
+            addToCounter("evt_trackingFailureFilter()");
+            if ( evt_ntracks() < 4 ) continue;
+            addToCounter("evt_ntracks()<4");
+
 
             // CSC HALO FILTER
-            if ( !evt_cscTightHaloFilter() ) continue; // XXX
+            if ( !evt_cscTightHaloFilter() ) continue;
+            addToCounter("evt_cscTightHaloFilter()");
 
             h1D_pfCaloMet_halo->Fill(pfCaloMet);
             h1D_pfMet_halo->Fill(pfMet);
@@ -266,9 +357,12 @@ int ScanChain( TChain* chain) {
             h1D_pfChMet_halo->Fill(pfChMet);
             if(dPhiCaloMet < M_PI) h1D_jetCaloMetPhi_halo->Fill(dPhiCaloMet);
 
+
             // HCAL NOISE FILTERS
             if ( !hbheIsoNoiseFilter() ) continue;
-            if ( !hcalnoise_passTightNoiseFilter() ) continue; // XXX
+            addToCounter("hbheIsoNoiseFilter()");
+            if ( !hcalnoise_passTightNoiseFilter() ) continue; 
+            addToCounter("hcalnoise_passTightNoiseFilter())");
 
             h1D_pfCaloMet_halonoise->Fill(pfCaloMet);
             h1D_pfMet_halonoise->Fill(pfMet);
@@ -279,7 +373,8 @@ int ScanChain( TChain* chain) {
 
 
             // HCAL FILTER 50NS
-            if ( !evt_hbheFilterRun1() ) continue; // XXX
+            if ( !evt_hbheFilterRun1() ) continue;
+            addToCounter("evt_hbheFilterRun1()");
 
             h1D_pfCaloMet_halonoisehbhe->Fill(pfCaloMet);
             h1D_pfMet_halonoisehbhe->Fill(pfMet);
@@ -290,8 +385,10 @@ int ScanChain( TChain* chain) {
 
 
             // ECAL FILTERS
-            if ( !evt_EcalDeadCellTriggerPrimitiveFilter() ) continue; // XXX
-            if ( !evt_eeBadScFilter() ) continue; // XXX
+            if ( !evt_EcalDeadCellTriggerPrimitiveFilter() ) continue;
+            addToCounter("evt_EcalDeadCellTriggerPrimitiveFilter()");
+            if ( !evt_eeBadScFilter() ) continue;
+            addToCounter("evt_eeBadScFilter()");
 
             h1D_pfCaloMet_halonoisehbheecal->Fill(pfCaloMet);
             h1D_pfMet_halonoisehbheecal->Fill(pfMet);
@@ -300,6 +397,25 @@ int ScanChain( TChain* chain) {
             h1D_pfChMet_halonoisehbheecal->Fill(pfChMet);
             if(dPhiCaloMet < M_PI) h1D_jetCaloMetPhi_halonoisehbheecal->Fill(dPhiCaloMet);
 
+            bool passJetID = true;
+            for(int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
+                if(pfjets_p4().at(iJet).pt() > 100) {
+                    if(!passesLoosePFJetID(iJet)) {
+                        passJetID = false;
+                        break;
+                    }
+                }
+            }
+
+            if( !passJetID ) continue;
+            addToCounter("passJetID");
+
+            h1D_pfCaloMet_halonoisehbheecaljet->Fill(pfCaloMet);
+            h1D_pfMet_halonoisehbheecaljet->Fill(pfMet);
+            h1D_caloMet_halonoisehbheecaljet->Fill(caloMet);
+            h1D_pfClusterMet_halonoisehbheecaljet->Fill(pfClusterMet);
+            h1D_pfChMet_halonoisehbheecaljet->Fill(pfChMet);
+            if(dPhiCaloMet < M_PI) h1D_jetCaloMetPhi_halonoisehbheecaljet->Fill(dPhiCaloMet);
 
             // SURVIVING EVENTS
 
@@ -321,6 +437,13 @@ int ScanChain( TChain* chain) {
 
             nEventsFiltered++;
 
+
+            if(evt_run() != prevRun || evt_lumiBlock() != prevLumi) {
+                runLumiOutput << evt_run() << ":" << evt_lumiBlock() << "\n";
+                prevRun = evt_run();
+                prevLumi = evt_lumiBlock();
+            }
+
             // also, if we're at this point, we want to check out the events in more detail
 
         }
@@ -330,6 +453,9 @@ int ScanChain( TChain* chain) {
         file->Close();
         delete file;
     }
+
+    runLumiOutput.close();
+    printCounter();
 
     std::cout << " nEventsChain: " << nEventsChain << " nEventsFiltered: " << nEventsFiltered << std::endl;
 
@@ -342,7 +468,14 @@ int ScanChain( TChain* chain) {
     dataMCplotMaker(null, h1D_pfClusterMet_filters_vec, titlesFilters, "", "", common+" --overrideHeader pfClusterMet (cumulative filters) --outputName "+out+"h1D_pfClusterMet_filters.pdf");
     dataMCplotMaker(null, h1D_pfChMet_filters_vec, titlesFilters, "", "", common+" --overrideHeader pfChMet (cumulative filters) --outputName "+out+"h1D_pfChMet_filters.pdf");
     dataMCplotMaker(null, h1D_pfCaloMet_filters_vec, titlesFilters, "", "", common+" --overrideHeader pfCaloMet (cumulative filters) --outputName "+out+"h1D_pfCaloMet_filters.pdf");
+
     dataMCplotMaker(null, h1D_jetCaloMetPhi_filters_vec, titlesFilters, "", "", common+"  --overrideHeader #Delta#phi(j,caloMet) (cumulative filters) --xAxisOverride #phi --outputName "+out+"h1D_jetCaloMetPhi_filters.pdf");
+
+    dataMCplotMaker(null, h1D_leadingJet_chf_vec, titlesLeadingJet, "", "", common+"  --overrideHeader charged hadron fraction (no filters) --xAxisOverride #phi --outputName "+out+"h1D_leadingJet_chf_vec.pdf");
+    dataMCplotMaker(null, h1D_leadingJet_nhf_vec, titlesLeadingJet, "", "", common+"  --overrideHeader neutral hadron fraction (no filters) --xAxisOverride #phi --outputName "+out+"h1D_leadingJet_nhf_vec.pdf");
+    dataMCplotMaker(null, h1D_leadingJet_cef_vec, titlesLeadingJet, "", "", common+"  --overrideHeader charged EM fraction (no filters) --xAxisOverride #phi --outputName "+out+"h1D_leadingJet_cef_vec.pdf");
+    dataMCplotMaker(null, h1D_leadingJet_nef_vec, titlesLeadingJet, "", "", common+"  --overrideHeader neutral EM fraction (no filters) --xAxisOverride #phi --outputName "+out+"h1D_leadingJet_nef_vec.pdf");
+    dataMCplotMaker(null, h1D_leadingJet_cm_vec,  titlesLeadingJet, "", "", common+"  --overrideHeader charged multiplicity  (no filters) --xAxisOverride #phi --outputName "+out+"h1D_leadingJet_cm_vec.pdf");
 
     drawHist2D(h2D_pfClusterMet_pfCaloMet,out+"h2D_pfClusterMet_pfCaloMet.pdf",    "--logscale --title pfCaloMet vs pfClusterMet --xlabel pfClusterMet --ylabel pfCaloMet");
     drawHist2D(h2D_pfClusterMet_caloMet,out+"h2D_pfClusterMet_caloMet.pdf","--logscale --title caloMet vs pfClusterMet --xlabel pfClusterMet --ylabel caloMet");
@@ -354,6 +487,9 @@ int ScanChain( TChain* chain) {
     drawHist2D(h2D_jetPt_caloMet,out+"h2D_jetPt_caloMet.pdf","--logscale --title caloMet vs leading jet pT --xlabel  jetPt --ylabel caloMet");
 
     drawHist2D(h2D_towers_etaphi,out+"h2D_towers_etaphi.pdf","--logscale --title towers --xlabel  #eta --ylabel #phi");
+    drawHist2D(h2D_towers_etaphi_em,out+"h2D_towers_etaphi_em.pdf","--logscale --title towers (EM weighted) --xlabel  #eta --ylabel #phi");
+    drawHist2D(h2D_towers_etaphi_had,out+"h2D_towers_etaphi_had.pdf","--logscale --title towers (HCAL weighted) --xlabel  #eta --ylabel #phi");
+    drawHist2D(h2D_towers_etaphi_outer,out+"h2D_towers_etaphi_outer.pdf","--logscale --title towers (HO weighted) --xlabel  #eta --ylabel #phi");
     drawHist2D(h2D_pfclusters_etaphi,out+"h2D_pfclusters_etaphi.pdf","--logscale --title pfclusters --xlabel  #eta --ylabel #phi");
     drawHist2D(h2D_calojets_etaphi,out+"h2D_calojets_etaphi.pdf","--logscale --title calojets --xlabel  #eta --ylabel #phi");
 

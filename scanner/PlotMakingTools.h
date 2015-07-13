@@ -14,7 +14,6 @@
 #include "TLine.h"
 #include "TLatex.h"
 #include "TChain.h"
-#include "TString.h"
 #include "TCut.h"
 #include "TROOT.h"
 

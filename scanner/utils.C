@@ -30,6 +30,12 @@ using namespace std;
 ///////////////////////////
 ////// counter stuff //////
 ///////////////////////////
+struct sort_pred {
+    bool operator()(const std::pair<TString,double> &left, const std::pair<TString,double> &right) {
+        return right.second < left.second;
+    }
+};
+
 TH1D * evtCounter = new TH1D("","",1,0,1); 
 map<TString, double> evtMap;
 void initCounter() {
@@ -43,10 +49,20 @@ void addToCounter(TString name, double weight=1.0) {
 }
 void printCounter() {
     cout << string(30, '-') << endl << "Counter totals: " << endl;
-    for(map<TString,double>::iterator it = evtMap.begin(); it != evtMap.end(); it++)
-        cout << "\t" << it->first << "\t" << it->second << endl;
+    // for(map<TString,double>::iterator it = evtMap.begin(); it != evtMap.end(); it++)
+    //     cout << "\t" << it->first << "\t" << it->second << endl;
 
-    cout << "Total: " << evtCounter->GetBinContent(1) << " pm " << evtCounter->GetBinError(1) << endl;
+    // cout << "Total: " << evtCounter->GetBinContent(1) << " pm " << evtCounter->GetBinError(1) << endl;
+    // cout << string(30, '-') << endl;
+
+    vector<pair<TString, double> > v;
+    copy(evtMap.begin(), evtMap.end(), back_inserter<vector<pair<TString, double> > >(v)); 
+    std::sort(v.begin(), v.end(), sort_pred());
+
+    for (unsigned int i = 0; i < v.size(); ++i) {
+        // cout << "\t" << v[i].first << "\t\t" << v[i].second << endl;
+        printf("%-45s%.1f\n",(v[i].first).Data(),(double)v[i].second);
+    }
     cout << string(30, '-') << endl;
 }
 
