@@ -3,6 +3,7 @@ CMS3 cms3;
 namespace tas {
 	const TBits &hlt_bits() { return cms3.hlt_bits(); }
 	const vector<TString> &hlt_trigNames() { return cms3.hlt_trigNames(); }
+	const vector<TString> &pfjets_bDiscriminatorNames() { return cms3.pfjets_bDiscriminatorNames(); }
 	const bool &hcalnoise_HasBadRBXTS4TS5() { return cms3.hcalnoise_HasBadRBXTS4TS5(); }
 	const bool &evt_EcalDeadCellTriggerPrimitiveFilter() { return cms3.evt_EcalDeadCellTriggerPrimitiveFilter(); }
 	const bool &evt_cscTightHaloFilter() { return cms3.evt_cscTightHaloFilter(); }
@@ -131,6 +132,7 @@ namespace tas {
 	const float &pfMet_met_type1cor() { return cms3.pfMet_met_type1cor(); }
 	const float &pfMet_sumet() { return cms3.pfMet_sumet(); }
 	const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &pfcands_p4() { return cms3.pfcands_p4(); }
+	const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &pfjets_p4() { return cms3.pfjets_p4(); }
 	const vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > > &hlt_trigObjs_p4() { return cms3.hlt_trigObjs_p4(); }
 	const vector<float> &calojets_eta() { return cms3.calojets_eta(); }
 	const vector<float> &calojets_phi() { return cms3.calojets_phi(); }
@@ -167,6 +169,19 @@ namespace tas {
 	const vector<float> &pfcluster_et() { return cms3.pfcluster_et(); }
 	const vector<float> &pfcluster_eta() { return cms3.pfcluster_eta(); }
 	const vector<float> &pfcluster_phi() { return cms3.pfcluster_phi(); }
+	const vector<float> &pfjets_area() { return cms3.pfjets_area(); }
+	const vector<float> &pfjets_chargedEmE() { return cms3.pfjets_chargedEmE(); }
+	const vector<float> &pfjets_chargedHadronE() { return cms3.pfjets_chargedHadronE(); }
+	const vector<float> &pfjets_electronE() { return cms3.pfjets_electronE(); }
+	const vector<float> &pfjets_hfEmE() { return cms3.pfjets_hfEmE(); }
+	const vector<float> &pfjets_hfHadronE() { return cms3.pfjets_hfHadronE(); }
+	const vector<float> &pfjets_mass() { return cms3.pfjets_mass(); }
+	const vector<float> &pfjets_muonE() { return cms3.pfjets_muonE(); }
+	const vector<float> &pfjets_neutralEmE() { return cms3.pfjets_neutralEmE(); }
+	const vector<float> &pfjets_neutralHadronE() { return cms3.pfjets_neutralHadronE(); }
+	const vector<float> &pfjets_photonE() { return cms3.pfjets_photonE(); }
+	const vector<float> &pfjets_undoJEC() { return cms3.pfjets_undoJEC(); }
+	const vector<vector<float> > &pfjets_bDiscriminators() { return cms3.pfjets_bDiscriminators(); }
 	const int &evt_bunchCrossing() { return cms3.evt_bunchCrossing(); }
 	const int &evt_experimentType() { return cms3.evt_experimentType(); }
 	const int &evt_isRealData() { return cms3.evt_isRealData(); }
@@ -198,7 +213,15 @@ namespace tas {
 	const vector<int> &pfcands_charge() { return cms3.pfcands_charge(); }
 	const vector<int> &pfcands_particleId() { return cms3.pfcands_particleId(); }
 	const vector<int> &pfcluster_layer() { return cms3.pfcluster_layer(); }
+	const vector<int> &pfjets_chargedHadronMultiplicity() { return cms3.pfjets_chargedHadronMultiplicity(); }
+	const vector<int> &pfjets_chargedMultiplicity() { return cms3.pfjets_chargedMultiplicity(); }
+	const vector<int> &pfjets_electronMultiplicity() { return cms3.pfjets_electronMultiplicity(); }
+	const vector<int> &pfjets_muonMultiplicity() { return cms3.pfjets_muonMultiplicity(); }
+	const vector<int> &pfjets_neutralHadronMultiplicity() { return cms3.pfjets_neutralHadronMultiplicity(); }
+	const vector<int> &pfjets_neutralMultiplicity() { return cms3.pfjets_neutralMultiplicity(); }
+	const vector<int> &pfjets_photonMultiplicity() { return cms3.pfjets_photonMultiplicity(); }
 	const vector<vector<int> > &hlt_trigObjs_id() { return cms3.hlt_trigObjs_id(); }
+	const vector<vector<int> > &pfjets_pfcandIndicies() { return cms3.pfjets_pfcandIndicies(); }
 	const unsigned int &evt_ntwrs() { return cms3.evt_ntwrs(); }
 	const unsigned int &evt_detectorStatus() { return cms3.evt_detectorStatus(); }
 	const unsigned int &evt_event() { return cms3.evt_event(); }
@@ -213,4 +236,5 @@ namespace tas {
 	const vector<unsigned int> &twrs_numRecoveredHcalCells() { return cms3.twrs_numRecoveredHcalCells(); }
 	const vector<unsigned int> &hlt_prescales() { return cms3.hlt_prescales(); }
 	bool passHLTTrigger(TString trigName) { return cms3.passHLTTrigger(trigName); }
+	float getbtagvalue(TString bDiscriminatorName, unsigned int jetIndx) { return cms3.getbtagvalue( bDiscriminatorName, jetIndx); }
 }
