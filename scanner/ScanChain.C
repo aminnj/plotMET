@@ -13,7 +13,6 @@
 
 #include "CMS3.cc"
 #include "dataMCplotMaker.h"
-// #include "/home/users/namin/2015/met/dcscore/CORE/EventSelections.h"
 
 using namespace std;
 using namespace tas;
@@ -26,6 +25,12 @@ bool haveFunctionalDCS() {
     }
     return true;
 }
+bool hbheIsoNoiseFilter() {
+    if( hcalnoise_numIsolatedNoiseChannels() >=10 ) return false;
+    if( hcalnoise_isolatedNoiseSumE() >=50        ) return false;
+    if( hcalnoise_isolatedNoiseSumEt() >=25       ) return false;
+    return true;
+}
 
 int ScanChain( TChain* chain) {
     TH1F* null = new TH1F("","",1,0,1);
@@ -36,6 +41,7 @@ int ScanChain( TChain* chain) {
     titlesMet.push_back("pfMet");
     titlesMet.push_back("caloMet");
     titlesMet.push_back("pfClusterMet");
+    titlesMet.push_back("pfChMet");
 
     float lowerMet = 0.0;
     float upperMet = 500.0;
@@ -46,6 +52,7 @@ int ScanChain( TChain* chain) {
     TH1F *h1D_pfMet = new TH1F("h1D_pfMet", "", metBins,lowerMet,upperMet);
     TH1F *h1D_caloMet = new TH1F("h1D_caloMet", "", metBins,lowerMet,upperMet);
     TH1F *h1D_pfClusterMet = new TH1F("h1D_pfClusterMet", "", metBins,lowerMet,upperMet);
+    TH1F *h1D_pfChMet = new TH1F("h1D_pfChMet", "", metBins,lowerMet,upperMet);
 
     // 2d plots of met
     TH2F* h2D_pfCaloMet_pfMet = new TH2F("h2D_pfCaloMet_pfMet","", metBins,lowerMet,upperMet, metBins,lowerMet,upperMet);
@@ -59,9 +66,10 @@ int ScanChain( TChain* chain) {
     TH2F* h2D_jetPt_caloMet = new TH2F("h2D_jetPt_caloMet","", metBins,lowerMet,upperMet, metBins,lowerMet,upperMet);
 
     // eta-phi of towers, pfclusters, and calojets
-    TH2F* h2D_towers_etaphi = new TH2F("h2D_towers_etaphi","",         50,-2.4,2.4, 50,-3.15,3.15);
-    TH2F* h2D_pfclusters_etaphi = new TH2F("h2D_pfclusters_etaphi","", 50,-2.4,2.4, 50,-3.15,3.15);
-    TH2F* h2D_calojets_etaphi = new TH2F("h2D_calojets_etaphi","",     50,-2.4,2.4, 50,-3.15,3.15);
+    float maxEta = 3.0;
+    TH2F* h2D_towers_etaphi = new TH2F("h2D_towers_etaphi","",         50,-maxEta,maxEta, 50,-3.15,3.15);
+    TH2F* h2D_pfclusters_etaphi = new TH2F("h2D_pfclusters_etaphi","", 50,-maxEta,maxEta, 50,-3.15,3.15);
+    TH2F* h2D_calojets_etaphi = new TH2F("h2D_calojets_etaphi","",     50,-maxEta,maxEta, 50,-3.15,3.15);
 
 
     // filters
@@ -69,55 +77,76 @@ int ScanChain( TChain* chain) {
     titlesFilters.push_back(" NO filter");
     titlesFilters.push_back("+cscTightHalo");
     titlesFilters.push_back("+hcalNoise");
-    // titlesFilters.push_back("+hbheRun2Tight");
     titlesFilters.push_back("+hbheFilterRun1");
+    titlesFilters.push_back("+ecalDeadCell");
 
     // caloMet with filters layered
     std::vector<TH1F*> h1D_caloMet_filters_vec;
     TH1F *h1D_caloMet_halo = new TH1F("h1D_caloMet_halo", "", metBins,lowerMet,upperMet);
     TH1F *h1D_caloMet_halonoise = new TH1F("h1D_caloMet_halonoise", "", metBins,lowerMet,upperMet);
     TH1F *h1D_caloMet_halonoisehbhe = new TH1F("h1D_caloMet_halonoisehbhe", "", metBins,lowerMet,upperMet);
+    TH1F *h1D_caloMet_halonoisehbheecal = new TH1F("h1D_caloMet_halonoisehbheecal", "", metBins,lowerMet,upperMet);
     h1D_caloMet_filters_vec.push_back(h1D_caloMet);
     h1D_caloMet_filters_vec.push_back(h1D_caloMet_halo);
     h1D_caloMet_filters_vec.push_back(h1D_caloMet_halonoise);
     h1D_caloMet_filters_vec.push_back(h1D_caloMet_halonoisehbhe);
+    h1D_caloMet_filters_vec.push_back(h1D_caloMet_halonoisehbheecal);
 
     // pfCaloMet with filters layered
     std::vector<TH1F*> h1D_pfCaloMet_filters_vec;
     TH1F *h1D_pfCaloMet_halo = new TH1F("h1D_pfCaloMet_halo", "", metBins,lowerMet,upperMet);
     TH1F *h1D_pfCaloMet_halonoise = new TH1F("h1D_pfCaloMet_halonoise", "", metBins,lowerMet,upperMet);
     TH1F *h1D_pfCaloMet_halonoisehbhe = new TH1F("h1D_pfCaloMet_halonoisehbhe", "", metBins,lowerMet,upperMet);
+    TH1F *h1D_pfCaloMet_halonoisehbheecal = new TH1F("h1D_pfCaloMet_halonoisehbheecal", "", metBins,lowerMet,upperMet);
     h1D_pfCaloMet_filters_vec.push_back(h1D_pfCaloMet);
     h1D_pfCaloMet_filters_vec.push_back(h1D_pfCaloMet_halo);
     h1D_pfCaloMet_filters_vec.push_back(h1D_pfCaloMet_halonoise);
     h1D_pfCaloMet_filters_vec.push_back(h1D_pfCaloMet_halonoisehbhe);
+    h1D_pfCaloMet_filters_vec.push_back(h1D_pfCaloMet_halonoisehbheecal);
+
+    // pfChMet with filters layered
+    std::vector<TH1F*> h1D_pfChMet_filters_vec;
+    TH1F *h1D_pfChMet_halo = new TH1F("h1D_pfChMet_halo", "", metBins,lowerMet,upperMet);
+    TH1F *h1D_pfChMet_halonoise = new TH1F("h1D_pfChMet_halonoise", "", metBins,lowerMet,upperMet);
+    TH1F *h1D_pfChMet_halonoisehbhe = new TH1F("h1D_pfChMet_halonoisehbhe", "", metBins,lowerMet,upperMet);
+    TH1F *h1D_pfChMet_halonoisehbheecal = new TH1F("h1D_pfChMet_halonoisehbheecal", "", metBins,lowerMet,upperMet);
+    h1D_pfChMet_filters_vec.push_back(h1D_pfChMet);
+    h1D_pfChMet_filters_vec.push_back(h1D_pfChMet_halo);
+    h1D_pfChMet_filters_vec.push_back(h1D_pfChMet_halonoise);
+    h1D_pfChMet_filters_vec.push_back(h1D_pfChMet_halonoisehbhe);
+    h1D_pfChMet_filters_vec.push_back(h1D_pfChMet_halonoisehbheecal);
 
     // pfMet with filters layered
     std::vector<TH1F*> h1D_pfMet_filters_vec;
     TH1F *h1D_pfMet_halo = new TH1F("h1D_pfMet_halo", "", metBins,lowerMet,upperMet);
     TH1F *h1D_pfMet_halonoise = new TH1F("h1D_pfMet_halonoise", "", metBins,lowerMet,upperMet);
     TH1F *h1D_pfMet_halonoisehbhe = new TH1F("h1D_pfMet_halonoisehbhe", "", metBins,lowerMet,upperMet);
+    TH1F *h1D_pfMet_halonoisehbheecal = new TH1F("h1D_pfMet_halonoisehbheecal", "", metBins,lowerMet,upperMet);
     h1D_pfMet_filters_vec.push_back(h1D_pfMet);
     h1D_pfMet_filters_vec.push_back(h1D_pfMet_halo);
     h1D_pfMet_filters_vec.push_back(h1D_pfMet_halonoise);
     h1D_pfMet_filters_vec.push_back(h1D_pfMet_halonoisehbhe);
+    h1D_pfMet_filters_vec.push_back(h1D_pfMet_halonoisehbheecal);
 
     // pfClusterMet with filters layered
     std::vector<TH1F*> h1D_pfClusterMet_filters_vec;
     TH1F *h1D_pfClusterMet_halo = new TH1F("h1D_pfClusterMet_halo", "", metBins,lowerMet,upperMet);
     TH1F *h1D_pfClusterMet_halonoise = new TH1F("h1D_pfClusterMet_halonoise", "", metBins,lowerMet,upperMet);
     TH1F *h1D_pfClusterMet_halonoisehbhe = new TH1F("h1D_pfClusterMet_halonoisehbhe", "", metBins,lowerMet,upperMet);
+    TH1F *h1D_pfClusterMet_halonoisehbheecal = new TH1F("h1D_pfClusterMet_halonoisehbheecal", "", metBins,lowerMet,upperMet);
     h1D_pfClusterMet_filters_vec.push_back(h1D_pfClusterMet);
     h1D_pfClusterMet_filters_vec.push_back(h1D_pfClusterMet_halo);
     h1D_pfClusterMet_filters_vec.push_back(h1D_pfClusterMet_halonoise);
     h1D_pfClusterMet_filters_vec.push_back(h1D_pfClusterMet_halonoisehbhe);
+    h1D_pfClusterMet_filters_vec.push_back(h1D_pfClusterMet_halonoisehbheecal);
 
     // all met after filters
     std::vector<TH1F*> h1D_met_vec;
-    h1D_met_vec.push_back(h1D_pfCaloMet_halonoisehbhe);
-    h1D_met_vec.push_back(h1D_pfMet_halonoisehbhe);
-    h1D_met_vec.push_back(h1D_caloMet_halonoisehbhe);
-    h1D_met_vec.push_back(h1D_pfClusterMet_halonoisehbhe);
+    h1D_met_vec.push_back(h1D_pfCaloMet_halonoisehbheecal);
+    h1D_met_vec.push_back(h1D_pfMet_halonoisehbheecal);
+    h1D_met_vec.push_back(h1D_caloMet_halonoisehbheecal);
+    h1D_met_vec.push_back(h1D_pfClusterMet_halonoisehbheecal);
+    h1D_met_vec.push_back(h1D_pfChMet_halonoisehbheecal);
 
 
     // dPhi(leading jet,caloMet)
@@ -126,10 +155,12 @@ int ScanChain( TChain* chain) {
     TH1F *h1D_jetCaloMetPhi_halo          = new TH1F("h1D_jetCaloMetPhi_halo", "",          70,0,3.5);
     TH1F *h1D_jetCaloMetPhi_halonoise     = new TH1F("h1D_jetCaloMetPhi_halonoise", "",     70,0,3.5);
     TH1F *h1D_jetCaloMetPhi_halonoisehbhe = new TH1F("h1D_jetCaloMetPhi_halonoisehbhe", "", 70,0,3.5);
+    TH1F *h1D_jetCaloMetPhi_halonoisehbheecal = new TH1F("h1D_jetCaloMetPhi_halonoisehbheecal", "", 70,0,3.5);
     h1D_jetCaloMetPhi_filters_vec.push_back(h1D_jetCaloMetPhi);
     h1D_jetCaloMetPhi_filters_vec.push_back(h1D_jetCaloMetPhi_halo);
     h1D_jetCaloMetPhi_filters_vec.push_back(h1D_jetCaloMetPhi_halonoise);
     h1D_jetCaloMetPhi_filters_vec.push_back(h1D_jetCaloMetPhi_halonoisehbhe);
+    h1D_jetCaloMetPhi_filters_vec.push_back(h1D_jetCaloMetPhi_halonoisehbheecal);
 
     // detector status
     std::vector<TH1F*> h1D_detectorStatus_vec;
@@ -159,7 +190,7 @@ int ScanChain( TChain* chain) {
         tree->SetCacheSize(128*1024*1024);
         cms3.Init(tree);
 
-        bool fast = true;
+        bool fast = false;
 
         // Loop over Events in current file
         if( nEventsTotal >= nEventsChain ) continue;
@@ -175,11 +206,27 @@ int ScanChain( TChain* chain) {
             CMS3::progress( nEventsTotal, nEventsChain );
 
             // Analysis Code
+            float pfCaloMet = pfCaloMet_met();
+            float pfCaloMetPhi = pfCaloMet_metPhi();
 
-            h1D_pfCaloMet->Fill(pfCaloMet_met());
-            h1D_pfMet->Fill(pfMet_met());
-            h1D_caloMet->Fill(evt_met());
-            h1D_pfClusterMet->Fill(pfcluster_met());
+            float pfMet = pfMet_met();
+            float pfMetPhi = pfMet_metPhi();
+
+            float pfChMet = pfChMet_met();
+            float pfChMetPhi = pfChMet_metPhi();
+
+            float caloMet = evt_metMuonCorr();
+            float caloMetPhi = evt_metMuonCorrPhi();
+
+            float pfClusterMet = pfcluster_met();
+            float pfClusterMetPhi = pfcluster_metphi();
+
+
+            h1D_pfCaloMet->Fill(pfCaloMet);
+            h1D_pfMet->Fill(pfMet);
+            h1D_caloMet->Fill(caloMet);
+            h1D_pfClusterMet->Fill(pfClusterMet);
+            h1D_pfChMet->Fill(pfChMet);
 
             if( !fast ) {
                 for(int i = 0; i < twrs_eta().size(); i++)      h2D_towers_etaphi->Fill(twrs_eta().at(i), twrs_phi().at(i));
@@ -200,105 +247,81 @@ int ScanChain( TChain* chain) {
                 if( evt_detectorStatus() & (1 << iDet) ) h1D_detectorStatus->Fill(iDet);
             }
 
-            float dPhiCaloMet = deltaPhi(leadingJetPhi, evt_metPhi());
+            float dPhiCaloMet = deltaPhi(leadingJetPhi, caloMetPhi);
             if(dPhiCaloMet < M_PI) h1D_jetCaloMetPhi->Fill(dPhiCaloMet);
 
 
-            // require that all subsystems systems are functional
-            // don't judge the hardcoding :(
-            // if ( ! haveFunctionalDCS() ) continue;
-            bool dcsFunctional = true;
-            if( ! ( evt_detectorStatus() & (1 << 0  ) ) ) dcsFunctional = false;
-            if( ! ( evt_detectorStatus() & (1 << 1  ) ) ) dcsFunctional = false;
-            if( ! ( evt_detectorStatus() & (1 << 2  ) ) ) dcsFunctional = false;
-            if( ! ( evt_detectorStatus() & (1 << 3  ) ) ) dcsFunctional = false;
-            if( ! ( evt_detectorStatus() & (1 << 5  ) ) ) dcsFunctional = false;
-            if( ! ( evt_detectorStatus() & (1 << 6  ) ) ) dcsFunctional = false;
-            if( ! ( evt_detectorStatus() & (1 << 7  ) ) ) dcsFunctional = false;
-            if( ! ( evt_detectorStatus() & (1 << 8  ) ) ) dcsFunctional = false;
-            if( ! ( evt_detectorStatus() & (1 << 9  ) ) ) dcsFunctional = false;
-            if( ! ( evt_detectorStatus() & (1 << 12 ) ) ) dcsFunctional = false;
-            if( ! ( evt_detectorStatus() & (1 << 13 ) ) ) dcsFunctional = false;
-            if( ! ( evt_detectorStatus() & (1 << 14 ) ) ) dcsFunctional = false;
-            if( ! ( evt_detectorStatus() & (1 << 15 ) ) ) dcsFunctional = false;
-            if( ! ( evt_detectorStatus() & (1 << 16 ) ) ) dcsFunctional = false;
-            if( ! ( evt_detectorStatus() & (1 << 17 ) ) ) dcsFunctional = false;
-            if( ! ( evt_detectorStatus() & (1 << 24 ) ) ) dcsFunctional = false;
-            if( ! ( evt_detectorStatus() & (1 << 25 ) ) ) dcsFunctional = false;
-            if( ! ( evt_detectorStatus() & (1 << 26 ) ) ) dcsFunctional = false;
-            if( ! ( evt_detectorStatus() & (1 << 27 ) ) ) dcsFunctional = false;
-            if( ! ( evt_detectorStatus() & (1 << 28 ) ) ) dcsFunctional = false;
-            if( ! ( evt_detectorStatus() & (1 << 29 ) ) ) dcsFunctional = false;
-            if( ! ( evt_detectorStatus() & (1 << 30 ) ) ) dcsFunctional = false;
-            if( ! ( evt_detectorStatus() & (1 << 31 ) ) ) dcsFunctional = false;
-            if( ! dcsFunctional ) continue;
+            // require that all subsystems systems are functional and that we have tracks
+            if ( ! haveFunctionalDCS() ) continue;
+            if ( ! evt_trackingFailureFilter() ) continue;
+            if ( evt_ntracks() < 4 ) continue; // should be redundant with the trackingFailureFilter
 
+            // CSC HALO FILTER
             if ( !evt_cscTightHaloFilter() ) continue; // XXX
 
-            h1D_pfCaloMet_halo->Fill(pfCaloMet_met());
-            h1D_pfMet_halo->Fill(pfMet_met());
-            h1D_caloMet_halo->Fill(evt_met());
-            h1D_pfClusterMet_halo->Fill(pfcluster_met());
+            h1D_pfCaloMet_halo->Fill(pfCaloMet);
+            h1D_pfMet_halo->Fill(pfMet);
+            h1D_caloMet_halo->Fill(caloMet);
+            h1D_pfClusterMet_halo->Fill(pfClusterMet);
+            h1D_pfChMet_halo->Fill(pfChMet);
             if(dPhiCaloMet < M_PI) h1D_jetCaloMetPhi_halo->Fill(dPhiCaloMet);
 
+            // HCAL NOISE FILTERS
+            if ( !hbheIsoNoiseFilter() ) continue;
             if ( !hcalnoise_passTightNoiseFilter() ) continue; // XXX
 
-            h1D_pfCaloMet_halonoise->Fill(pfCaloMet_met());
-            h1D_pfMet_halonoise->Fill(pfMet_met());
-            h1D_caloMet_halonoise->Fill(evt_met());
-            h1D_pfClusterMet_halonoise->Fill(pfcluster_met());
+            h1D_pfCaloMet_halonoise->Fill(pfCaloMet);
+            h1D_pfMet_halonoise->Fill(pfMet);
+            h1D_caloMet_halonoise->Fill(caloMet);
+            h1D_pfClusterMet_halonoise->Fill(pfClusterMet);
+            h1D_pfChMet_halonoise->Fill(pfChMet);
             if(dPhiCaloMet < M_PI) h1D_jetCaloMetPhi_halonoise->Fill(dPhiCaloMet);
 
-            // if ( !evt_hbheFilterRun2Tight() ) continue; // XXX
+
+            // HCAL FILTER 50NS
             if ( !evt_hbheFilterRun1() ) continue; // XXX
 
-            h1D_pfCaloMet_halonoisehbhe->Fill(pfCaloMet_met());
-            h1D_pfMet_halonoisehbhe->Fill(pfMet_met());
-            h1D_caloMet_halonoisehbhe->Fill(evt_met());
-            h1D_pfClusterMet_halonoisehbhe->Fill(pfcluster_met());
+            h1D_pfCaloMet_halonoisehbhe->Fill(pfCaloMet);
+            h1D_pfMet_halonoisehbhe->Fill(pfMet);
+            h1D_caloMet_halonoisehbhe->Fill(caloMet);
+            h1D_pfClusterMet_halonoisehbhe->Fill(pfClusterMet);
+            h1D_pfChMet_halonoisehbhe->Fill(pfChMet);
             if(dPhiCaloMet < M_PI) h1D_jetCaloMetPhi_halonoisehbhe->Fill(dPhiCaloMet);
 
+
+            // ECAL FILTERS
+            if ( !evt_EcalDeadCellTriggerPrimitiveFilter() ) continue; // XXX
+            if ( !evt_eeBadScFilter() ) continue; // XXX
+
+            h1D_pfCaloMet_halonoisehbheecal->Fill(pfCaloMet);
+            h1D_pfMet_halonoisehbheecal->Fill(pfMet);
+            h1D_caloMet_halonoisehbheecal->Fill(caloMet);
+            h1D_pfClusterMet_halonoisehbheecal->Fill(pfClusterMet);
+            h1D_pfChMet_halonoisehbheecal->Fill(pfChMet);
+            if(dPhiCaloMet < M_PI) h1D_jetCaloMetPhi_halonoisehbheecal->Fill(dPhiCaloMet);
+
+
+            // SURVIVING EVENTS
 
             for(int iDet = 0; iDet < 32; iDet++) {
                 if( evt_detectorStatus() & (1 << iDet) ) h1D_detectorStatus_filt->Fill(iDet);
             }
 
 
-            h2D_pfCaloMet_pfMet->Fill(pfCaloMet_met(), pfMet_met());
-            h2D_pfCaloMet_caloMet->Fill(pfCaloMet_met(), evt_met());
-            h2D_caloMet_pfMet->Fill(evt_met(), pfMet_met());
-            h2D_pfClusterMet_pfMet->Fill(pfcluster_met(),pfMet_met());
-            h2D_pfClusterMet_caloMet->Fill(pfcluster_met(),evt_met());
-            h2D_pfClusterMet_pfCaloMet->Fill(pfcluster_met(),pfCaloMet_met());
-            h2D_pfCaloMet_pfMet->Fill(pfCaloMet_met(), pfMet_met());
-            h2D_pfCaloMet_caloMet->Fill(pfCaloMet_met(), evt_met());
-            h2D_caloMet_pfMet->Fill(evt_met(), pfMet_met());
-            h2D_jetPt_caloMet->Fill(leadingJetPt, evt_met());
+            h2D_pfCaloMet_pfMet->Fill(pfCaloMet, pfMet);
+            h2D_pfCaloMet_caloMet->Fill(pfCaloMet, caloMet);
+            h2D_caloMet_pfMet->Fill(caloMet, pfMet);
+            h2D_pfClusterMet_pfMet->Fill(pfClusterMet,pfMet);
+            h2D_pfClusterMet_caloMet->Fill(pfClusterMet,caloMet);
+            h2D_pfClusterMet_pfCaloMet->Fill(pfClusterMet,pfCaloMet);
+            h2D_pfCaloMet_pfMet->Fill(pfCaloMet, pfMet);
+            h2D_pfCaloMet_caloMet->Fill(pfCaloMet, caloMet);
+            h2D_caloMet_pfMet->Fill(caloMet, pfMet);
+            h2D_jetPt_caloMet->Fill(leadingJetPt, caloMet);
 
             nEventsFiltered++;
 
             // also, if we're at this point, we want to check out the events in more detail
-
-            float thresh = 1200;
-            if( evt_met()>thresh || pfCaloMet_met()>thresh || pfcluster_met()>thresh || pfMet_met()>thresh ) {
-                std::cout << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event() << " caloMet: " << evt_met() << " pfCaloMet: " << pfCaloMet_met() << " pfClusterMet: " << pfcluster_met() << " pfMet: " << pfMet_met() << std::endl;
-            }
-
-            if( evt_met() > 70 && pfMet_met() < 20 )
-                std::cout << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event() << " caloMet: " << evt_met() << " pfCaloMet: " << pfCaloMet_met() << " pfClusterMet: " << pfcluster_met() << " pfMet: " << pfMet_met() << std::endl;
-
-            if( evt_met() < 20 && pfcluster_met() > 60 )
-                std::cout << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event() << " caloMet: " << evt_met() << " pfCaloMet: " << pfCaloMet_met() << " pfClusterMet: " << pfcluster_met() << " pfMet: " << pfMet_met() << std::endl;
-
-            if( pfCaloMet_met() > 110 && evt_met() < 20 )
-                std::cout << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event() << " caloMet: " << evt_met() << " pfCaloMet: " << pfCaloMet_met() << " pfClusterMet: " << pfcluster_met() << " pfMet: " << pfMet_met() << std::endl;
-
-            if( pfcluster_met() > 60 && pfCaloMet_met() < 10 )
-                std::cout << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event() << " caloMet: " << evt_met() << " pfCaloMet: " << pfCaloMet_met() << " pfClusterMet: " << pfcluster_met() << " pfMet: " << pfMet_met() << std::endl;
-
-            // if( pfCaloMet_met() > 220 && pfMet_met() > 160 )
-            if( evt_met() > 150 )
-                std::cout << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event() << " caloMet: " << evt_met() << " pfCaloMet: " << pfCaloMet_met() << " pfClusterMet: " << pfcluster_met() << " pfMet: " << pfMet_met() << std::endl;
 
         }
 
@@ -317,8 +340,8 @@ int ScanChain( TChain* chain) {
     dataMCplotMaker(null, h1D_caloMet_filters_vec, titlesFilters, "", "", common+" --overrideHeader caloMet (cumulative filters) --outputName "+out+"h1D_caloMet_filters.pdf");
     dataMCplotMaker(null, h1D_pfMet_filters_vec, titlesFilters, "", "", common+" --overrideHeader pfMet (cumulative filters) --outputName "+out+"h1D_pfMet_filters.pdf");
     dataMCplotMaker(null, h1D_pfClusterMet_filters_vec, titlesFilters, "", "", common+" --overrideHeader pfClusterMet (cumulative filters) --outputName "+out+"h1D_pfClusterMet_filters.pdf");
+    dataMCplotMaker(null, h1D_pfChMet_filters_vec, titlesFilters, "", "", common+" --overrideHeader pfChMet (cumulative filters) --outputName "+out+"h1D_pfChMet_filters.pdf");
     dataMCplotMaker(null, h1D_pfCaloMet_filters_vec, titlesFilters, "", "", common+" --overrideHeader pfCaloMet (cumulative filters) --outputName "+out+"h1D_pfCaloMet_filters.pdf");
-
     dataMCplotMaker(null, h1D_jetCaloMetPhi_filters_vec, titlesFilters, "", "", common+"  --overrideHeader #Delta#phi(j,caloMet) (cumulative filters) --xAxisOverride #phi --outputName "+out+"h1D_jetCaloMetPhi_filters.pdf");
 
     drawHist2D(h2D_pfClusterMet_pfCaloMet,out+"h2D_pfClusterMet_pfCaloMet.pdf",    "--logscale --title pfCaloMet vs pfClusterMet --xlabel pfClusterMet --ylabel pfCaloMet");

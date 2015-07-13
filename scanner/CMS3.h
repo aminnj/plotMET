@@ -27,9 +27,21 @@ protected:
 	bool hcalnoise_HasBadRBXTS4TS5_;
 	TBranch *hcalnoise_HasBadRBXTS4TS5_branch;
 	bool hcalnoise_HasBadRBXTS4TS5_isLoaded;
+	bool evt_EcalDeadCellTriggerPrimitiveFilter_;
+	TBranch *evt_EcalDeadCellTriggerPrimitiveFilter_branch;
+	bool evt_EcalDeadCellTriggerPrimitiveFilter_isLoaded;
 	bool evt_cscTightHaloFilter_;
 	TBranch *evt_cscTightHaloFilter_branch;
 	bool evt_cscTightHaloFilter_isLoaded;
+	bool evt_eeBadScFilter_;
+	TBranch *evt_eeBadScFilter_branch;
+	bool evt_eeBadScFilter_isLoaded;
+	bool evt_eeNoiseFilter_;
+	TBranch *evt_eeNoiseFilter_branch;
+	bool evt_eeNoiseFilter_isLoaded;
+	bool evt_goodVertices_;
+	TBranch *evt_goodVertices_branch;
+	bool evt_goodVertices_isLoaded;
 	bool evt_hbheFilter_;
 	TBranch *evt_hbheFilter_branch;
 	bool evt_hbheFilter_isLoaded;
@@ -42,6 +54,9 @@ protected:
 	bool evt_hbheFilterRun2Tight_;
 	TBranch *evt_hbheFilterRun2Tight_branch;
 	bool evt_hbheFilterRun2Tight_isLoaded;
+	bool evt_trackingFailureFilter_;
+	TBranch *evt_trackingFailureFilter_branch;
+	bool evt_trackingFailureFilter_isLoaded;
 	float evt_bField_;
 	TBranch *evt_bField_branch;
 	bool evt_bField_isLoaded;
@@ -339,6 +354,27 @@ protected:
 	float pfCaloMet_sumet_;
 	TBranch *pfCaloMet_sumet_branch;
 	bool pfCaloMet_sumet_isLoaded;
+	float pfChMet_met_;
+	TBranch *pfChMet_met_branch;
+	bool pfChMet_met_isLoaded;
+	float pfChMet_metPhi_;
+	TBranch *pfChMet_metPhi_branch;
+	bool pfChMet_metPhi_isLoaded;
+	float pfChMet_metPhi_type1cor_;
+	TBranch *pfChMet_metPhi_type1cor_branch;
+	bool pfChMet_metPhi_type1cor_isLoaded;
+	float pfChMet_metSig_;
+	TBranch *pfChMet_metSig_branch;
+	bool pfChMet_metSig_isLoaded;
+	float pfChMet_metSignificance_;
+	TBranch *pfChMet_metSignificance_branch;
+	bool pfChMet_metSignificance_isLoaded;
+	float pfChMet_met_type1cor_;
+	TBranch *pfChMet_met_type1cor_branch;
+	bool pfChMet_met_type1cor_isLoaded;
+	float pfChMet_sumet_;
+	TBranch *pfChMet_sumet_branch;
+	bool pfChMet_sumet_isLoaded;
 	float pfcluster_met_;
 	TBranch *pfcluster_met_branch;
 	bool pfcluster_met_isLoaded;
@@ -369,6 +405,9 @@ protected:
 	float pfMet_sumet_;
 	TBranch *pfMet_sumet_branch;
 	bool pfMet_sumet_isLoaded;
+	vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > pfcands_p4_;
+	TBranch *pfcands_p4_branch;
+	bool pfcands_p4_isLoaded;
 	vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > > hlt_trigObjs_p4_;
 	TBranch *hlt_trigObjs_p4_branch;
 	bool hlt_trigObjs_p4_isLoaded;
@@ -462,6 +501,9 @@ protected:
 	vector<float> mus_met_deltay_;
 	TBranch *mus_met_deltay_branch;
 	bool mus_met_deltay_isLoaded;
+	vector<float> pfcands_mass_;
+	TBranch *pfcands_mass_branch;
+	bool pfcands_mass_isLoaded;
 	vector<float> pfcluster_energy_;
 	TBranch *pfcluster_energy_branch;
 	bool pfcluster_energy_isLoaded;
@@ -483,6 +525,9 @@ protected:
 	int evt_isRealData_;
 	TBranch *evt_isRealData_branch;
 	bool evt_isRealData_isLoaded;
+	int evt_ntracks_;
+	TBranch *evt_ntracks_branch;
+	bool evt_ntracks_isLoaded;
 	int evt_orbitNumber_;
 	TBranch *evt_orbitNumber_branch;
 	bool evt_orbitNumber_isLoaded;
@@ -495,6 +540,9 @@ protected:
 	int hcalnoise_GetRecHitCount15_;
 	TBranch *hcalnoise_GetRecHitCount15_branch;
 	bool hcalnoise_GetRecHitCount15_isLoaded;
+	int hcalnoise_hbheIsoNoiseFilter_;
+	TBranch *hcalnoise_hbheIsoNoiseFilter_branch;
+	bool hcalnoise_hbheIsoNoiseFilter_isLoaded;
 	int hcalnoise_maxHPDHits_;
 	TBranch *hcalnoise_maxHPDHits_branch;
 	bool hcalnoise_maxHPDHits_isLoaded;
@@ -552,6 +600,12 @@ protected:
 	vector<int> mus_met_flag_;
 	TBranch *mus_met_flag_branch;
 	bool mus_met_flag_isLoaded;
+	vector<int> pfcands_charge_;
+	TBranch *pfcands_charge_branch;
+	bool pfcands_charge_isLoaded;
+	vector<int> pfcands_particleId_;
+	TBranch *pfcands_particleId_branch;
+	bool pfcands_particleId_isLoaded;
 	vector<int> pfcluster_layer_;
 	TBranch *pfcluster_layer_branch;
 	bool pfcluster_layer_isLoaded;
@@ -604,6 +658,11 @@ void Init(TTree *tree) {
 		hlt_bits_branch = tree->GetBranch(tree->GetAlias("hlt_bits"));
 		if (hlt_bits_branch) {hlt_bits_branch->SetAddress(&hlt_bits_);}
 	}
+	pfcands_p4_branch = 0;
+	if (tree->GetAlias("pfcands_p4") != 0) {
+		pfcands_p4_branch = tree->GetBranch(tree->GetAlias("pfcands_p4"));
+		if (pfcands_p4_branch) {pfcands_p4_branch->SetAddress(&pfcands_p4_);}
+	}
   tree->SetMakeClass(1);
 	hlt_trigNames_branch = 0;
 	if (tree->GetAlias("hlt_trigNames") != 0) {
@@ -615,10 +674,30 @@ void Init(TTree *tree) {
 		hcalnoise_HasBadRBXTS4TS5_branch = tree->GetBranch(tree->GetAlias("hcalnoise_HasBadRBXTS4TS5"));
 		if (hcalnoise_HasBadRBXTS4TS5_branch) {hcalnoise_HasBadRBXTS4TS5_branch->SetAddress(&hcalnoise_HasBadRBXTS4TS5_);}
 	}
+	evt_EcalDeadCellTriggerPrimitiveFilter_branch = 0;
+	if (tree->GetAlias("evt_EcalDeadCellTriggerPrimitiveFilter") != 0) {
+		evt_EcalDeadCellTriggerPrimitiveFilter_branch = tree->GetBranch(tree->GetAlias("evt_EcalDeadCellTriggerPrimitiveFilter"));
+		if (evt_EcalDeadCellTriggerPrimitiveFilter_branch) {evt_EcalDeadCellTriggerPrimitiveFilter_branch->SetAddress(&evt_EcalDeadCellTriggerPrimitiveFilter_);}
+	}
 	evt_cscTightHaloFilter_branch = 0;
 	if (tree->GetAlias("evt_cscTightHaloFilter") != 0) {
 		evt_cscTightHaloFilter_branch = tree->GetBranch(tree->GetAlias("evt_cscTightHaloFilter"));
 		if (evt_cscTightHaloFilter_branch) {evt_cscTightHaloFilter_branch->SetAddress(&evt_cscTightHaloFilter_);}
+	}
+	evt_eeBadScFilter_branch = 0;
+	if (tree->GetAlias("evt_eeBadScFilter") != 0) {
+		evt_eeBadScFilter_branch = tree->GetBranch(tree->GetAlias("evt_eeBadScFilter"));
+		if (evt_eeBadScFilter_branch) {evt_eeBadScFilter_branch->SetAddress(&evt_eeBadScFilter_);}
+	}
+	evt_eeNoiseFilter_branch = 0;
+	if (tree->GetAlias("evt_eeNoiseFilter") != 0) {
+		evt_eeNoiseFilter_branch = tree->GetBranch(tree->GetAlias("evt_eeNoiseFilter"));
+		if (evt_eeNoiseFilter_branch) {evt_eeNoiseFilter_branch->SetAddress(&evt_eeNoiseFilter_);}
+	}
+	evt_goodVertices_branch = 0;
+	if (tree->GetAlias("evt_goodVertices") != 0) {
+		evt_goodVertices_branch = tree->GetBranch(tree->GetAlias("evt_goodVertices"));
+		if (evt_goodVertices_branch) {evt_goodVertices_branch->SetAddress(&evt_goodVertices_);}
 	}
 	evt_hbheFilter_branch = 0;
 	if (tree->GetAlias("evt_hbheFilter") != 0) {
@@ -639,6 +718,11 @@ void Init(TTree *tree) {
 	if (tree->GetAlias("evt_hbheFilterRun2Tight") != 0) {
 		evt_hbheFilterRun2Tight_branch = tree->GetBranch(tree->GetAlias("evt_hbheFilterRun2Tight"));
 		if (evt_hbheFilterRun2Tight_branch) {evt_hbheFilterRun2Tight_branch->SetAddress(&evt_hbheFilterRun2Tight_);}
+	}
+	evt_trackingFailureFilter_branch = 0;
+	if (tree->GetAlias("evt_trackingFailureFilter") != 0) {
+		evt_trackingFailureFilter_branch = tree->GetBranch(tree->GetAlias("evt_trackingFailureFilter"));
+		if (evt_trackingFailureFilter_branch) {evt_trackingFailureFilter_branch->SetAddress(&evt_trackingFailureFilter_);}
 	}
 	evt_bField_branch = 0;
 	if (tree->GetAlias("evt_bField") != 0) {
@@ -1135,6 +1219,41 @@ void Init(TTree *tree) {
 		pfCaloMet_sumet_branch = tree->GetBranch(tree->GetAlias("pfCaloMet_sumet"));
 		if (pfCaloMet_sumet_branch) {pfCaloMet_sumet_branch->SetAddress(&pfCaloMet_sumet_);}
 	}
+	pfChMet_met_branch = 0;
+	if (tree->GetAlias("pfChMet_met") != 0) {
+		pfChMet_met_branch = tree->GetBranch(tree->GetAlias("pfChMet_met"));
+		if (pfChMet_met_branch) {pfChMet_met_branch->SetAddress(&pfChMet_met_);}
+	}
+	pfChMet_metPhi_branch = 0;
+	if (tree->GetAlias("pfChMet_metPhi") != 0) {
+		pfChMet_metPhi_branch = tree->GetBranch(tree->GetAlias("pfChMet_metPhi"));
+		if (pfChMet_metPhi_branch) {pfChMet_metPhi_branch->SetAddress(&pfChMet_metPhi_);}
+	}
+	pfChMet_metPhi_type1cor_branch = 0;
+	if (tree->GetAlias("pfChMet_metPhi_type1cor") != 0) {
+		pfChMet_metPhi_type1cor_branch = tree->GetBranch(tree->GetAlias("pfChMet_metPhi_type1cor"));
+		if (pfChMet_metPhi_type1cor_branch) {pfChMet_metPhi_type1cor_branch->SetAddress(&pfChMet_metPhi_type1cor_);}
+	}
+	pfChMet_metSig_branch = 0;
+	if (tree->GetAlias("pfChMet_metSig") != 0) {
+		pfChMet_metSig_branch = tree->GetBranch(tree->GetAlias("pfChMet_metSig"));
+		if (pfChMet_metSig_branch) {pfChMet_metSig_branch->SetAddress(&pfChMet_metSig_);}
+	}
+	pfChMet_metSignificance_branch = 0;
+	if (tree->GetAlias("pfChMet_metSignificance") != 0) {
+		pfChMet_metSignificance_branch = tree->GetBranch(tree->GetAlias("pfChMet_metSignificance"));
+		if (pfChMet_metSignificance_branch) {pfChMet_metSignificance_branch->SetAddress(&pfChMet_metSignificance_);}
+	}
+	pfChMet_met_type1cor_branch = 0;
+	if (tree->GetAlias("pfChMet_met_type1cor") != 0) {
+		pfChMet_met_type1cor_branch = tree->GetBranch(tree->GetAlias("pfChMet_met_type1cor"));
+		if (pfChMet_met_type1cor_branch) {pfChMet_met_type1cor_branch->SetAddress(&pfChMet_met_type1cor_);}
+	}
+	pfChMet_sumet_branch = 0;
+	if (tree->GetAlias("pfChMet_sumet") != 0) {
+		pfChMet_sumet_branch = tree->GetBranch(tree->GetAlias("pfChMet_sumet"));
+		if (pfChMet_sumet_branch) {pfChMet_sumet_branch->SetAddress(&pfChMet_sumet_);}
+	}
 	pfcluster_met_branch = 0;
 	if (tree->GetAlias("pfcluster_met") != 0) {
 		pfcluster_met_branch = tree->GetBranch(tree->GetAlias("pfcluster_met"));
@@ -1340,6 +1459,11 @@ void Init(TTree *tree) {
 		mus_met_deltay_branch = tree->GetBranch(tree->GetAlias("mus_met_deltay"));
 		if (mus_met_deltay_branch) {mus_met_deltay_branch->SetAddress(&mus_met_deltay_);}
 	}
+	pfcands_mass_branch = 0;
+	if (tree->GetAlias("pfcands_mass") != 0) {
+		pfcands_mass_branch = tree->GetBranch(tree->GetAlias("pfcands_mass"));
+		if (pfcands_mass_branch) {pfcands_mass_branch->SetAddress(&pfcands_mass_);}
+	}
 	pfcluster_energy_branch = 0;
 	if (tree->GetAlias("pfcluster_energy") != 0) {
 		pfcluster_energy_branch = tree->GetBranch(tree->GetAlias("pfcluster_energy"));
@@ -1375,6 +1499,11 @@ void Init(TTree *tree) {
 		evt_isRealData_branch = tree->GetBranch(tree->GetAlias("evt_isRealData"));
 		if (evt_isRealData_branch) {evt_isRealData_branch->SetAddress(&evt_isRealData_);}
 	}
+	evt_ntracks_branch = 0;
+	if (tree->GetAlias("evt_ntracks") != 0) {
+		evt_ntracks_branch = tree->GetBranch(tree->GetAlias("evt_ntracks"));
+		if (evt_ntracks_branch) {evt_ntracks_branch->SetAddress(&evt_ntracks_);}
+	}
 	evt_orbitNumber_branch = 0;
 	if (tree->GetAlias("evt_orbitNumber") != 0) {
 		evt_orbitNumber_branch = tree->GetBranch(tree->GetAlias("evt_orbitNumber"));
@@ -1394,6 +1523,11 @@ void Init(TTree *tree) {
 	if (tree->GetAlias("hcalnoise_GetRecHitCount15") != 0) {
 		hcalnoise_GetRecHitCount15_branch = tree->GetBranch(tree->GetAlias("hcalnoise_GetRecHitCount15"));
 		if (hcalnoise_GetRecHitCount15_branch) {hcalnoise_GetRecHitCount15_branch->SetAddress(&hcalnoise_GetRecHitCount15_);}
+	}
+	hcalnoise_hbheIsoNoiseFilter_branch = 0;
+	if (tree->GetAlias("hcalnoise_hbheIsoNoiseFilter") != 0) {
+		hcalnoise_hbheIsoNoiseFilter_branch = tree->GetBranch(tree->GetAlias("hcalnoise_hbheIsoNoiseFilter"));
+		if (hcalnoise_hbheIsoNoiseFilter_branch) {hcalnoise_hbheIsoNoiseFilter_branch->SetAddress(&hcalnoise_hbheIsoNoiseFilter_);}
 	}
 	hcalnoise_maxHPDHits_branch = 0;
 	if (tree->GetAlias("hcalnoise_maxHPDHits") != 0) {
@@ -1490,6 +1624,16 @@ void Init(TTree *tree) {
 		mus_met_flag_branch = tree->GetBranch(tree->GetAlias("mus_met_flag"));
 		if (mus_met_flag_branch) {mus_met_flag_branch->SetAddress(&mus_met_flag_);}
 	}
+	pfcands_charge_branch = 0;
+	if (tree->GetAlias("pfcands_charge") != 0) {
+		pfcands_charge_branch = tree->GetBranch(tree->GetAlias("pfcands_charge"));
+		if (pfcands_charge_branch) {pfcands_charge_branch->SetAddress(&pfcands_charge_);}
+	}
+	pfcands_particleId_branch = 0;
+	if (tree->GetAlias("pfcands_particleId") != 0) {
+		pfcands_particleId_branch = tree->GetBranch(tree->GetAlias("pfcands_particleId"));
+		if (pfcands_particleId_branch) {pfcands_particleId_branch->SetAddress(&pfcands_particleId_);}
+	}
 	pfcluster_layer_branch = 0;
 	if (tree->GetAlias("pfcluster_layer") != 0) {
 		pfcluster_layer_branch = tree->GetBranch(tree->GetAlias("pfcluster_layer"));
@@ -1574,11 +1718,16 @@ void GetEntry(unsigned int idx)
 		hlt_bits_isLoaded = false;
 		hlt_trigNames_isLoaded = false;
 		hcalnoise_HasBadRBXTS4TS5_isLoaded = false;
+		evt_EcalDeadCellTriggerPrimitiveFilter_isLoaded = false;
 		evt_cscTightHaloFilter_isLoaded = false;
+		evt_eeBadScFilter_isLoaded = false;
+		evt_eeNoiseFilter_isLoaded = false;
+		evt_goodVertices_isLoaded = false;
 		evt_hbheFilter_isLoaded = false;
 		evt_hbheFilterRun1_isLoaded = false;
 		evt_hbheFilterRun2Loose_isLoaded = false;
 		evt_hbheFilterRun2Tight_isLoaded = false;
+		evt_trackingFailureFilter_isLoaded = false;
 		evt_bField_isLoaded = false;
 		hcalnoise_GetRecHitEnergy_isLoaded = false;
 		hcalnoise_GetRecHitEnergy15_isLoaded = false;
@@ -1678,6 +1827,13 @@ void GetEntry(unsigned int idx)
 		pfCaloMet_metSignificance_isLoaded = false;
 		pfCaloMet_met_type1cor_isLoaded = false;
 		pfCaloMet_sumet_isLoaded = false;
+		pfChMet_met_isLoaded = false;
+		pfChMet_metPhi_isLoaded = false;
+		pfChMet_metPhi_type1cor_isLoaded = false;
+		pfChMet_metSig_isLoaded = false;
+		pfChMet_metSignificance_isLoaded = false;
+		pfChMet_met_type1cor_isLoaded = false;
+		pfChMet_sumet_isLoaded = false;
 		pfcluster_met_isLoaded = false;
 		pfcluster_metphi_isLoaded = false;
 		pfcluster_sumet_isLoaded = false;
@@ -1688,6 +1844,7 @@ void GetEntry(unsigned int idx)
 		pfMet_metSignificance_isLoaded = false;
 		pfMet_met_type1cor_isLoaded = false;
 		pfMet_sumet_isLoaded = false;
+		pfcands_p4_isLoaded = false;
 		hlt_trigObjs_p4_isLoaded = false;
 		calojets_eta_isLoaded = false;
 		calojets_phi_isLoaded = false;
@@ -1719,6 +1876,7 @@ void GetEntry(unsigned int idx)
 		evt_towermet_etaslicePhi_isLoaded = false;
 		mus_met_deltax_isLoaded = false;
 		mus_met_deltay_isLoaded = false;
+		pfcands_mass_isLoaded = false;
 		pfcluster_energy_isLoaded = false;
 		pfcluster_et_isLoaded = false;
 		pfcluster_eta_isLoaded = false;
@@ -1726,10 +1884,12 @@ void GetEntry(unsigned int idx)
 		evt_bunchCrossing_isLoaded = false;
 		evt_experimentType_isLoaded = false;
 		evt_isRealData_isLoaded = false;
+		evt_ntracks_isLoaded = false;
 		evt_orbitNumber_isLoaded = false;
 		evt_storeNumber_isLoaded = false;
 		hcalnoise_GetRecHitCount_isLoaded = false;
 		hcalnoise_GetRecHitCount15_isLoaded = false;
+		hcalnoise_hbheIsoNoiseFilter_isLoaded = false;
 		hcalnoise_maxHPDHits_isLoaded = false;
 		hcalnoise_maxHPDNoOtherHits_isLoaded = false;
 		hcalnoise_maxRBXHits_isLoaded = false;
@@ -1749,6 +1909,8 @@ void GetEntry(unsigned int idx)
 		hcalnoise_passTightNoiseFilter_isLoaded = false;
 		twrs_numCrystals_isLoaded = false;
 		mus_met_flag_isLoaded = false;
+		pfcands_charge_isLoaded = false;
+		pfcands_particleId_isLoaded = false;
 		pfcluster_layer_isLoaded = false;
 		hlt_trigObjs_id_isLoaded = false;
 		evt_ntwrs_isLoaded = false;
@@ -1772,11 +1934,16 @@ void LoadAllBranches()
 	if (hlt_bits_branch != 0) hlt_bits();
 	if (hlt_trigNames_branch != 0) hlt_trigNames();
 	if (hcalnoise_HasBadRBXTS4TS5_branch != 0) hcalnoise_HasBadRBXTS4TS5();
+	if (evt_EcalDeadCellTriggerPrimitiveFilter_branch != 0) evt_EcalDeadCellTriggerPrimitiveFilter();
 	if (evt_cscTightHaloFilter_branch != 0) evt_cscTightHaloFilter();
+	if (evt_eeBadScFilter_branch != 0) evt_eeBadScFilter();
+	if (evt_eeNoiseFilter_branch != 0) evt_eeNoiseFilter();
+	if (evt_goodVertices_branch != 0) evt_goodVertices();
 	if (evt_hbheFilter_branch != 0) evt_hbheFilter();
 	if (evt_hbheFilterRun1_branch != 0) evt_hbheFilterRun1();
 	if (evt_hbheFilterRun2Loose_branch != 0) evt_hbheFilterRun2Loose();
 	if (evt_hbheFilterRun2Tight_branch != 0) evt_hbheFilterRun2Tight();
+	if (evt_trackingFailureFilter_branch != 0) evt_trackingFailureFilter();
 	if (evt_bField_branch != 0) evt_bField();
 	if (hcalnoise_GetRecHitEnergy_branch != 0) hcalnoise_GetRecHitEnergy();
 	if (hcalnoise_GetRecHitEnergy15_branch != 0) hcalnoise_GetRecHitEnergy15();
@@ -1876,6 +2043,13 @@ void LoadAllBranches()
 	if (pfCaloMet_metSignificance_branch != 0) pfCaloMet_metSignificance();
 	if (pfCaloMet_met_type1cor_branch != 0) pfCaloMet_met_type1cor();
 	if (pfCaloMet_sumet_branch != 0) pfCaloMet_sumet();
+	if (pfChMet_met_branch != 0) pfChMet_met();
+	if (pfChMet_metPhi_branch != 0) pfChMet_metPhi();
+	if (pfChMet_metPhi_type1cor_branch != 0) pfChMet_metPhi_type1cor();
+	if (pfChMet_metSig_branch != 0) pfChMet_metSig();
+	if (pfChMet_metSignificance_branch != 0) pfChMet_metSignificance();
+	if (pfChMet_met_type1cor_branch != 0) pfChMet_met_type1cor();
+	if (pfChMet_sumet_branch != 0) pfChMet_sumet();
 	if (pfcluster_met_branch != 0) pfcluster_met();
 	if (pfcluster_metphi_branch != 0) pfcluster_metphi();
 	if (pfcluster_sumet_branch != 0) pfcluster_sumet();
@@ -1886,6 +2060,7 @@ void LoadAllBranches()
 	if (pfMet_metSignificance_branch != 0) pfMet_metSignificance();
 	if (pfMet_met_type1cor_branch != 0) pfMet_met_type1cor();
 	if (pfMet_sumet_branch != 0) pfMet_sumet();
+	if (pfcands_p4_branch != 0) pfcands_p4();
 	if (hlt_trigObjs_p4_branch != 0) hlt_trigObjs_p4();
 	if (calojets_eta_branch != 0) calojets_eta();
 	if (calojets_phi_branch != 0) calojets_phi();
@@ -1917,6 +2092,7 @@ void LoadAllBranches()
 	if (evt_towermet_etaslicePhi_branch != 0) evt_towermet_etaslicePhi();
 	if (mus_met_deltax_branch != 0) mus_met_deltax();
 	if (mus_met_deltay_branch != 0) mus_met_deltay();
+	if (pfcands_mass_branch != 0) pfcands_mass();
 	if (pfcluster_energy_branch != 0) pfcluster_energy();
 	if (pfcluster_et_branch != 0) pfcluster_et();
 	if (pfcluster_eta_branch != 0) pfcluster_eta();
@@ -1924,10 +2100,12 @@ void LoadAllBranches()
 	if (evt_bunchCrossing_branch != 0) evt_bunchCrossing();
 	if (evt_experimentType_branch != 0) evt_experimentType();
 	if (evt_isRealData_branch != 0) evt_isRealData();
+	if (evt_ntracks_branch != 0) evt_ntracks();
 	if (evt_orbitNumber_branch != 0) evt_orbitNumber();
 	if (evt_storeNumber_branch != 0) evt_storeNumber();
 	if (hcalnoise_GetRecHitCount_branch != 0) hcalnoise_GetRecHitCount();
 	if (hcalnoise_GetRecHitCount15_branch != 0) hcalnoise_GetRecHitCount15();
+	if (hcalnoise_hbheIsoNoiseFilter_branch != 0) hcalnoise_hbheIsoNoiseFilter();
 	if (hcalnoise_maxHPDHits_branch != 0) hcalnoise_maxHPDHits();
 	if (hcalnoise_maxHPDNoOtherHits_branch != 0) hcalnoise_maxHPDNoOtherHits();
 	if (hcalnoise_maxRBXHits_branch != 0) hcalnoise_maxRBXHits();
@@ -1947,6 +2125,8 @@ void LoadAllBranches()
 	if (hcalnoise_passTightNoiseFilter_branch != 0) hcalnoise_passTightNoiseFilter();
 	if (twrs_numCrystals_branch != 0) twrs_numCrystals();
 	if (mus_met_flag_branch != 0) mus_met_flag();
+	if (pfcands_charge_branch != 0) pfcands_charge();
+	if (pfcands_particleId_branch != 0) pfcands_particleId();
 	if (pfcluster_layer_branch != 0) pfcluster_layer();
 	if (hlt_trigObjs_id_branch != 0) hlt_trigObjs_id();
 	if (evt_ntwrs_branch != 0) evt_ntwrs();
@@ -2003,6 +2183,19 @@ void LoadAllBranches()
 		}
 		return hcalnoise_HasBadRBXTS4TS5_;
 	}
+	bool &evt_EcalDeadCellTriggerPrimitiveFilter()
+	{
+		if (not evt_EcalDeadCellTriggerPrimitiveFilter_isLoaded) {
+			if (evt_EcalDeadCellTriggerPrimitiveFilter_branch != 0) {
+				evt_EcalDeadCellTriggerPrimitiveFilter_branch->GetEntry(index);
+			} else { 
+				printf("branch evt_EcalDeadCellTriggerPrimitiveFilter_branch does not exist!\n");
+				exit(1);
+			}
+			evt_EcalDeadCellTriggerPrimitiveFilter_isLoaded = true;
+		}
+		return evt_EcalDeadCellTriggerPrimitiveFilter_;
+	}
 	bool &evt_cscTightHaloFilter()
 	{
 		if (not evt_cscTightHaloFilter_isLoaded) {
@@ -2015,6 +2208,45 @@ void LoadAllBranches()
 			evt_cscTightHaloFilter_isLoaded = true;
 		}
 		return evt_cscTightHaloFilter_;
+	}
+	bool &evt_eeBadScFilter()
+	{
+		if (not evt_eeBadScFilter_isLoaded) {
+			if (evt_eeBadScFilter_branch != 0) {
+				evt_eeBadScFilter_branch->GetEntry(index);
+			} else { 
+				printf("branch evt_eeBadScFilter_branch does not exist!\n");
+				exit(1);
+			}
+			evt_eeBadScFilter_isLoaded = true;
+		}
+		return evt_eeBadScFilter_;
+	}
+	bool &evt_eeNoiseFilter()
+	{
+		if (not evt_eeNoiseFilter_isLoaded) {
+			if (evt_eeNoiseFilter_branch != 0) {
+				evt_eeNoiseFilter_branch->GetEntry(index);
+			} else { 
+				printf("branch evt_eeNoiseFilter_branch does not exist!\n");
+				exit(1);
+			}
+			evt_eeNoiseFilter_isLoaded = true;
+		}
+		return evt_eeNoiseFilter_;
+	}
+	bool &evt_goodVertices()
+	{
+		if (not evt_goodVertices_isLoaded) {
+			if (evt_goodVertices_branch != 0) {
+				evt_goodVertices_branch->GetEntry(index);
+			} else { 
+				printf("branch evt_goodVertices_branch does not exist!\n");
+				exit(1);
+			}
+			evt_goodVertices_isLoaded = true;
+		}
+		return evt_goodVertices_;
 	}
 	bool &evt_hbheFilter()
 	{
@@ -2067,6 +2299,19 @@ void LoadAllBranches()
 			evt_hbheFilterRun2Tight_isLoaded = true;
 		}
 		return evt_hbheFilterRun2Tight_;
+	}
+	bool &evt_trackingFailureFilter()
+	{
+		if (not evt_trackingFailureFilter_isLoaded) {
+			if (evt_trackingFailureFilter_branch != 0) {
+				evt_trackingFailureFilter_branch->GetEntry(index);
+			} else { 
+				printf("branch evt_trackingFailureFilter_branch does not exist!\n");
+				exit(1);
+			}
+			evt_trackingFailureFilter_isLoaded = true;
+		}
+		return evt_trackingFailureFilter_;
 	}
 	float &evt_bField()
 	{
@@ -3355,6 +3600,97 @@ void LoadAllBranches()
 		}
 		return pfCaloMet_sumet_;
 	}
+	float &pfChMet_met()
+	{
+		if (not pfChMet_met_isLoaded) {
+			if (pfChMet_met_branch != 0) {
+				pfChMet_met_branch->GetEntry(index);
+			} else { 
+				printf("branch pfChMet_met_branch does not exist!\n");
+				exit(1);
+			}
+			pfChMet_met_isLoaded = true;
+		}
+		return pfChMet_met_;
+	}
+	float &pfChMet_metPhi()
+	{
+		if (not pfChMet_metPhi_isLoaded) {
+			if (pfChMet_metPhi_branch != 0) {
+				pfChMet_metPhi_branch->GetEntry(index);
+			} else { 
+				printf("branch pfChMet_metPhi_branch does not exist!\n");
+				exit(1);
+			}
+			pfChMet_metPhi_isLoaded = true;
+		}
+		return pfChMet_metPhi_;
+	}
+	float &pfChMet_metPhi_type1cor()
+	{
+		if (not pfChMet_metPhi_type1cor_isLoaded) {
+			if (pfChMet_metPhi_type1cor_branch != 0) {
+				pfChMet_metPhi_type1cor_branch->GetEntry(index);
+			} else { 
+				printf("branch pfChMet_metPhi_type1cor_branch does not exist!\n");
+				exit(1);
+			}
+			pfChMet_metPhi_type1cor_isLoaded = true;
+		}
+		return pfChMet_metPhi_type1cor_;
+	}
+	float &pfChMet_metSig()
+	{
+		if (not pfChMet_metSig_isLoaded) {
+			if (pfChMet_metSig_branch != 0) {
+				pfChMet_metSig_branch->GetEntry(index);
+			} else { 
+				printf("branch pfChMet_metSig_branch does not exist!\n");
+				exit(1);
+			}
+			pfChMet_metSig_isLoaded = true;
+		}
+		return pfChMet_metSig_;
+	}
+	float &pfChMet_metSignificance()
+	{
+		if (not pfChMet_metSignificance_isLoaded) {
+			if (pfChMet_metSignificance_branch != 0) {
+				pfChMet_metSignificance_branch->GetEntry(index);
+			} else { 
+				printf("branch pfChMet_metSignificance_branch does not exist!\n");
+				exit(1);
+			}
+			pfChMet_metSignificance_isLoaded = true;
+		}
+		return pfChMet_metSignificance_;
+	}
+	float &pfChMet_met_type1cor()
+	{
+		if (not pfChMet_met_type1cor_isLoaded) {
+			if (pfChMet_met_type1cor_branch != 0) {
+				pfChMet_met_type1cor_branch->GetEntry(index);
+			} else { 
+				printf("branch pfChMet_met_type1cor_branch does not exist!\n");
+				exit(1);
+			}
+			pfChMet_met_type1cor_isLoaded = true;
+		}
+		return pfChMet_met_type1cor_;
+	}
+	float &pfChMet_sumet()
+	{
+		if (not pfChMet_sumet_isLoaded) {
+			if (pfChMet_sumet_branch != 0) {
+				pfChMet_sumet_branch->GetEntry(index);
+			} else { 
+				printf("branch pfChMet_sumet_branch does not exist!\n");
+				exit(1);
+			}
+			pfChMet_sumet_isLoaded = true;
+		}
+		return pfChMet_sumet_;
+	}
 	float &pfcluster_met()
 	{
 		if (not pfcluster_met_isLoaded) {
@@ -3484,6 +3820,19 @@ void LoadAllBranches()
 			pfMet_sumet_isLoaded = true;
 		}
 		return pfMet_sumet_;
+	}
+	const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &pfcands_p4()
+	{
+		if (not pfcands_p4_isLoaded) {
+			if (pfcands_p4_branch != 0) {
+				pfcands_p4_branch->GetEntry(index);
+			} else { 
+				printf("branch pfcands_p4_branch does not exist!\n");
+				exit(1);
+			}
+			pfcands_p4_isLoaded = true;
+		}
+		return pfcands_p4_;
 	}
 	const vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > > &hlt_trigObjs_p4()
 	{
@@ -3888,6 +4237,19 @@ void LoadAllBranches()
 		}
 		return mus_met_deltay_;
 	}
+	const vector<float> &pfcands_mass()
+	{
+		if (not pfcands_mass_isLoaded) {
+			if (pfcands_mass_branch != 0) {
+				pfcands_mass_branch->GetEntry(index);
+			} else { 
+				printf("branch pfcands_mass_branch does not exist!\n");
+				exit(1);
+			}
+			pfcands_mass_isLoaded = true;
+		}
+		return pfcands_mass_;
+	}
 	const vector<float> &pfcluster_energy()
 	{
 		if (not pfcluster_energy_isLoaded) {
@@ -3979,6 +4341,19 @@ void LoadAllBranches()
 		}
 		return evt_isRealData_;
 	}
+	int &evt_ntracks()
+	{
+		if (not evt_ntracks_isLoaded) {
+			if (evt_ntracks_branch != 0) {
+				evt_ntracks_branch->GetEntry(index);
+			} else { 
+				printf("branch evt_ntracks_branch does not exist!\n");
+				exit(1);
+			}
+			evt_ntracks_isLoaded = true;
+		}
+		return evt_ntracks_;
+	}
 	int &evt_orbitNumber()
 	{
 		if (not evt_orbitNumber_isLoaded) {
@@ -4030,6 +4405,19 @@ void LoadAllBranches()
 			hcalnoise_GetRecHitCount15_isLoaded = true;
 		}
 		return hcalnoise_GetRecHitCount15_;
+	}
+	int &hcalnoise_hbheIsoNoiseFilter()
+	{
+		if (not hcalnoise_hbheIsoNoiseFilter_isLoaded) {
+			if (hcalnoise_hbheIsoNoiseFilter_branch != 0) {
+				hcalnoise_hbheIsoNoiseFilter_branch->GetEntry(index);
+			} else { 
+				printf("branch hcalnoise_hbheIsoNoiseFilter_branch does not exist!\n");
+				exit(1);
+			}
+			hcalnoise_hbheIsoNoiseFilter_isLoaded = true;
+		}
+		return hcalnoise_hbheIsoNoiseFilter_;
 	}
 	int &hcalnoise_maxHPDHits()
 	{
@@ -4278,6 +4666,32 @@ void LoadAllBranches()
 		}
 		return mus_met_flag_;
 	}
+	const vector<int> &pfcands_charge()
+	{
+		if (not pfcands_charge_isLoaded) {
+			if (pfcands_charge_branch != 0) {
+				pfcands_charge_branch->GetEntry(index);
+			} else { 
+				printf("branch pfcands_charge_branch does not exist!\n");
+				exit(1);
+			}
+			pfcands_charge_isLoaded = true;
+		}
+		return pfcands_charge_;
+	}
+	const vector<int> &pfcands_particleId()
+	{
+		if (not pfcands_particleId_isLoaded) {
+			if (pfcands_particleId_branch != 0) {
+				pfcands_particleId_branch->GetEntry(index);
+			} else { 
+				printf("branch pfcands_particleId_branch does not exist!\n");
+				exit(1);
+			}
+			pfcands_particleId_isLoaded = true;
+		}
+		return pfcands_particleId_;
+	}
 	const vector<int> &pfcluster_layer()
 	{
 		if (not pfcluster_layer_isLoaded) {
@@ -4518,11 +4932,16 @@ namespace tas {
 	const TBits &hlt_bits();
 	const vector<TString> &hlt_trigNames();
 	const bool &hcalnoise_HasBadRBXTS4TS5();
+	const bool &evt_EcalDeadCellTriggerPrimitiveFilter();
 	const bool &evt_cscTightHaloFilter();
+	const bool &evt_eeBadScFilter();
+	const bool &evt_eeNoiseFilter();
+	const bool &evt_goodVertices();
 	const bool &evt_hbheFilter();
 	const bool &evt_hbheFilterRun1();
 	const bool &evt_hbheFilterRun2Loose();
 	const bool &evt_hbheFilterRun2Tight();
+	const bool &evt_trackingFailureFilter();
 	const float &evt_bField();
 	const float &hcalnoise_GetRecHitEnergy();
 	const float &hcalnoise_GetRecHitEnergy15();
@@ -4622,6 +5041,13 @@ namespace tas {
 	const float &pfCaloMet_metSignificance();
 	const float &pfCaloMet_met_type1cor();
 	const float &pfCaloMet_sumet();
+	const float &pfChMet_met();
+	const float &pfChMet_metPhi();
+	const float &pfChMet_metPhi_type1cor();
+	const float &pfChMet_metSig();
+	const float &pfChMet_metSignificance();
+	const float &pfChMet_met_type1cor();
+	const float &pfChMet_sumet();
 	const float &pfcluster_met();
 	const float &pfcluster_metphi();
 	const float &pfcluster_sumet();
@@ -4632,6 +5058,7 @@ namespace tas {
 	const float &pfMet_metSignificance();
 	const float &pfMet_met_type1cor();
 	const float &pfMet_sumet();
+	const vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > &pfcands_p4();
 	const vector<vector<ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<float> > > > &hlt_trigObjs_p4();
 	const vector<float> &calojets_eta();
 	const vector<float> &calojets_phi();
@@ -4663,6 +5090,7 @@ namespace tas {
 	const vector<float> &evt_towermet_etaslicePhi();
 	const vector<float> &mus_met_deltax();
 	const vector<float> &mus_met_deltay();
+	const vector<float> &pfcands_mass();
 	const vector<float> &pfcluster_energy();
 	const vector<float> &pfcluster_et();
 	const vector<float> &pfcluster_eta();
@@ -4670,10 +5098,12 @@ namespace tas {
 	const int &evt_bunchCrossing();
 	const int &evt_experimentType();
 	const int &evt_isRealData();
+	const int &evt_ntracks();
 	const int &evt_orbitNumber();
 	const int &evt_storeNumber();
 	const int &hcalnoise_GetRecHitCount();
 	const int &hcalnoise_GetRecHitCount15();
+	const int &hcalnoise_hbheIsoNoiseFilter();
 	const int &hcalnoise_maxHPDHits();
 	const int &hcalnoise_maxHPDNoOtherHits();
 	const int &hcalnoise_maxRBXHits();
@@ -4693,6 +5123,8 @@ namespace tas {
 	const int &hcalnoise_passTightNoiseFilter();
 	const vector<int> &twrs_numCrystals();
 	const vector<int> &mus_met_flag();
+	const vector<int> &pfcands_charge();
+	const vector<int> &pfcands_particleId();
 	const vector<int> &pfcluster_layer();
 	const vector<vector<int> > &hlt_trigObjs_id();
 	const unsigned int &evt_ntwrs();
