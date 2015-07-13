@@ -45,7 +45,7 @@ int ScanChain( TChain* chain) {
 
     float lowerMet = 0.0;
     float upperMet = 500.0;
-    int metBins = 80;
+    int metBins = 60;
 
     // met with no filters
     TH1F *h1D_pfCaloMet = new TH1F("h1D_pfCaloMet", "", metBins,lowerMet,upperMet);
@@ -66,10 +66,10 @@ int ScanChain( TChain* chain) {
     TH2F* h2D_jetPt_caloMet = new TH2F("h2D_jetPt_caloMet","", metBins,lowerMet,upperMet, metBins,lowerMet,upperMet);
 
     // eta-phi of towers, pfclusters, and calojets
-    float maxEta = 3.0;
-    TH2F* h2D_towers_etaphi = new TH2F("h2D_towers_etaphi","",         50,-maxEta,maxEta, 50,-3.15,3.15);
-    TH2F* h2D_pfclusters_etaphi = new TH2F("h2D_pfclusters_etaphi","", 50,-maxEta,maxEta, 50,-3.15,3.15);
-    TH2F* h2D_calojets_etaphi = new TH2F("h2D_calojets_etaphi","",     50,-maxEta,maxEta, 50,-3.15,3.15);
+    float maxEta = 2.8;
+    TH2F* h2D_towers_etaphi = new TH2F("h2D_towers_etaphi","",         100,-maxEta,maxEta, 100,-3.15,3.15);
+    TH2F* h2D_pfclusters_etaphi = new TH2F("h2D_pfclusters_etaphi","", 100,-maxEta,maxEta, 100,-3.15,3.15);
+    TH2F* h2D_calojets_etaphi = new TH2F("h2D_calojets_etaphi","",     100,-maxEta,maxEta, 100,-3.15,3.15);
 
 
     // filters
