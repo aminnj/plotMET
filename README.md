@@ -9,3 +9,7 @@ git clone git@github.com:cmstas/Software.git
 
 # make CORE:
 cd CORE/ && cmsenv && make -j10
+
+# modify scanner/all.sh
+cd scanner/
+. all.sh

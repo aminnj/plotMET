@@ -253,7 +253,7 @@ int ScanChain( TChain* chain) {
         tree->SetCacheSize(128*1024*1024);
         cms3.Init(tree);
 
-        bool fast = true;
+        bool fast = false;
 
         // Loop over Events in current file
         if( nEventsTotal >= nEventsChain ) continue;
@@ -320,7 +320,6 @@ int ScanChain( TChain* chain) {
                 }
             }
             if(leadingPFJetPt > -1) {
-                cout << "filling stuff" << endl;
                 h1D_leadingJet_chf->Fill(pfjets_chargedHadronE()[pfJetIdx] / (pfjets_undoJEC().at(pfJetIdx)*pfjets_p4()[pfJetIdx].energy()));
                 h1D_leadingJet_nhf->Fill(pfjets_neutralHadronE()[pfJetIdx] / (pfjets_undoJEC().at(pfJetIdx)*pfjets_p4()[pfJetIdx].energy()));
                 h1D_leadingJet_cef->Fill(pfjets_chargedEmE()[pfJetIdx] / (pfjets_undoJEC().at(pfJetIdx)*pfjets_p4()[pfJetIdx].energy()));
@@ -344,6 +343,12 @@ int ScanChain( TChain* chain) {
             addToCounter("evt_trackingFailureFilter()");
             if ( evt_ntracks() < 4 ) continue;
             addToCounter("evt_ntracks()<4");
+
+            // if(evt_run() != prevRun || evt_lumiBlock() != prevLumi) {
+            //     runLumiOutput << evt_run() << ":" << evt_lumiBlock() << "\n";
+            //     prevRun = evt_run();
+            //     prevLumi = evt_lumiBlock();
+            // }
 
 
             // CSC HALO FILTER
@@ -445,6 +450,12 @@ int ScanChain( TChain* chain) {
             }
 
             // also, if we're at this point, we want to check out the events in more detail
+            if(  (caloMet > 290 && pfMet > 290) ||
+                 (caloMet > 100 && pfMet < 30)  ||
+                 (caloMet < 20  && pfMet > 100) ) {
+                std::cout << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event()
+                          << " caloMet: " << caloMet << " pfMet: " << pfMet << " pfCaloMet: " << pfCaloMet << " pfChMet: " << pfChMet << " pfClusterMet: " << pfClusterMet << std::endl;
+            }
 
         }
 
@@ -471,11 +482,11 @@ int ScanChain( TChain* chain) {
 
     dataMCplotMaker(null, h1D_jetCaloMetPhi_filters_vec, titlesFilters, "", "", common+"  --overrideHeader #Delta#phi(j,caloMet) (cumulative filters) --xAxisOverride #phi --outputName "+out+"h1D_jetCaloMetPhi_filters.pdf");
 
-    dataMCplotMaker(null, h1D_leadingJet_chf_vec, titlesLeadingJet, "", "", common+"  --overrideHeader charged hadron fraction (no filters) --xAxisOverride #phi --outputName "+out+"h1D_leadingJet_chf_vec.pdf");
-    dataMCplotMaker(null, h1D_leadingJet_nhf_vec, titlesLeadingJet, "", "", common+"  --overrideHeader neutral hadron fraction (no filters) --xAxisOverride #phi --outputName "+out+"h1D_leadingJet_nhf_vec.pdf");
-    dataMCplotMaker(null, h1D_leadingJet_cef_vec, titlesLeadingJet, "", "", common+"  --overrideHeader charged EM fraction (no filters) --xAxisOverride #phi --outputName "+out+"h1D_leadingJet_cef_vec.pdf");
-    dataMCplotMaker(null, h1D_leadingJet_nef_vec, titlesLeadingJet, "", "", common+"  --overrideHeader neutral EM fraction (no filters) --xAxisOverride #phi --outputName "+out+"h1D_leadingJet_nef_vec.pdf");
-    dataMCplotMaker(null, h1D_leadingJet_cm_vec,  titlesLeadingJet, "", "", common+"  --overrideHeader charged multiplicity  (no filters) --xAxisOverride #phi --outputName "+out+"h1D_leadingJet_cm_vec.pdf");
+    dataMCplotMaker(null, h1D_leadingJet_chf_vec, titlesLeadingJet, "", "", common+"  --overrideHeader charged hadron fraction (no filters) --xAxisOverride fraction --outputName "+out+"h1D_leadingJet_chf_vec.pdf");
+    dataMCplotMaker(null, h1D_leadingJet_nhf_vec, titlesLeadingJet, "", "", common+"  --overrideHeader neutral hadron fraction (no filters) --xAxisOverride fraction --outputName "+out+"h1D_leadingJet_nhf_vec.pdf");
+    dataMCplotMaker(null, h1D_leadingJet_cef_vec, titlesLeadingJet, "", "", common+"  --overrideHeader charged EM fraction (no filters) --xAxisOverride fraction --outputName "+out+"h1D_leadingJet_cef_vec.pdf");
+    dataMCplotMaker(null, h1D_leadingJet_nef_vec, titlesLeadingJet, "", "", common+"  --overrideHeader neutral EM fraction (no filters) --xAxisOverride fraction --outputName "+out+"h1D_leadingJet_nef_vec.pdf");
+    dataMCplotMaker(null, h1D_leadingJet_cm_vec,  titlesLeadingJet, "", "", common+"  --overrideHeader charged multiplicity  (no filters) --xAxisOverride --outputName "+out+"h1D_leadingJet_cm_vec.pdf");
 
     drawHist2D(h2D_pfClusterMet_pfCaloMet,out+"h2D_pfClusterMet_pfCaloMet.pdf",    "--logscale --title pfCaloMet vs pfClusterMet --xlabel pfClusterMet --ylabel pfCaloMet");
     drawHist2D(h2D_pfClusterMet_caloMet,out+"h2D_pfClusterMet_caloMet.pdf","--logscale --title caloMet vs pfClusterMet --xlabel pfClusterMet --ylabel caloMet");

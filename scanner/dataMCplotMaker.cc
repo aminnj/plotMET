@@ -384,7 +384,7 @@ void dataMCplotMaker(TH1F* Data, std::vector <TH1F*> Backgrounds, std::vector <s
     Colors.push_back(kBlue-2);
     Colors.push_back(kGreen+3);   
     Colors.push_back(kBlack);
-    Colors.push_back(kViolet+4);
+    Colors.push_back(kOrange-6);
     Colors.push_back(kMagenta-2);
   }
   else if (color_input.size() == 0 && use_signals == 1){ 
