@@ -256,12 +256,18 @@ int ScanChain( TChain* chain) {
         cms3.Init(tree);
 
         bool fast = true;
+        int iCut = 0;
 
         // Loop over Events in current file
         if( nEventsTotal >= nEventsChain ) continue;
         unsigned int nEventsTree = tree->GetEntriesFast();
 
         for( unsigned int event = 0; event < nEventsTree; ++event) {
+
+            //before loading next event, print out where last event failed cutflow
+            // if iCut is 2 then we failed the evt_trackingFailureFilter (i.e., iCut = n means
+            // we failed the filter labeled by n+1 in the cutflow printout)
+            debug << iCut << " " << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event() << "\n";
 
             // Get Event Content
             if( nEventsTotal >= nEventsChain ) continue;
@@ -286,7 +292,7 @@ int ScanChain( TChain* chain) {
             float pfClusterMet = pfcluster_met();
             float pfClusterMetPhi = pfcluster_metphi();
 
-            int iCut = 0;
+            iCut = 0;
 
             h1D_pfCaloMet->Fill(pfCaloMet);
             h1D_pfMet->Fill(pfMet);
@@ -339,32 +345,20 @@ int ScanChain( TChain* chain) {
             if(dPhiCaloMet < M_PI) h1D_jetCaloMetPhi->Fill(dPhiCaloMet);
 
 
-            addToCounter(to_string(++iCut)+" ALL");
-            debug << iCut << " " << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event() << "\n";
+            addToCounter(to_string(++iCut)+" ALL"); // iCut will be 1
             // DCS AND TRACKS FILTER
             if ( ! haveFunctionalDCS() ) continue;
-            addToCounter(to_string(++iCut)+" haveFunctionalDCS()");
-            debug << iCut << " " << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event() << "\n";
+            addToCounter(to_string(++iCut)+" haveFunctionalDCS()"); // iCut will be 2
 
             if ( ! evt_trackingFailureFilter() ) continue;
             addToCounter(to_string(++iCut)+" evt_trackingFailureFilter()");
-            debug << iCut << " " << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event() << "\n";
 
             if ( evt_ntracks() < 4 ) continue;
             addToCounter(to_string(++iCut)+" evt_ntracks()<4");
-            debug << iCut << " " << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event() << "\n";
-
-            // if(evt_run() != prevRun || evt_lumiBlock() != prevLumi) {
-            //     runLumiOutput << evt_run() << ":" << evt_lumiBlock() << "\n";
-            //     prevRun = evt_run();
-            //     prevLumi = evt_lumiBlock();
-            // }
-
 
             // CSC HALO FILTER
             if ( !evt_cscTightHaloFilter() ) continue;
             addToCounter(to_string(++iCut)+" evt_cscTightHaloFilter()");
-            debug << iCut << " " << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event() << "\n";
 
             h1D_pfCaloMet_halo->Fill(pfCaloMet);
             h1D_pfMet_halo->Fill(pfMet);
@@ -377,11 +371,9 @@ int ScanChain( TChain* chain) {
             // HCAL NOISE FILTERS
             if ( !hbheIsoNoiseFilter() ) continue;
             addToCounter(to_string(++iCut)+" hbheIsoNoiseFilter()");
-            debug << iCut << " " << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event() << "\n";
 
             if ( !hcalnoise_passTightNoiseFilter() ) continue; 
             addToCounter(to_string(++iCut)+" hcalnoise_passTightNoiseFilter())");
-            debug << iCut << " " << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event() << "\n";
 
             h1D_pfCaloMet_halonoise->Fill(pfCaloMet);
             h1D_pfMet_halonoise->Fill(pfMet);
@@ -394,7 +386,6 @@ int ScanChain( TChain* chain) {
             // HCAL FILTER 50NS
             if ( !evt_hbheFilterRun1() ) continue;
             addToCounter(to_string(++iCut)+" evt_hbheFilterRun1()");
-            debug << iCut << " " << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event() << "\n";
 
             h1D_pfCaloMet_halonoisehbhe->Fill(pfCaloMet);
             h1D_pfMet_halonoisehbhe->Fill(pfMet);
@@ -407,11 +398,9 @@ int ScanChain( TChain* chain) {
             // ECAL FILTERS
             if ( !evt_EcalDeadCellTriggerPrimitiveFilter() ) continue;
             addToCounter(to_string(++iCut)+" evt_EcalDeadCellTriggerPrimitiveFilter()");
-            debug << iCut << " " << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event() << "\n";
 
             if ( !evt_eeBadScFilter() ) continue;
             addToCounter(to_string(++iCut)+" evt_eeBadScFilter()");
-            debug << iCut << " " << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event() << "\n";
 
             h1D_pfCaloMet_halonoisehbheecal->Fill(pfCaloMet);
             h1D_pfMet_halonoisehbheecal->Fill(pfMet);
@@ -432,7 +421,6 @@ int ScanChain( TChain* chain) {
 
             if( !passJetID ) continue;
             addToCounter(to_string(++iCut)+" passJetID");
-            debug << iCut << " " << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event() << "\n";
 
             h1D_pfCaloMet_halonoisehbheecaljet->Fill(pfCaloMet);
             h1D_pfMet_halonoisehbheecaljet->Fill(pfMet);
