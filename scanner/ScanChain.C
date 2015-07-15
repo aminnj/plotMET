@@ -226,6 +226,38 @@ int ScanChain( TChain* chain) {
     h1D_leadingJet_nef_vec.push_back(h1D_leadingJet_nef);
     h1D_leadingJet_cm_vec.push_back(h1D_leadingJet_cm);
 
+    // caloMet with and without each filter
+    std::vector<std::string> titlesOneFilt = {"without filter", "with filter"};
+
+    std::vector<TH1F*> h1D_caloMet_filt_halo_vec; h1D_caloMet_filt_halo_vec.push_back(h1D_caloMet);
+    TH1F *h1D_caloMet_filt_halo = new TH1F("h1D_caloMet_filt_halo", "", metBins,lowerMet,upperMet);
+    h1D_caloMet_filt_halo_vec.push_back(h1D_caloMet_filt_halo);
+
+    std::vector<TH1F*> h1D_caloMet_filt_track_vec; h1D_caloMet_filt_track_vec.push_back(h1D_caloMet);
+    TH1F *h1D_caloMet_filt_track = new TH1F("h1D_caloMet_filt_track", "", metBins,lowerMet,upperMet);
+    h1D_caloMet_filt_track_vec.push_back(h1D_caloMet_filt_track);
+
+    std::vector<TH1F*> h1D_caloMet_filt_isonoise_vec; h1D_caloMet_filt_isonoise_vec.push_back(h1D_caloMet);
+    TH1F *h1D_caloMet_filt_isonoise = new TH1F("h1D_caloMet_filt_isonoise", "", metBins,lowerMet,upperMet);
+    h1D_caloMet_filt_isonoise_vec.push_back(h1D_caloMet_filt_isonoise);
+
+    std::vector<TH1F*> h1D_caloMet_filt_tightnoise_vec; h1D_caloMet_filt_tightnoise_vec.push_back(h1D_caloMet);
+    TH1F *h1D_caloMet_filt_tightnoise = new TH1F("h1D_caloMet_filt_tightnoise", "", metBins,lowerMet,upperMet);
+    h1D_caloMet_filt_tightnoise_vec.push_back(h1D_caloMet_filt_tightnoise);
+
+    std::vector<TH1F*> h1D_caloMet_filt_hbherun1_vec; h1D_caloMet_filt_hbherun1_vec.push_back(h1D_caloMet);
+    TH1F *h1D_caloMet_filt_hbherun1 = new TH1F("h1D_caloMet_filt_hbherun1", "", metBins,lowerMet,upperMet);
+    h1D_caloMet_filt_hbherun1_vec.push_back(h1D_caloMet_filt_hbherun1);
+
+    std::vector<TH1F*> h1D_caloMet_filt_ecalcell_vec; h1D_caloMet_filt_ecalcell_vec.push_back(h1D_caloMet);
+    TH1F *h1D_caloMet_filt_ecalcell = new TH1F("h1D_caloMet_filt_ecalcell", "", metBins,lowerMet,upperMet);
+    h1D_caloMet_filt_ecalcell_vec.push_back(h1D_caloMet_filt_ecalcell);
+
+    std::vector<TH1F*> h1D_caloMet_filt_eebadsc_vec; h1D_caloMet_filt_eebadsc_vec.push_back(h1D_caloMet);
+    TH1F *h1D_caloMet_filt_eebadsc = new TH1F("h1D_caloMet_filt_eebadsc", "", metBins,lowerMet,upperMet);
+    h1D_caloMet_filt_eebadsc_vec.push_back(h1D_caloMet_filt_eebadsc);
+
+
     // detector status
     std::vector<TH1F*> h1D_detectorStatus_vec;
     std::vector<std::string> titlesDCS;
@@ -294,11 +326,31 @@ int ScanChain( TChain* chain) {
 
             iCut = 0;
 
+
+            // look at bottom of https://twiki.cern.ch/twiki/bin/view/CMS/CollisionsJuly2015
+            // use only these good runs
+
+            if( !( evt_run() == 251244 ||
+                   evt_run() == 251251 ||
+                   evt_run() == 251252 ||
+                   evt_run() == 251561 ||
+                   evt_run() == 251562 ||
+                   evt_run() == 251643 ) ) continue;
+
             h1D_pfCaloMet->Fill(pfCaloMet);
             h1D_pfMet->Fill(pfMet);
             h1D_caloMet->Fill(caloMet);
             h1D_pfClusterMet->Fill(pfClusterMet);
             h1D_pfChMet->Fill(pfChMet);
+
+            if ( evt_trackingFailureFilter() )              h1D_caloMet_filt_track->Fill(caloMet);
+            if ( evt_cscTightHaloFilter() )                 h1D_caloMet_filt_halo->Fill(caloMet);
+            if ( hbheIsoNoiseFilter() )                     h1D_caloMet_filt_isonoise->Fill(caloMet);
+            if ( hcalnoise_passTightNoiseFilter() )         h1D_caloMet_filt_tightnoise->Fill(caloMet);
+            if ( evt_hbheFilterRun1() )                     h1D_caloMet_filt_hbherun1->Fill(caloMet);
+            if ( evt_EcalDeadCellTriggerPrimitiveFilter() ) h1D_caloMet_filt_ecalcell->Fill(caloMet);
+            if ( evt_eeBadScFilter() )                      h1D_caloMet_filt_eebadsc->Fill(caloMet);
+
 
             if( !fast ) {
                 for(int i = 0; i < twrs_eta().size(); i++) {
@@ -457,7 +509,7 @@ int ScanChain( TChain* chain) {
             }
 
             // also, if we're at this point, we want to check out the events in more detail
-            if(  (caloMet > 290 && pfMet > 290) ||
+            if(  (caloMet > 250 && pfMet > 250) ||
                  (caloMet > 100 && pfMet < 30)  ||
                  (caloMet < 20  && pfMet > 100) ) {
                 std::cout << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event()
@@ -489,6 +541,14 @@ int ScanChain( TChain* chain) {
     dataMCplotMaker(null, h1D_pfCaloMet_filters_vec, titlesFilters, "", "", common+" --overrideHeader pfCaloMet (cumulative filters) --outputName "+out+"h1D_pfCaloMet_filters.pdf");
 
     dataMCplotMaker(null, h1D_jetCaloMetPhi_filters_vec, titlesFilters, "", "", common+"  --overrideHeader #Delta#phi(j,caloMet) (cumulative filters) --xAxisOverride #phi --outputName "+out+"h1D_jetCaloMetPhi_filters.pdf");
+
+    dataMCplotMaker(null, h1D_caloMet_filt_track_vec, titlesOneFilt, "", "", common+" --overrideHeader caloMet: trackingFailureFilter --outputName "+out+"h1D_caloMet_filt_track.pdf");
+    dataMCplotMaker(null, h1D_caloMet_filt_halo_vec, titlesOneFilt, "", "", common+" --overrideHeader caloMet: cscTightHaloFilter --outputName "+out+"h1D_caloMet_filt_halo.pdf");
+    dataMCplotMaker(null, h1D_caloMet_filt_isonoise_vec, titlesOneFilt, "", "", common+" --overrideHeader caloMet: hbheIsoNoiseFilter --outputName "+out+"h1D_caloMet_filt_isonoise.pdf");
+    dataMCplotMaker(null, h1D_caloMet_filt_tightnoise_vec, titlesOneFilt, "", "", common+" --overrideHeader caloMet: passTightNoiseFilter --outputName "+out+"h1D_caloMet_filt_tightnoise.pdf");
+    dataMCplotMaker(null, h1D_caloMet_filt_hbherun1_vec, titlesOneFilt, "", "", common+" --overrideHeader caloMet: hbheFilterRun1 --outputName "+out+"h1D_caloMet_filt_hbherun1.pdf");
+    dataMCplotMaker(null, h1D_caloMet_filt_ecalcell_vec, titlesOneFilt, "", "", common+" --overrideHeader caloMet: EcalDeadCellFilter --outputName "+out+"h1D_caloMet_filt_ecalcell.pdf");
+    dataMCplotMaker(null, h1D_caloMet_filt_eebadsc_vec, titlesOneFilt, "", "", common+" --overrideHeader caloMet: eeBadScFilter --outputName "+out+"h1D_caloMet_filt_eebadsc.pdf");
 
     dataMCplotMaker(null, h1D_leadingJet_chf_vec, titlesLeadingJet, "", "", common+"  --overrideHeader charged hadron fraction (no filters) --xAxisOverride fraction --outputName "+out+"h1D_leadingJet_chf_vec.pdf");
     dataMCplotMaker(null, h1D_leadingJet_nhf_vec, titlesLeadingJet, "", "", common+"  --overrideHeader neutral hadron fraction (no filters) --xAxisOverride fraction --outputName "+out+"h1D_leadingJet_nhf_vec.pdf");
