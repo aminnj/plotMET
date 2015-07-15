@@ -14,6 +14,7 @@
 
 #include "CMS3.cc"
 #include "dataMCplotMaker.h"
+#include "../Tools/goodrun.cc"
 
 using namespace std;
 using namespace tas;
@@ -30,6 +31,14 @@ bool hbheIsoNoiseFilter() {
     if( hcalnoise_numIsolatedNoiseChannels() >=10 ) return false;
     if( hcalnoise_isolatedNoiseSumE() >=50        ) return false;
     if( hcalnoise_isolatedNoiseSumEt() >=25       ) return false;
+    return true;
+}
+bool hbheNoiseFilter() {
+    if(hcalnoise_maxHPDHits()>=17) return false;
+    if(hcalnoise_maxHPDNoOtherHits()>=10) return false;
+    if(hcalnoise_numIsolatedNoiseChannels()>=10) return false;
+    if(hcalnoise_isolatedNoiseSumE()>=50.0) return false;
+    if(hcalnoise_isolatedNoiseSumEt()>=25.0) return false;
     return true;
 }
 bool passesLoosePFJetID(int pfJetIdx) {
@@ -72,7 +81,7 @@ int ScanChain( TChain* chain) {
 
     float lowerMet = 0.0;
     float upperMet = 500.0;
-    int metBins = 60;
+    int metBins = 80;
 
     // met with no filters
     TH1F *h1D_pfCaloMet = new TH1F("h1D_pfCaloMet", "", metBins,lowerMet,upperMet);
@@ -268,6 +277,20 @@ int ScanChain( TChain* chain) {
     titlesDCS.push_back("DCS bits (no filters)");
     titlesDCS.push_back("DCS bits (filters)");
 
+    // eff by run
+    std::vector<TH1F*> h1D_effbyrun_vec;
+    TH1F *h1D_effbyrun = new TH1F("h1D_effbyrun","", 500,251200,251700);
+    TH1F *h1D_effbyrun_filt = new TH1F("h1D_effbyrun_filt","", 500,251200,251700);
+    h1D_effbyrun_vec.push_back(h1D_effbyrun);
+    h1D_effbyrun_vec.push_back(h1D_effbyrun_filt);
+
+
+
+    const char* json_file = "Run2015BGolden.txt";
+    set_goodrun_file(json_file);
+
+    std::vector<int> passFilters = { 0, 0, 0, 0, 0, 0, 0, 0 };
+
     unsigned int nEventsTotal = 0;
     unsigned int nEventsChain = chain->GetEntries();
     unsigned int nEventsFiltered = 0;
@@ -299,7 +322,7 @@ int ScanChain( TChain* chain) {
             //before loading next event, print out where last event failed cutflow
             // if iCut is 2 then we failed the evt_trackingFailureFilter (i.e., iCut = n means
             // we failed the filter labeled by n+1 in the cutflow printout)
-            debug << iCut << " " << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event() << "\n";
+            // debug << iCut << " " << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event() << "\n";
 
             // Get Event Content
             if( nEventsTotal >= nEventsChain ) continue;
@@ -330,12 +353,16 @@ int ScanChain( TChain* chain) {
             // look at bottom of https://twiki.cern.ch/twiki/bin/view/CMS/CollisionsJuly2015
             // use only these good runs
 
-            if( !( evt_run() == 251244 ||
-                   evt_run() == 251251 ||
-                   evt_run() == 251252 ||
-                   evt_run() == 251561 ||
-                   evt_run() == 251562 ||
-                   evt_run() == 251643 ) ) continue;
+            // if( !( evt_run() == 251244 ||
+            //        evt_run() == 251251 ||
+            //        evt_run() == 251252 ||
+            //        evt_run() == 251561 ||
+            //        evt_run() == 251562 ||
+            //        evt_run() == 251643 ) ) continue;
+
+            // use golden json file 
+            if ( evt_isRealData() && !goodrun(evt_run(), evt_lumiBlock()) ) continue;
+
 
             h1D_pfCaloMet->Fill(pfCaloMet);
             h1D_pfMet->Fill(pfMet);
@@ -343,14 +370,58 @@ int ScanChain( TChain* chain) {
             h1D_pfClusterMet->Fill(pfClusterMet);
             h1D_pfChMet->Fill(pfChMet);
 
-            if ( evt_trackingFailureFilter() )              h1D_caloMet_filt_track->Fill(caloMet);
-            if ( evt_cscTightHaloFilter() )                 h1D_caloMet_filt_halo->Fill(caloMet);
-            if ( hbheIsoNoiseFilter() )                     h1D_caloMet_filt_isonoise->Fill(caloMet);
-            if ( hcalnoise_passTightNoiseFilter() )         h1D_caloMet_filt_tightnoise->Fill(caloMet);
-            if ( evt_hbheFilterRun1() )                     h1D_caloMet_filt_hbherun1->Fill(caloMet);
-            if ( evt_EcalDeadCellTriggerPrimitiveFilter() ) h1D_caloMet_filt_ecalcell->Fill(caloMet);
-            if ( evt_eeBadScFilter() )                      h1D_caloMet_filt_eebadsc->Fill(caloMet);
+            h1D_effbyrun->Fill(evt_run());
 
+            // if ( evt_trackingFailureFilter() )              h1D_caloMet_filt_track->Fill(caloMet);
+            // if ( evt_cscTightHaloFilter() )                 h1D_caloMet_filt_halo->Fill(caloMet);
+            // if ( hbheIsoNoiseFilter() )                     h1D_caloMet_filt_isonoise->Fill(caloMet);
+            // if ( evt_hbheFilterRun1() )                     h1D_caloMet_filt_hbherun1->Fill(caloMet);
+            // if ( evt_EcalDeadCellTriggerPrimitiveFilter() ) h1D_caloMet_filt_ecalcell->Fill(caloMet);
+            // if ( evt_eeBadScFilter() )                      h1D_caloMet_filt_eebadsc->Fill(caloMet);
+            // if ( hcalnoise_passTightNoiseFilter() )         { 
+            //     h1D_caloMet_filt_tightnoise->Fill(caloMet);
+            //     h1D_effbyrun_filt->Fill(evt_run());
+            // }
+            int iPass = 0;
+            passFilters.at(iPass)++; iPass++;
+
+
+            if ( evt_trackingFailureFilter() ) {
+                h1D_caloMet_filt_track->Fill(caloMet);
+                passFilters.at(iPass)++;
+            }
+            iPass++;
+            if ( evt_cscTightHaloFilter() ) {
+                h1D_caloMet_filt_halo->Fill(caloMet);
+                passFilters.at(iPass)++;
+            }
+            iPass++;
+            if ( hbheIsoNoiseFilter() ) {
+                h1D_caloMet_filt_isonoise->Fill(caloMet);
+                passFilters.at(iPass)++;
+            }
+            iPass++;
+            if ( evt_hbheFilterRun1() ) {
+                h1D_caloMet_filt_hbherun1->Fill(caloMet);
+                passFilters.at(iPass)++;
+            }
+            iPass++;
+            if ( evt_EcalDeadCellTriggerPrimitiveFilter() ) {
+                h1D_caloMet_filt_ecalcell->Fill(caloMet);
+                passFilters.at(iPass)++;
+            }
+            iPass++;
+            if ( evt_eeBadScFilter() ) {
+                h1D_caloMet_filt_eebadsc->Fill(caloMet);
+                passFilters.at(iPass)++;
+            }
+            iPass++;
+            if ( hcalnoise_passTightNoiseFilter() ) { 
+                h1D_caloMet_filt_tightnoise->Fill(caloMet);
+                passFilters.at(iPass)++;
+
+                h1D_effbyrun_filt->Fill(evt_run());
+            }
 
             if( !fast ) {
                 for(int i = 0; i < twrs_eta().size(); i++) {
@@ -509,12 +580,17 @@ int ScanChain( TChain* chain) {
             }
 
             // also, if we're at this point, we want to check out the events in more detail
-            if(  (caloMet > 250 && pfMet > 250) ||
-                 (caloMet > 100 && pfMet < 30)  ||
-                 (caloMet < 20  && pfMet > 100) ) {
+            if(  (caloMet > 300 || pfMet > 300) ||
+                 (caloMet < 30  && pfMet > 100)  ||
+                 (caloMet > 200 && pfMet < 100) ) {
                 std::cout << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event()
                           << " caloMet: " << caloMet << " pfMet: " << pfMet << " pfCaloMet: " << pfCaloMet << " pfChMet: " << pfChMet << " pfClusterMet: " << pfClusterMet << std::endl;
             }
+
+
+            // if( caloMet > 300 && pfMet > 300 )
+            //     std::cout << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event() << " caloMet: " << caloMet << " pfMet: " << pfMet << " pfCaloMet: " << pfCaloMet << " pfChMet: " << pfChMet << " pfClusterMet: " << pfClusterMet << std::endl;
+
 
         }
 
@@ -529,6 +605,17 @@ int ScanChain( TChain* chain) {
     printCounter();
 
     std::cout << " nEventsChain: " << nEventsChain << " nEventsFiltered: " << nEventsFiltered << std::endl;
+
+
+    std::cout << "ALL: " << passFilters.at(0) << std::endl
+              << "trackingFailure: " << passFilters.at(1) << std::endl
+              << "cscTightHalo: " << passFilters.at(2) << std::endl
+              << "hbheIsoNoise: " << passFilters.at(3) << std::endl
+              << "hbheFilterRun1: " << passFilters.at(4) << std::endl
+              << "ecalDeadCell: " << passFilters.at(5) << std::endl
+              << "eeBadSc: " << passFilters.at(6) << std::endl
+              << "passTightNoise: " << passFilters.at(7) << std::endl;
+
 
     std::string out = "pdfs/";
     std::string common = "--noStack --noFill --xAxisOverride [GeV] --type --preserveBackgroundOrder --legendTextSize 0.03 --legendRight -0.05";
@@ -549,6 +636,8 @@ int ScanChain( TChain* chain) {
     dataMCplotMaker(null, h1D_caloMet_filt_hbherun1_vec, titlesOneFilt, "", "", common+" --overrideHeader caloMet: hbheFilterRun1 --outputName "+out+"h1D_caloMet_filt_hbherun1.pdf");
     dataMCplotMaker(null, h1D_caloMet_filt_ecalcell_vec, titlesOneFilt, "", "", common+" --overrideHeader caloMet: EcalDeadCellFilter --outputName "+out+"h1D_caloMet_filt_ecalcell.pdf");
     dataMCplotMaker(null, h1D_caloMet_filt_eebadsc_vec, titlesOneFilt, "", "", common+" --overrideHeader caloMet: eeBadScFilter --outputName "+out+"h1D_caloMet_filt_eebadsc.pdf");
+
+    dataMCplotMaker(null, h1D_effbyrun_vec, titlesOneFilt, "", "", common+" --overrideHeader passTightNoiseFilter by run --outputName "+out+"h1D_effbyrun.pdf");
 
     dataMCplotMaker(null, h1D_leadingJet_chf_vec, titlesLeadingJet, "", "", common+"  --overrideHeader charged hadron fraction (no filters) --xAxisOverride fraction --outputName "+out+"h1D_leadingJet_chf_vec.pdf");
     dataMCplotMaker(null, h1D_leadingJet_nhf_vec, titlesLeadingJet, "", "", common+"  --overrideHeader neutral hadron fraction (no filters) --xAxisOverride fraction --outputName "+out+"h1D_leadingJet_nhf_vec.pdf");
