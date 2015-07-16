@@ -165,6 +165,15 @@ vector<int> findZPair(std::vector<LorentzVector> goodEls, std::vector<LorentzVec
 }
 
 ////////////////////////////
+////// misc utilities //////
+////////////////////////////
+float avg(std::vector<float> v) {
+    double sum = std::accumulate(v.begin(), v.end(), 0.0);
+    if(v.size() < 1) return -999.0;
+    else return sum / v.size();
+}
+
+////////////////////////////
 ////// root utilities //////
 ////////////////////////////
 double getIntegral(TH1F* h, bool includeOverflow = true) {
