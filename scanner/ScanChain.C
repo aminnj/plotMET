@@ -155,6 +155,36 @@ int ScanChain( TChain* chain) {
     h1D_caloMet_filters_vec.push_back(h1D_caloMet_halonoisehbhe);
     h1D_caloMet_filters_vec.push_back(h1D_caloMet_halonoisehbheecal);
     h1D_caloMet_filters_vec.push_back(h1D_caloMet_halonoisehbheecaljet);
+    
+    // caloMetPhi with filters layered
+    std::vector<TH1F*> h1D_caloMetPhi_filters_vec;
+    TH1F *h1D_caloMetPhi = new TH1F("h1D_caloMetPhi", "",                                           100,-3.14,3.14);
+    TH1F *h1D_caloMetPhi_halo = new TH1F("h1D_caloMetPhi_halo", "",                                 100,-3.14,3.14);
+    TH1F *h1D_caloMetPhi_halonoise = new TH1F("h1D_caloMetPhi_halonoise", "",                       100,-3.14,3.14);
+    TH1F *h1D_caloMetPhi_halonoisehbhe = new TH1F("h1D_caloMetPhi_halonoisehbhe", "",               100,-3.14,3.14);
+    TH1F *h1D_caloMetPhi_halonoisehbheecal = new TH1F("h1D_caloMetPhi_halonoisehbheecal", "",       100,-3.14,3.14);
+    TH1F *h1D_caloMetPhi_halonoisehbheecaljet = new TH1F("h1D_caloMetPhi_halonoisehbheecaljet", "", 100,-3.14,3.14);
+    h1D_caloMetPhi_filters_vec.push_back(h1D_caloMetPhi);
+    h1D_caloMetPhi_filters_vec.push_back(h1D_caloMetPhi_halo);
+    h1D_caloMetPhi_filters_vec.push_back(h1D_caloMetPhi_halonoise);
+    h1D_caloMetPhi_filters_vec.push_back(h1D_caloMetPhi_halonoisehbhe);
+    h1D_caloMetPhi_filters_vec.push_back(h1D_caloMetPhi_halonoisehbheecal);
+    h1D_caloMetPhi_filters_vec.push_back(h1D_caloMetPhi_halonoisehbheecaljet);
+    
+    // pfMetPhi with filters layered
+    std::vector<TH1F*> h1D_pfMetPhi_filters_vec;
+    TH1F *h1D_pfMetPhi = new TH1F("h1D_pfMetPhi", "",                                           100,-3.14,3.14);
+    TH1F *h1D_pfMetPhi_halo = new TH1F("h1D_pfMetPhi_halo", "",                                 100,-3.14,3.14);
+    TH1F *h1D_pfMetPhi_halonoise = new TH1F("h1D_pfMetPhi_halonoise", "",                       100,-3.14,3.14);
+    TH1F *h1D_pfMetPhi_halonoisehbhe = new TH1F("h1D_pfMetPhi_halonoisehbhe", "",               100,-3.14,3.14);
+    TH1F *h1D_pfMetPhi_halonoisehbheecal = new TH1F("h1D_pfMetPhi_halonoisehbheecal", "",       100,-3.14,3.14);
+    TH1F *h1D_pfMetPhi_halonoisehbheecaljet = new TH1F("h1D_pfMetPhi_halonoisehbheecaljet", "", 100,-3.14,3.14);
+    h1D_pfMetPhi_filters_vec.push_back(h1D_pfMetPhi);
+    h1D_pfMetPhi_filters_vec.push_back(h1D_pfMetPhi_halo);
+    h1D_pfMetPhi_filters_vec.push_back(h1D_pfMetPhi_halonoise);
+    h1D_pfMetPhi_filters_vec.push_back(h1D_pfMetPhi_halonoisehbhe);
+    h1D_pfMetPhi_filters_vec.push_back(h1D_pfMetPhi_halonoisehbheecal);
+    h1D_pfMetPhi_filters_vec.push_back(h1D_pfMetPhi_halonoisehbheecaljet);
 
     // pfCaloMet with filters layered
     std::vector<TH1F*> h1D_pfCaloMet_filters_vec;
@@ -345,14 +375,25 @@ int ScanChain( TChain* chain) {
 
     // dominick trigger check
     std::vector<TH1F*> h1D_trig_pfMet_vec;
-    std::vector<std::string> titlesTrig; titlesTrig.push_back("HLT_PFMET170_NoiseCleaned_v2"); titlesTrig.push_back("HLT_PFMET170_v1");
-    TH1F *h1D_trig_pfMet = new TH1F("h1D_trig_pfMet","",             metBins,lowerMet,upperMet);
-    TH1F *h1D_trig_pfMet_clean = new TH1F("h1D_trig_pfMet_clean","", metBins,lowerMet,upperMet);
+    std::vector<std::string> titlesTrig;
+    TH1F *h1D_trig_pfMet = new TH1F("h1D_trig_pfMet","",             metBins,lowerMet,upperMet); titlesTrig.push_back("PFMET170 (normal)"); 
+    TH1F *h1D_trig_pfMet_clean = new TH1F("h1D_trig_pfMet_clean","", metBins,lowerMet,upperMet); titlesTrig.push_back("NoiseCleaned"); 
+    TH1F *h1D_trig_pfMet_both = new TH1F("h1D_trig_pfMet_both","", metBins,lowerMet,upperMet); titlesTrig.push_back("both"); 
     h1D_trig_pfMet_vec.push_back(h1D_trig_pfMet);
     h1D_trig_pfMet_vec.push_back(h1D_trig_pfMet_clean);
+    h1D_trig_pfMet_vec.push_back(h1D_trig_pfMet_both);
+
+    // projected 2D plots
+    TH1F* h1D_towers_phi = new TH1F("h2D_towers_phi","",              30 ,-3.15,3.15);
+    TH1F* h1D_towers_phi_em = new TH1F("h2D_towers_phi_em","",        30 ,-3.15,3.15);
+    TH1F* h1D_towers_phi_had = new TH1F("h2D_towers_phi_had","",      30 ,-3.15,3.15);
+    TH1F* h1D_towers_phi_outer = new TH1F("h2D_towers_phi_outer","",  30 ,-3.15,3.15);
+    TH1F* h1D_pfclusters_phi = new TH1F("h2D_pfclusters_phi","",      30 ,-3.15,3.15);
+    TH1F* h1D_calojets_phi = new TH1F("h2D_calojets_phi","",          30 ,-3.15,3.15);
 
 
-    const char* json_file = "Run2015BGolden.txt";
+    const char* json_file = "Run2015BGoldenPlus.txt";
+    // const char* json_file = "Run2015BGolden.txt";
     set_goodrun_file(json_file);
 
     std::vector<int> passFilters = { 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -379,7 +420,7 @@ int ScanChain( TChain* chain) {
         tree->SetCacheSize(128*1024*1024);
         cms3.Init(tree);
 
-        bool fast = true;
+        bool fast = false;
         int iCut = 0;
 
         // Loop over Events in current file
@@ -421,12 +462,19 @@ int ScanChain( TChain* chain) {
             // use golden json file 
             if ( evt_isRealData() && !goodrun(evt_run(), evt_lumiBlock()) ) continue;
 
+            // if( evt_run() != 251251 ) continue;
+            // if( evt_run() != 251252 ) continue;
+            // if( evt_run() != 251244 ) continue;
+
 
             h1D_pfCaloMet->Fill(pfCaloMet);
             h1D_pfMet->Fill(pfMet);
             h1D_caloMet->Fill(caloMet);
             h1D_pfClusterMet->Fill(pfClusterMet);
             h1D_pfChMet->Fill(pfChMet);
+
+            h1D_caloMetPhi->Fill(caloMetPhi);
+            h1D_pfMetPhi->Fill(pfMetPhi);
 
             addRunToMap(evt_run());
             h1D_effbyrun->Fill(runToBinMap[evt_run()]);
@@ -466,8 +514,8 @@ int ScanChain( TChain* chain) {
                 passFilters.at(iPass)++;
             }
             iPass++;
-            if ( hcalnoise_passTightNoiseFilter() ) {
-            // if ( hbheNoiseFilter() ) { // IGNORE MAXZEROS
+            // if ( hcalnoise_passTightNoiseFilter() ) {
+            if ( hbheNoiseFilter() ) { // IGNORE MAXZEROS
                 h1D_caloMet_filt_tightnoise->Fill(caloMet);
                 passFilters.at(iPass)++;
 
@@ -475,14 +523,30 @@ int ScanChain( TChain* chain) {
 
             if( !fast ) {
                 for(int i = 0; i < twrs_eta().size(); i++) {
-                    h2D_towers_etaphi->Fill(twrs_eta().at(i), twrs_phi().at(i));
-                    h2D_towers_etaphi_em->Fill(twrs_eta().at(i), twrs_phi().at(i), twrs_emEnergy().at(i));
-                    h2D_towers_etaphi_had->Fill(twrs_eta().at(i), twrs_phi().at(i), twrs_hadEnergy().at(i));
-                    h2D_towers_etaphi_outer->Fill(twrs_eta().at(i), twrs_phi().at(i), twrs_outerEnergy().at(i));
+                    // float twrEta = twrs_eta().at(i);
+                    // float twrPhi = twrs_phi().at(i);
+                    float twrEta = twrs_etacorr().at(i);
+                    float twrPhi = twrs_phicorr().at(i);
+                    h2D_towers_etaphi->Fill(twrEta, twrPhi);
+                    h2D_towers_etaphi_em->Fill(twrEta, twrPhi, twrs_emEnergy().at(i));
+                    h2D_towers_etaphi_had->Fill(twrEta, twrPhi, twrs_hadEnergy().at(i));
+                    h2D_towers_etaphi_outer->Fill(twrEta, twrPhi, twrs_outerEnergy().at(i));
+
+                    h1D_towers_phi->Fill(twrPhi);
+                    h1D_towers_phi_em->Fill(twrPhi, twrs_emEnergy().at(i));
+                    h1D_towers_phi_had->Fill(twrPhi, twrs_hadEnergy().at(i));
+                    h1D_towers_phi_outer->Fill(twrPhi, twrs_outerEnergy().at(i));
                 }   
 
-                for(int i = 0; i < pfcluster_eta().size(); i++) h2D_pfclusters_etaphi->Fill(pfcluster_eta().at(i), pfcluster_phi().at(i));
-                for(int i = 0; i < calojets_eta().size(); i++)  h2D_calojets_etaphi->Fill(calojets_eta().at(i), calojets_phi().at(i));
+                for(int i = 0; i < pfcluster_eta().size(); i++) {
+                    h2D_pfclusters_etaphi->Fill(pfcluster_eta().at(i), pfcluster_phi().at(i));
+                    h1D_pfclusters_phi->Fill(pfcluster_phi().at(i));
+                }
+                for(int i = 0; i < calojets_eta().size(); i++) {
+                    h2D_calojets_etaphi->Fill(calojets_eta().at(i), calojets_phi().at(i));
+                    h1D_calojets_phi->Fill(calojets_phi().at(i));
+                }
+
             }
 
             float leadingJetPhi = 999.0;
@@ -567,6 +631,8 @@ int ScanChain( TChain* chain) {
             h1D_pfCaloMet_halo->Fill(pfCaloMet);
             h1D_pfMet_halo->Fill(pfMet);
             h1D_caloMet_halo->Fill(caloMet);
+            h1D_caloMetPhi_halo->Fill(caloMetPhi);
+            h1D_pfMetPhi_halo->Fill(pfMetPhi);
             h1D_pfClusterMet_halo->Fill(pfClusterMet);
             h1D_pfChMet_halo->Fill(pfChMet);
             if(dPhiCaloMet < M_PI) h1D_jetCaloMetPhi_halo->Fill(dPhiCaloMet);
@@ -576,26 +642,30 @@ int ScanChain( TChain* chain) {
             if ( !hbheIsoNoiseFilter() ) continue;
             addToCounter(to_string(++iCut)+" hbheIsoNoiseFilter()");
 
-            if ( !hcalnoise_passTightNoiseFilter() ) continue; 
-            // if ( !hbheNoiseFilter() ) continue; // IGNORE MAXZEROS
+            // if ( !hcalnoise_passTightNoiseFilter() ) continue; 
+            if ( !hbheNoiseFilter() ) continue; // IGNORE MAXZEROS
             addToCounter(to_string(++iCut)+" hcalnoise_passTightNoiseFilter()");
 
             h1D_pfCaloMet_halonoise->Fill(pfCaloMet);
             h1D_pfMet_halonoise->Fill(pfMet);
             h1D_caloMet_halonoise->Fill(caloMet);
+            h1D_caloMetPhi_halonoise->Fill(caloMetPhi);
+            h1D_pfMetPhi_halonoise->Fill(pfMetPhi);
             h1D_pfClusterMet_halonoise->Fill(pfClusterMet);
             h1D_pfChMet_halonoise->Fill(pfChMet);
             if(dPhiCaloMet < M_PI) h1D_jetCaloMetPhi_halonoise->Fill(dPhiCaloMet);
 
 
             // HCAL FILTER 50NS
-            if ( !evt_hbheFilterRun1() ) continue;
-            // if ( false ) continue; // IGNORE MAXZEROS
+            // if ( !evt_hbheFilterRun1() ) continue;
+            if ( false ) continue; // IGNORE MAXZEROS
             addToCounter(to_string(++iCut)+" evt_hbheFilterRun1()");
 
             h1D_pfCaloMet_halonoisehbhe->Fill(pfCaloMet);
             h1D_pfMet_halonoisehbhe->Fill(pfMet);
             h1D_caloMet_halonoisehbhe->Fill(caloMet);
+            h1D_caloMetPhi_halonoisehbhe->Fill(caloMetPhi);
+            h1D_pfMetPhi_halonoisehbhe->Fill(pfMetPhi);
             h1D_pfClusterMet_halonoisehbhe->Fill(pfClusterMet);
             h1D_pfChMet_halonoisehbhe->Fill(pfChMet);
             if(dPhiCaloMet < M_PI) h1D_jetCaloMetPhi_halonoisehbhe->Fill(dPhiCaloMet);
@@ -611,6 +681,8 @@ int ScanChain( TChain* chain) {
             h1D_pfCaloMet_halonoisehbheecal->Fill(pfCaloMet);
             h1D_pfMet_halonoisehbheecal->Fill(pfMet);
             h1D_caloMet_halonoisehbheecal->Fill(caloMet);
+            h1D_caloMetPhi_halonoisehbheecal->Fill(caloMetPhi);
+            h1D_pfMetPhi_halonoisehbheecal->Fill(pfMetPhi);
             h1D_pfClusterMet_halonoisehbheecal->Fill(pfClusterMet);
             h1D_pfChMet_halonoisehbheecal->Fill(pfChMet);
             if(dPhiCaloMet < M_PI) h1D_jetCaloMetPhi_halonoisehbheecal->Fill(dPhiCaloMet);
@@ -632,6 +704,8 @@ int ScanChain( TChain* chain) {
             h1D_pfCaloMet_halonoisehbheecaljet->Fill(pfCaloMet);
             h1D_pfMet_halonoisehbheecaljet->Fill(pfMet);
             h1D_caloMet_halonoisehbheecaljet->Fill(caloMet);
+            h1D_caloMetPhi_halonoisehbheecaljet->Fill(caloMetPhi);
+            h1D_pfMetPhi_halonoisehbheecaljet->Fill(pfMetPhi);
             h1D_pfClusterMet_halonoisehbheecaljet->Fill(pfClusterMet);
             h1D_pfChMet_halonoisehbheecaljet->Fill(pfChMet);
             if(dPhiCaloMet < M_PI) h1D_jetCaloMetPhi_halonoisehbheecaljet->Fill(dPhiCaloMet);
@@ -663,26 +737,24 @@ int ScanChain( TChain* chain) {
                 prevLumi = evt_lumiBlock();
             }
 
-            if( passHLTTrigger("HLT_PFMET170_NoiseCleaned_v2") ) h1D_trig_pfMet_clean->Fill(pfMet);
-            if( passHLTTrigger("HLT_PFMET170_v1") ) h1D_trig_pfMet->Fill(pfMet);
+            // if(std::find(hlt_trigNames().begin(), hlt_trigNames().end(), "HLT_PFMET170_v1")!=hlt_trigNames().end() &&
+            //    std::find(hlt_trigNames().begin(), hlt_trigNames().end(), "HLT_PFMET170_NoiseCleaned_v2")!=hlt_trigNames().end() ) {
+            // }
                 
+            if( passHLTTrigger("HLT_PFMET170_v1") ) h1D_trig_pfMet->Fill(pfMet);
+            if( passHLTTrigger("HLT_PFMET170_NoiseCleaned_v2") ) h1D_trig_pfMet_clean->Fill(pfMet);
+            if( passHLTTrigger("HLT_PFMET170_v1") && passHLTTrigger("HLT_PFMET170_NoiseCleaned_v2") ) h1D_trig_pfMet_both->Fill(pfMet);
                     
             
-
             h1D_maxZeros_filt->Fill(hcalnoise_maxZeros());
             h1D_effbyrun_filt->Fill(runToBinMap[evt_run()]);
 
             // also, if we're at this point, we want to check out the events in more detail
-            if(  (caloMet > 350 || pfMet > 350) ||
-                 (caloMet > 250 && pfMet < 60) ) {
-                std::cout << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event()
-                          << " caloMet: " << caloMet << " pfMet: " << pfMet << " pfCaloMet: " << pfCaloMet << " pfChMet: " << pfChMet << " pfClusterMet: " << pfClusterMet << std::endl;
-            }
-
-
-            // if( caloMet > 300 && pfMet > 300 )
-            //     std::cout << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event() << " caloMet: " << caloMet << " pfMet: " << pfMet << " pfCaloMet: " << pfCaloMet << " pfChMet: " << pfChMet << " pfClusterMet: " << pfClusterMet << std::endl;
-
+            // if(  (caloMet > 350 || pfMet > 350) ||
+            //      (caloMet > 250 && pfMet < 60) ) {
+            //     std::cout << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event()
+            //               << " caloMet: " << caloMet << " pfMet: " << pfMet << " pfCaloMet: " << pfCaloMet << " pfChMet: " << pfChMet << " pfClusterMet: " << pfClusterMet << std::endl;
+            // }
 
         }
 
@@ -708,6 +780,7 @@ int ScanChain( TChain* chain) {
               << "eeBadSc: " << passFilters.at(6) << std::endl
               << "passTightNoise: " << passFilters.at(7) << std::endl;
 
+
     std::string out = "pdfs/";
     std::string common = "--noStack --noFill --xAxisOverride [GeV] --type --preserveBackgroundOrder --legendTextSize 0.03 --legendRight -0.05";
     dataMCplotMaker(null, h1D_met_vec, titlesMet, "", "", common+" --overrideHeader MET (after filters) --outputName "+out+"h1D_met.pdf");
@@ -717,6 +790,9 @@ int ScanChain( TChain* chain) {
     dataMCplotMaker(null, h1D_pfClusterMet_filters_vec, titlesFilters, "", "", common+" --overrideHeader pfClusterMet (cumulative filters) --outputName "+out+"h1D_pfClusterMet_filters.pdf");
     dataMCplotMaker(null, h1D_pfChMet_filters_vec, titlesFilters, "", "", common+" --overrideHeader pfChMet (cumulative filters) --outputName "+out+"h1D_pfChMet_filters.pdf");
     dataMCplotMaker(null, h1D_pfCaloMet_filters_vec, titlesFilters, "", "", common+" --overrideHeader pfCaloMet (cumulative filters) --outputName "+out+"h1D_pfCaloMet_filters.pdf");
+
+    dataMCplotMaker(null, h1D_caloMetPhi_filters_vec, titlesFilters, "", "", common+" --isLinear --overrideHeader caloMetPhi (cumulative filters) --outputName "+out+"h1D_caloMetPhi_filters.pdf");
+    dataMCplotMaker(null, h1D_pfMetPhi_filters_vec, titlesFilters, "", "", common+" --isLinear --overrideHeader pfMetPhi (cumulative filters) --outputName "+out+"h1D_pfMetPhi_filters.pdf");
 
     dataMCplotMaker(null, h1D_jetCaloMetPhi_filters_vec, titlesFilters, "", "", common+"  --overrideHeader #Delta#phi(j,caloMet) (cumulative filters) --xAxisOverride #phi --outputName "+out+"h1D_jetCaloMetPhi_filters.pdf");
 
@@ -736,12 +812,11 @@ int ScanChain( TChain* chain) {
     dataMCplotMaker(null, h1D_leadingJet_nef_vec, titlesLeadingJet, "", "", common+"  --overrideHeader neutral EM fraction (no filters) --xAxisOverride fraction --outputName "+out+"h1D_leadingJet_nef.pdf");
     dataMCplotMaker(null, h1D_leadingJet_cm_vec,  titlesLeadingJet, "", "", common+"  --overrideHeader charged multiplicity  (no filters) --xAxisOverride --outputName "+out+"h1D_leadingJet_cm.pdf");
 
-
-    dataMCplotMaker(null, h1D_nm1_maxHPDHits_vec, titlesNm1, "", "", common+"  --overrideHeader maxHPDHits N-1 before other filters --xAxisOverride n --outputName "+out+"h1D_nm1_maxHPDHits.pdf");
-    dataMCplotMaker(null, h1D_nm1_maxHPDNoOtherHits_vec, titlesNm1, "", "", common+"  --overrideHeader maxHPDNoOtherHits N-1 before other filters --xAxisOverride n --outputName "+out+"h1D_nm1_maxHPDNoOtherHits.pdf");
-    dataMCplotMaker(null, h1D_nm1_numIsolatedNoiseChannels_vec, titlesNm1, "", "", common+"  --overrideHeader numIsolatedNoiseChannels N-1 before other filters --xAxisOverride n --outputName "+out+"h1D_nm1_numIsolatedNoiseChannels.pdf");
-    dataMCplotMaker(null, h1D_nm1_isolatedNoiseSumE_vec, titlesNm1, "", "", common+"  --overrideHeader isolatedNoiseSumE N-1 before other filters --xAxisOverride [GeV] --outputName "+out+"h1D_nm1_isolatedNoiseSumE.pdf");
-    dataMCplotMaker(null, h1D_nm1_isolatedNoiseSumEt_vec,  titlesNm1, "", "", common+"  --overrideHeader isolatedNoiseSumEt N-1 before other filters --xAxisOverride [GeV] --outputName "+out+"h1D_nm1_isolatedNoiseSumEt.pdf");
+    dataMCplotMaker(null, h1D_nm1_maxHPDHits_vec, titlesNm1, "", "", common+"  --overrideHeader maxHPDHits N-1 before other filters --xAxisOverride n --vLine 17 --outputName "+out+"h1D_nm1_maxHPDHits.pdf");
+    dataMCplotMaker(null, h1D_nm1_maxHPDNoOtherHits_vec, titlesNm1, "", "", common+"  --overrideHeader maxHPDNoOtherHits N-1 before other filters --xAxisOverride n --vLine 10 --outputName "+out+"h1D_nm1_maxHPDNoOtherHits.pdf");
+    dataMCplotMaker(null, h1D_nm1_numIsolatedNoiseChannels_vec, titlesNm1, "", "", common+"  --overrideHeader numIsolatedNoiseChannels N-1 before other filters --vLine 10 --xAxisOverride n --outputName "+out+"h1D_nm1_numIsolatedNoiseChannels.pdf");
+    dataMCplotMaker(null, h1D_nm1_isolatedNoiseSumE_vec, titlesNm1, "", "", common+"  --overrideHeader isolatedNoiseSumE N-1 before other filters --vLine 50 --xAxisOverride [GeV] --outputName "+out+"h1D_nm1_isolatedNoiseSumE.pdf");
+    dataMCplotMaker(null, h1D_nm1_isolatedNoiseSumEt_vec,  titlesNm1, "", "", common+"  --overrideHeader isolatedNoiseSumEt N-1 before other filters --vLine 25 --xAxisOverride [GeV] --outputName "+out+"h1D_nm1_isolatedNoiseSumEt.pdf");
 
     dataMCplotMaker(null, h1D_trig_pfMet_vec,  titlesTrig, "", "", common+"  --overrideHeader pfMet (after filters) --xAxisOverride [GeV] --outputName "+out+"h1D_trig_pfMet.pdf");
 
@@ -761,10 +836,39 @@ int ScanChain( TChain* chain) {
     drawHist2D(h2D_pfclusters_etaphi,out+"h2D_pfclusters_etaphi.pdf","--logscale --title pfclusters --xlabel  #eta --ylabel #phi");
     drawHist2D(h2D_calojets_etaphi,out+"h2D_calojets_etaphi.pdf","--logscale --title calojets --xlabel  #eta --ylabel #phi");
 
+    TH2F *h2D_towers_etaphi_em_avg = (TH2F*)h2D_towers_etaphi_em->Clone();
+    TH2F *h2D_towers_etaphi_had_avg = (TH2F*)h2D_towers_etaphi_had->Clone();
+    h2D_towers_etaphi_em_avg->Divide(h2D_towers_etaphi);
+    h2D_towers_etaphi_had_avg->Divide(h2D_towers_etaphi);
+
+    h2D_towers_etaphi_em->Divide(h2D_towers_etaphi);
+    h2D_towers_etaphi_had->Divide(h2D_towers_etaphi);
+
+    drawHist2D(h2D_towers_etaphi_em,out+"h2D_towers_etaphi_em_avg.pdf","--logscale --title towers (EM weighted,avg per bin) --xlabel  #eta --ylabel #phi");
+    drawHist2D(h2D_towers_etaphi_had,out+"h2D_towers_etaphi_had_avg.pdf","--logscale --title towers (HCAL weighted,avg per bin) --xlabel  #eta --ylabel #phi");
+
+    h1D_trig_pfMet_clean->Divide(h1D_trig_pfMet);
+
+    singlePlotMaker(h1D_trig_pfMet_clean, "",common+" --overrideHeader clean/normal --outputName "+out+"h1D_trig_pfMet_clean_ratio.pdf");
+
+    singlePlotMaker(h1D_towers_phi, "",common+" --overrideHeader towers phi occupancy --outputName "+out+"h1D_towers_phi.pdf");
+    singlePlotMaker(h1D_towers_phi_em, "",common+" --overrideHeader towers phi occupancy (ECAL weighted) --outputName "+out+"h1D_towers_phi_em.pdf");
+    singlePlotMaker(h1D_towers_phi_had, "",common+" --overrideHeader towers phi occupancy (HCAL weighted)--outputName "+out+"h1D_towers_phi_had.pdf");
+    singlePlotMaker(h1D_towers_phi_outer, "",common+" --overrideHeader towers phi occupancy (HO weighted) --outputName "+out+"h1D_towers_phi_outer.pdf");
+
+    h1D_towers_phi_em->Divide(h1D_towers_phi);
+    h1D_towers_phi_had->Divide(h1D_towers_phi);
+
+    singlePlotMaker(h1D_towers_phi_em, "",common+" --histoErrors --overrideHeader towers phi occupancy (ECAL weighted,avg per bin) --outputName "+out+"h1D_towers_phi_em_avg.pdf");
+    singlePlotMaker(h1D_towers_phi_had, "",common+" --histoErrors --overrideHeader towers phi occupancy (HCAL weighted,avg per bin)--outputName "+out+"h1D_towers_phi_had_avg.pdf");
+
     std::string runBinLabels = "";
     for(int i = 0; i < binToRunMap.size(); i++) {
             runBinLabels += to_string(binToRunMap[i]) + ",";
     }
+    // h1D_effbyrun_vec.at(0)->GetXaxis()->SetLimits(0,25);
+    // h1D_effbyrun_vec.at(1)->GetXaxis()->SetLimits(0,25);
+    // std::cout << " h1D_effbyrun_vec.at(0)->GetXaxis()->GetXmax(): " << h1D_effbyrun_vec.at(0)->GetXaxis()->GetXmax() << " h1D_effbyrun_vec.at(1)->GetXaxis()->GetXmax(): " << h1D_effbyrun_vec.at(1)->GetXaxis()->GetXmax() << std::endl;
     dataMCplotMaker(null, h1D_effbyrun_vec, titlesOnesFilt, "", "", common+" --overrideHeader filter efficiency by run  --xAxisVerticalBinLabels --xAxisBinLabels "+runBinLabels+" --outputName "+out+"h1D_effbyrun.pdf");
 
     std::string binLabels = "EBp,EBm,EEp,EEm,_,HBHEa,HBHEb,HBHEc,HF,HO,_,_,RPC,DT0,DTp,DTm,CSCp,CSCm,_,_,CASTOR,_,ZDC,_,TIBTID,TOB,TECp,TECm,BPIX,FPIX,ESp,ESm";
