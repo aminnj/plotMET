@@ -390,8 +390,8 @@ int ScanChain( TChain* chain) {
     TH1F* h1D_pfclusters_phi = new TH1F("h2D_pfclusters_phi","",      30 ,-3.15,3.15);
     TH1F* h1D_calojets_phi = new TH1F("h2D_calojets_phi","",          30 ,-3.15,3.15);
 
-    // TH1F* h1D_caloMetNew = new TH1F("h1D_caloMetNew", "", metBins, lowerMet, upperMet);
-    // TH1F* h1D_caloMetPhiNew = new TH1F("h1D_caloMetPhiNew","",       100,-3.14,3.14 );
+    TH1F* h1D_caloMetNew = new TH1F("h1D_caloMetNew", "", metBins, lowerMet, upperMet);
+    TH1F* h1D_caloMetPhiNew = new TH1F("h1D_caloMetPhiNew","",       100,-3.14,3.14 );
 
 
     const char* json_file = "Run2015BGoldenPlus.txt";
@@ -421,7 +421,7 @@ int ScanChain( TChain* chain) {
         tree->SetCacheSize(128*1024*1024);
         cms3.Init(tree);
 
-        bool fast = false;
+        bool fast = true;
         int iCut = 0;
 
         // Loop over Events in current file
@@ -752,6 +752,11 @@ int ScanChain( TChain* chain) {
 
 
             // At this point, we've passed all the filters
+            // and are now in the region of interest
+
+            if(pfMet > 500) {
+                std::cout << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event() << " pfCaloMet: " << pfCaloMet << " pfMet: " << pfMet << " pfChMet: " << pfChMet << " caloMet: " << caloMet << " pfClusterMet: " << pfClusterMet << std::endl;
+            }
 
         }
 

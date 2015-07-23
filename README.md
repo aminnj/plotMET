@@ -1,18 +1,10 @@
-# plotMET
-plotting stuff for MET study
+### plotMET
+# plotting stuff for MET study
 
-# check out CORE:
-git clone -b cmssw74x git@github.com:cmstas/CORE.git
+install using
+. install.sh
 
-# check out software:
-git clone git@github.com:cmstas/Software.git
-
-# check out tools:
-git clone https://github.com/cmstas/Tools.git
-
-# make CORE:
-cd CORE/ && cmsenv && make -j10
-
-# modify scanner/all.sh
-cd scanner/
+then you can go into the "scanner" directory and run
 . all.sh
+after modifying doAll.C to have the sample you would like to scan
+and/or modifying ScanChain.C with whatever printouts/cuts you would like
