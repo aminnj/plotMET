@@ -13,8 +13,8 @@
 #include "TROOT.h"
 #include "TCanvas.h"
 #include "TH2.h"
-#include "utils.C"
 
+#include "utils.C"
 #include "CMS3.cc"
 #include "dataMCplotMaker.h"
 #include "../Tools/goodrun.cc"
@@ -68,6 +68,7 @@ bool hbheNoiseFilter() {
     if(hcalnoise_isolatedNoiseSumEt()>=25.0) return false;
     return true;
 }
+
 bool passesLoosePFJetID(int pfJetIdx) {
     float pfjet_chf_  = pfjets_chargedHadronE()[pfJetIdx] / (pfjets_undoJEC().at(pfJetIdx)*pfjets_p4()[pfJetIdx].energy());
     float pfjet_nhf_  = pfjets_neutralHadronE()[pfJetIdx] / (pfjets_undoJEC().at(pfJetIdx)*pfjets_p4()[pfJetIdx].energy());
@@ -75,9 +76,6 @@ bool passesLoosePFJetID(int pfJetIdx) {
     float pfjet_nef_  = pfjets_neutralEmE()[pfJetIdx] / (pfjets_undoJEC().at(pfJetIdx)*pfjets_p4()[pfJetIdx].energy());
     int   pfjet_cm_  = pfjets_chargedMultiplicity()[pfJetIdx];
     float pfjet_eta  = fabs(pfjets_p4()[pfJetIdx].eta());
-
-    // std::cout << " pfjet_chf_: " << pfjet_chf_ << " pfjet_nhf_: " << pfjet_nhf_ << " pfjet_cef_: " << pfjet_cef_ << " pfjet_nef_: " << pfjet_nef_ << std::endl;
-    // std::cout << pfjet_eta << std::endl;
 
     if (pfjets_pfcandIndicies()[pfJetIdx].size() < 2) return false;
     if (pfjet_nef_ >= 0.99) return false;
@@ -95,6 +93,7 @@ bool passesLoosePFJetID(int pfJetIdx) {
 int ScanChain( TChain* chain) {
     ofstream runLumiOutput;
     ofstream debug;
+    TFile f("histos.root", "new");
     runLumiOutput.open("runLumiOutput.txt");
     debug.open("debug.txt");
     initCounter();
@@ -124,7 +123,7 @@ int ScanChain( TChain* chain) {
     TH2F* h2D_jetPt_caloMet = new TH2F("h2D_jetPt_caloMet","", metBins,lowerMet,upperMet, metBins,lowerMet,upperMet);
 
     // eta-phi of towers, pfclusters, and calojets
-    float maxEta = 2.8;
+    float maxEta = 4.5;
     TH2F* h2D_towers_etaphi = new TH2F("h2D_towers_etaphi","",             50 ,-maxEta,maxEta, 50 ,-3.15,3.15);
     TH2F* h2D_towers_etaphi_em = new TH2F("h2D_towers_etaphi_em","",       50 ,-maxEta,maxEta, 50 ,-3.15,3.15);
     TH2F* h2D_towers_etaphi_had = new TH2F("h2D_towers_etaphi_had","",     50 ,-maxEta,maxEta, 50 ,-3.15,3.15);
@@ -383,13 +382,16 @@ int ScanChain( TChain* chain) {
     h1D_trig_pfMet_vec.push_back(h1D_trig_pfMet_clean);
     h1D_trig_pfMet_vec.push_back(h1D_trig_pfMet_both);
 
-    // projected 2D plots
+    // single plots
     TH1F* h1D_towers_phi = new TH1F("h2D_towers_phi","",              30 ,-3.15,3.15);
     TH1F* h1D_towers_phi_em = new TH1F("h2D_towers_phi_em","",        30 ,-3.15,3.15);
     TH1F* h1D_towers_phi_had = new TH1F("h2D_towers_phi_had","",      30 ,-3.15,3.15);
     TH1F* h1D_towers_phi_outer = new TH1F("h2D_towers_phi_outer","",  30 ,-3.15,3.15);
     TH1F* h1D_pfclusters_phi = new TH1F("h2D_pfclusters_phi","",      30 ,-3.15,3.15);
     TH1F* h1D_calojets_phi = new TH1F("h2D_calojets_phi","",          30 ,-3.15,3.15);
+
+    // TH1F* h1D_caloMetNew = new TH1F("h1D_caloMetNew", "", metBins, lowerMet, upperMet);
+    // TH1F* h1D_caloMetPhiNew = new TH1F("h1D_caloMetPhiNew","",       100,-3.14,3.14 );
 
 
     const char* json_file = "Run2015BGoldenPlus.txt";
@@ -410,7 +412,6 @@ int ScanChain( TChain* chain) {
     int prevRun = -1; int prevLumi = -1;
     while ( (currentFile = (TFile*)fileIter.Next()) ) {
 
-        // if(nEventsFiltered>400000) break;
         std::cout << nEventsFiltered << " " << currentFile->GetTitle() << std::endl;
 
         // Get File Content
@@ -429,11 +430,6 @@ int ScanChain( TChain* chain) {
 
         for( unsigned int event = 0; event < nEventsTree; ++event) {
 
-            //before loading next event, print out where last event failed cutflow
-            // if iCut is 2 then we failed the evt_trackingFailureFilter (i.e., iCut = n means
-            // we failed the filter labeled by n+1 in the cutflow printout)
-            // debug << iCut << " " << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event() << "\n";
-
             // Get Event Content
             if( nEventsTotal >= nEventsChain ) continue;
             tree->LoadTree(event);
@@ -451,6 +447,8 @@ int ScanChain( TChain* chain) {
             float pfChMet = pfChMet_met();
             float pfChMetPhi = pfChMet_metPhi();
 
+            // float caloMet = evt_met();
+            // float caloMetPhi = evt_metPhi();
             float caloMet = evt_metMuonCorr();
             float caloMetPhi = evt_metMuonCorrPhi();
 
@@ -461,10 +459,6 @@ int ScanChain( TChain* chain) {
 
             // use golden json file 
             if ( evt_isRealData() && !goodrun(evt_run(), evt_lumiBlock()) ) continue;
-
-            // if( evt_run() != 251251 ) continue;
-            // if( evt_run() != 251252 ) continue;
-            // if( evt_run() != 251244 ) continue;
 
 
             h1D_pfCaloMet->Fill(pfCaloMet);
@@ -522,11 +516,17 @@ int ScanChain( TChain* chain) {
             }
 
             if( !fast ) {
+                float caloMetNewX = 0;
+                float caloMetNewY = 0;
                 for(int i = 0; i < twrs_eta().size(); i++) {
-                    // float twrEta = twrs_eta().at(i);
-                    // float twrPhi = twrs_phi().at(i);
+
                     float twrEta = twrs_etacorr().at(i);
                     float twrPhi = twrs_phicorr().at(i);
+                    if(twrs_emEtcorr().at(i) + twrs_hadEtcorr().at(i) > 0.3) {
+                        caloMetNewX -= (twrs_hadEtcorr().at(i) + twrs_emEtcorr().at(i))*cos(twrPhi);
+                        caloMetNewY -= (twrs_hadEtcorr().at(i) + twrs_emEtcorr().at(i))*sin(twrPhi);
+                    }
+                    
                     h2D_towers_etaphi->Fill(twrEta, twrPhi);
                     h2D_towers_etaphi_em->Fill(twrEta, twrPhi, twrs_emEnergy().at(i));
                     h2D_towers_etaphi_had->Fill(twrEta, twrPhi, twrs_hadEnergy().at(i));
@@ -536,6 +536,7 @@ int ScanChain( TChain* chain) {
                     h1D_towers_phi_em->Fill(twrPhi, twrs_emEnergy().at(i));
                     h1D_towers_phi_had->Fill(twrPhi, twrs_hadEnergy().at(i));
                     h1D_towers_phi_outer->Fill(twrPhi, twrs_outerEnergy().at(i));
+
                 }   
 
                 for(int i = 0; i < pfcluster_eta().size(); i++) {
@@ -546,6 +547,11 @@ int ScanChain( TChain* chain) {
                     h2D_calojets_etaphi->Fill(calojets_eta().at(i), calojets_phi().at(i));
                     h1D_calojets_phi->Fill(calojets_phi().at(i));
                 }
+
+                float caloMetNew = sqrt(caloMetNewX*caloMetNewX + caloMetNewY*caloMetNewY);
+                float caloMetPhiNew = atan2(caloMetNewY,caloMetNewX);
+                h1D_caloMetNew->Fill(caloMetNew);
+                h1D_caloMetPhiNew->Fill(caloMetPhiNew);
 
             }
 
@@ -690,7 +696,6 @@ int ScanChain( TChain* chain) {
             bool passJetID = true;
             for(int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
                 if(pfjets_p4().at(iJet).pt() > 100) {
-                // cout << pfjets_p4().at(iJet).pt() << endl;
                     if(!passesLoosePFJetID(iJet)) {
                         passJetID = false;
                         break;
@@ -737,10 +742,6 @@ int ScanChain( TChain* chain) {
                 prevLumi = evt_lumiBlock();
             }
 
-            // if(std::find(hlt_trigNames().begin(), hlt_trigNames().end(), "HLT_PFMET170_v1")!=hlt_trigNames().end() &&
-            //    std::find(hlt_trigNames().begin(), hlt_trigNames().end(), "HLT_PFMET170_NoiseCleaned_v2")!=hlt_trigNames().end() ) {
-            // }
-                
             if( passHLTTrigger("HLT_PFMET170_v1") ) h1D_trig_pfMet->Fill(pfMet);
             if( passHLTTrigger("HLT_PFMET170_NoiseCleaned_v2") ) h1D_trig_pfMet_clean->Fill(pfMet);
             if( passHLTTrigger("HLT_PFMET170_v1") && passHLTTrigger("HLT_PFMET170_NoiseCleaned_v2") ) h1D_trig_pfMet_both->Fill(pfMet);
@@ -749,12 +750,8 @@ int ScanChain( TChain* chain) {
             h1D_maxZeros_filt->Fill(hcalnoise_maxZeros());
             h1D_effbyrun_filt->Fill(runToBinMap[evt_run()]);
 
-            // also, if we're at this point, we want to check out the events in more detail
-            // if(  (caloMet > 350 || pfMet > 350) ||
-            //      (caloMet > 250 && pfMet < 60) ) {
-            //     std::cout << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event()
-            //               << " caloMet: " << caloMet << " pfMet: " << pfMet << " pfCaloMet: " << pfCaloMet << " pfChMet: " << pfChMet << " pfClusterMet: " << pfClusterMet << std::endl;
-            // }
+
+            // At this point, we've passed all the filters
 
         }
 
@@ -791,7 +788,7 @@ int ScanChain( TChain* chain) {
     dataMCplotMaker(null, h1D_pfChMet_filters_vec, titlesFilters, "", "", common+" --overrideHeader pfChMet (cumulative filters) --outputName "+out+"h1D_pfChMet_filters.pdf");
     dataMCplotMaker(null, h1D_pfCaloMet_filters_vec, titlesFilters, "", "", common+" --overrideHeader pfCaloMet (cumulative filters) --outputName "+out+"h1D_pfCaloMet_filters.pdf");
 
-    dataMCplotMaker(null, h1D_caloMetPhi_filters_vec, titlesFilters, "", "", common+" --isLinear --overrideHeader caloMetPhi (cumulative filters) --outputName "+out+"h1D_caloMetPhi_filters.pdf");
+    dataMCplotMaker(null, h1D_caloMetPhi_filters_vec, titlesFilters, "", "", common+" --setMaximum 5000 --isLinear --overrideHeader caloMetPhi (cumulative filters) --outputName "+out+"h1D_caloMetPhi_filters.pdf");
     dataMCplotMaker(null, h1D_pfMetPhi_filters_vec, titlesFilters, "", "", common+" --isLinear --overrideHeader pfMetPhi (cumulative filters) --outputName "+out+"h1D_pfMetPhi_filters.pdf");
 
     dataMCplotMaker(null, h1D_jetCaloMetPhi_filters_vec, titlesFilters, "", "", common+"  --overrideHeader #Delta#phi(j,caloMet) (cumulative filters) --xAxisOverride #phi --outputName "+out+"h1D_jetCaloMetPhi_filters.pdf");
@@ -853,26 +850,29 @@ int ScanChain( TChain* chain) {
 
     singlePlotMaker(h1D_towers_phi, "",common+" --overrideHeader towers phi occupancy --outputName "+out+"h1D_towers_phi.pdf");
     singlePlotMaker(h1D_towers_phi_em, "",common+" --overrideHeader towers phi occupancy (ECAL weighted) --outputName "+out+"h1D_towers_phi_em.pdf");
-    singlePlotMaker(h1D_towers_phi_had, "",common+" --overrideHeader towers phi occupancy (HCAL weighted)--outputName "+out+"h1D_towers_phi_had.pdf");
+    singlePlotMaker(h1D_towers_phi_had, "",common+" --overrideHeader towers phi occupancy (HCAL weighted) --outputName "+out+"h1D_towers_phi_had.pdf");
     singlePlotMaker(h1D_towers_phi_outer, "",common+" --overrideHeader towers phi occupancy (HO weighted) --outputName "+out+"h1D_towers_phi_outer.pdf");
 
     h1D_towers_phi_em->Divide(h1D_towers_phi);
     h1D_towers_phi_had->Divide(h1D_towers_phi);
 
-    singlePlotMaker(h1D_towers_phi_em, "",common+" --histoErrors --overrideHeader towers phi occupancy (ECAL weighted,avg per bin) --outputName "+out+"h1D_towers_phi_em_avg.pdf");
-    singlePlotMaker(h1D_towers_phi_had, "",common+" --histoErrors --overrideHeader towers phi occupancy (HCAL weighted,avg per bin)--outputName "+out+"h1D_towers_phi_had_avg.pdf");
+    singlePlotMaker(h1D_towers_phi_em, "",common+" --histoErrors --overrideHeader towers phi occupancy (ECAL weighted, avg per bin) --outputName "+out+"h1D_towers_phi_em_avg.pdf");
+    singlePlotMaker(h1D_towers_phi_had, "",common+" --histoErrors --overrideHeader towers phi occupancy (HCAL weighted, avg per bin) --outputName "+out+"h1D_towers_phi_had_avg.pdf");
+
+    // singlePlotMaker(h1D_caloMetNew, "",common+" --overrideHeader caloMet tower eta-phi corrected --outputName "+out+"h1D_caloMetNew.pdf");
+    // singlePlotMaker(h1D_caloMetPhiNew, "",common+" --isLinear --overrideHeader caloMetPhi tower eta-phi corrected --outputName "+out+"h1D_caloMetPhiNew.pdf");
 
     std::string runBinLabels = "";
     for(int i = 0; i < binToRunMap.size(); i++) {
             runBinLabels += to_string(binToRunMap[i]) + ",";
     }
-    // h1D_effbyrun_vec.at(0)->GetXaxis()->SetLimits(0,25);
-    // h1D_effbyrun_vec.at(1)->GetXaxis()->SetLimits(0,25);
-    // std::cout << " h1D_effbyrun_vec.at(0)->GetXaxis()->GetXmax(): " << h1D_effbyrun_vec.at(0)->GetXaxis()->GetXmax() << " h1D_effbyrun_vec.at(1)->GetXaxis()->GetXmax(): " << h1D_effbyrun_vec.at(1)->GetXaxis()->GetXmax() << std::endl;
     dataMCplotMaker(null, h1D_effbyrun_vec, titlesOnesFilt, "", "", common+" --overrideHeader filter efficiency by run  --xAxisVerticalBinLabels --xAxisBinLabels "+runBinLabels+" --outputName "+out+"h1D_effbyrun.pdf");
 
     std::string binLabels = "EBp,EBm,EEp,EEm,_,HBHEa,HBHEb,HBHEc,HF,HO,_,_,RPC,DT0,DTp,DTm,CSCp,CSCm,_,_,CASTOR,_,ZDC,_,TIBTID,TOB,TECp,TECm,BPIX,FPIX,ESp,ESm";
     dataMCplotMaker(null, h1D_detectorStatus_vec, titlesDCS, "", "", common+"  --overrideHeader DCS bits --nDivisions 216 --xAxisVerticalBinLabels --xAxisBinLabels "+binLabels+" --outputName "+out+"h1D_detectorStatus.pdf");
+
+
+    f.Write();
 
     return 0;
 }
