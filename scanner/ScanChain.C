@@ -449,12 +449,12 @@ int ScanChain( TChain* chain) {
     std::vector<TH1F*> h1D_hcalnoise_passTightNoiseFilter_vec;
 
     std::vector<TH1F*> h1D_twrs_numBadEcalCells_vec;
-	std::vector<TH1F*> h1D_twrs_numRecoveredEcalCells_vec;
-	std::vector<TH1F*> h1D_twrs_numProblematicEcalCells_vec;
-	std::vector<TH1F*> h1D_twrs_numBadHcalCells_vec;
-	std::vector<TH1F*> h1D_twrs_numRecoveredHcalCells_vec;
-	std::vector<TH1F*> h1D_twrs_numProblematicHcalCells_vec;
-	std::vector<TH1F*> h1D_twrs_numCrystals_vec;
+    std::vector<TH1F*> h1D_twrs_numRecoveredEcalCells_vec;
+    std::vector<TH1F*> h1D_twrs_numProblematicEcalCells_vec;
+    std::vector<TH1F*> h1D_twrs_numBadHcalCells_vec;
+    std::vector<TH1F*> h1D_twrs_numRecoveredHcalCells_vec;
+    std::vector<TH1F*> h1D_twrs_numProblematicHcalCells_vec;
+    std::vector<TH1F*> h1D_twrs_numCrystals_vec;
 
     // _jet means it doesn't pass jet id
     TH1F *h1D_hcalnoise_HasBadRBXTS4TS5 = new TH1F("h1D_hcalnoise_HasBadRBXTS4TS5","", 2,0,2);
@@ -509,20 +509,20 @@ int ScanChain( TChain* chain) {
     TH1F *h1D_hcalnoise_flatNoiseSumEt_jet = new TH1F("h1D_hcalnoise_flatNoiseSumEt_jet","", 100,0,20);
     h1D_hcalnoise_flatNoiseSumEt_vec.push_back(h1D_hcalnoise_flatNoiseSumEt);
     h1D_hcalnoise_flatNoiseSumEt_vec.push_back(h1D_hcalnoise_flatNoiseSumEt_jet);
-    TH1F *h1D_hcalnoise_isolatedNoiseSumE = new TH1F("h1D_hcalnoise_isolatedNoiseSumE","", 100,0,1000);
-    TH1F *h1D_hcalnoise_isolatedNoiseSumE_jet = new TH1F("h1D_hcalnoise_isolatedNoiseSumE_jet","", 100,0,1000);
+    TH1F *h1D_hcalnoise_isolatedNoiseSumE = new TH1F("h1D_hcalnoise_isolatedNoiseSumE","", 100,0,200);
+    TH1F *h1D_hcalnoise_isolatedNoiseSumE_jet = new TH1F("h1D_hcalnoise_isolatedNoiseSumE_jet","", 100,0,200);
     h1D_hcalnoise_isolatedNoiseSumE_vec.push_back(h1D_hcalnoise_isolatedNoiseSumE);
     h1D_hcalnoise_isolatedNoiseSumE_vec.push_back(h1D_hcalnoise_isolatedNoiseSumE_jet);
-    TH1F *h1D_hcalnoise_isolatedNoiseSumEt = new TH1F("h1D_hcalnoise_isolatedNoiseSumEt","", 100,0,1000);
-    TH1F *h1D_hcalnoise_isolatedNoiseSumEt_jet = new TH1F("h1D_hcalnoise_isolatedNoiseSumEt_jet","", 100,0,1000);
+    TH1F *h1D_hcalnoise_isolatedNoiseSumEt = new TH1F("h1D_hcalnoise_isolatedNoiseSumEt","", 100,0,200);
+    TH1F *h1D_hcalnoise_isolatedNoiseSumEt_jet = new TH1F("h1D_hcalnoise_isolatedNoiseSumEt_jet","", 100,0,200);
     h1D_hcalnoise_isolatedNoiseSumEt_vec.push_back(h1D_hcalnoise_isolatedNoiseSumEt);
     h1D_hcalnoise_isolatedNoiseSumEt_vec.push_back(h1D_hcalnoise_isolatedNoiseSumEt_jet);
-    TH1F *h1D_hcalnoise_max10GeVHitTime = new TH1F("h1D_hcalnoise_max10GeVHitTime","", 100,-1,100);
-    TH1F *h1D_hcalnoise_max10GeVHitTime_jet = new TH1F("h1D_hcalnoise_max10GeVHitTime_jet","", 100,-1,100);
+    TH1F *h1D_hcalnoise_max10GeVHitTime = new TH1F("h1D_hcalnoise_max10GeVHitTime","", 100,-1,20);
+    TH1F *h1D_hcalnoise_max10GeVHitTime_jet = new TH1F("h1D_hcalnoise_max10GeVHitTime_jet","", 100,-1,20);
     h1D_hcalnoise_max10GeVHitTime_vec.push_back(h1D_hcalnoise_max10GeVHitTime);
     h1D_hcalnoise_max10GeVHitTime_vec.push_back(h1D_hcalnoise_max10GeVHitTime_jet);
-    TH1F *h1D_hcalnoise_max25GeVHitTime = new TH1F("h1D_hcalnoise_max25GeVHitTime","", 100,-1,100);
-    TH1F *h1D_hcalnoise_max25GeVHitTime_jet = new TH1F("h1D_hcalnoise_max25GeVHitTime_jet","", 100,-1,100);
+    TH1F *h1D_hcalnoise_max25GeVHitTime = new TH1F("h1D_hcalnoise_max25GeVHitTime","", 100,-1,20);
+    TH1F *h1D_hcalnoise_max25GeVHitTime_jet = new TH1F("h1D_hcalnoise_max25GeVHitTime_jet","", 100,-1,20);
     h1D_hcalnoise_max25GeVHitTime_vec.push_back(h1D_hcalnoise_max25GeVHitTime);
     h1D_hcalnoise_max25GeVHitTime_vec.push_back(h1D_hcalnoise_max25GeVHitTime_jet);
     TH1F *h1D_hcalnoise_maxE10TS = new TH1F("h1D_hcalnoise_maxE10TS","", 100,0,5000);
@@ -537,12 +537,12 @@ int ScanChain( TChain* chain) {
     TH1F *h1D_hcalnoise_maxE2TS_jet = new TH1F("h1D_hcalnoise_maxE2TS_jet","", 100,0,5000);
     h1D_hcalnoise_maxE2TS_vec.push_back(h1D_hcalnoise_maxE2TS);
     h1D_hcalnoise_maxE2TS_vec.push_back(h1D_hcalnoise_maxE2TS_jet);
-    TH1F *h1D_hcalnoise_min10GeVHitTime = new TH1F("h1D_hcalnoise_min10GeVHitTime","", 100,-1,110000);
-    TH1F *h1D_hcalnoise_min10GeVHitTime_jet = new TH1F("h1D_hcalnoise_min10GeVHitTime_jet","", 100,-1,110000);
+    TH1F *h1D_hcalnoise_min10GeVHitTime = new TH1F("h1D_hcalnoise_min10GeVHitTime","", 100,-1,20);
+    TH1F *h1D_hcalnoise_min10GeVHitTime_jet = new TH1F("h1D_hcalnoise_min10GeVHitTime_jet","", 100,-1,20);
     h1D_hcalnoise_min10GeVHitTime_vec.push_back(h1D_hcalnoise_min10GeVHitTime);
     h1D_hcalnoise_min10GeVHitTime_vec.push_back(h1D_hcalnoise_min10GeVHitTime_jet);
-    TH1F *h1D_hcalnoise_min25GeVHitTime = new TH1F("h1D_hcalnoise_min25GeVHitTime","", 100,-1,110000);
-    TH1F *h1D_hcalnoise_min25GeVHitTime_jet = new TH1F("h1D_hcalnoise_min25GeVHitTime_jet","", 100,-1,110000);
+    TH1F *h1D_hcalnoise_min25GeVHitTime = new TH1F("h1D_hcalnoise_min25GeVHitTime","", 100,-1,20);
+    TH1F *h1D_hcalnoise_min25GeVHitTime_jet = new TH1F("h1D_hcalnoise_min25GeVHitTime_jet","", 100,-1,20);
     h1D_hcalnoise_min25GeVHitTime_vec.push_back(h1D_hcalnoise_min25GeVHitTime);
     h1D_hcalnoise_min25GeVHitTime_vec.push_back(h1D_hcalnoise_min25GeVHitTime_jet);
     TH1F *h1D_hcalnoise_minE10TS = new TH1F("h1D_hcalnoise_minE10TS","", 100,0,5000);
@@ -557,12 +557,12 @@ int ScanChain( TChain* chain) {
     TH1F *h1D_hcalnoise_minE2TS_jet = new TH1F("h1D_hcalnoise_minE2TS_jet","", 100,0,5000);
     h1D_hcalnoise_minE2TS_vec.push_back(h1D_hcalnoise_minE2TS);
     h1D_hcalnoise_minE2TS_vec.push_back(h1D_hcalnoise_minE2TS_jet);
-    TH1F *h1D_hcalnoise_minHPDEMF = new TH1F("h1D_hcalnoise_minHPDEMF","", 100,0,1.08e+06);
-    TH1F *h1D_hcalnoise_minHPDEMF_jet = new TH1F("h1D_hcalnoise_minHPDEMF_jet","", 100,0,1.08e+06);
+    TH1F *h1D_hcalnoise_minHPDEMF = new TH1F("h1D_hcalnoise_minHPDEMF","", 100,0,1.1);
+    TH1F *h1D_hcalnoise_minHPDEMF_jet = new TH1F("h1D_hcalnoise_minHPDEMF_jet","", 100,0,1.1);
     h1D_hcalnoise_minHPDEMF_vec.push_back(h1D_hcalnoise_minHPDEMF);
     h1D_hcalnoise_minHPDEMF_vec.push_back(h1D_hcalnoise_minHPDEMF_jet);
-    TH1F *h1D_hcalnoise_minRBXEMF = new TH1F("h1D_hcalnoise_minRBXEMF","", 100,0,1.1e+06);
-    TH1F *h1D_hcalnoise_minRBXEMF_jet = new TH1F("h1D_hcalnoise_minRBXEMF_jet","", 100,0,1.1e+06);
+    TH1F *h1D_hcalnoise_minRBXEMF = new TH1F("h1D_hcalnoise_minRBXEMF","", 100,0,1.1);
+    TH1F *h1D_hcalnoise_minRBXEMF_jet = new TH1F("h1D_hcalnoise_minRBXEMF_jet","", 100,0,1.1);
     h1D_hcalnoise_minRBXEMF_vec.push_back(h1D_hcalnoise_minRBXEMF);
     h1D_hcalnoise_minRBXEMF_vec.push_back(h1D_hcalnoise_minRBXEMF_jet);
     TH1F *h1D_hcalnoise_rms10GeVHitTime = new TH1F("h1D_hcalnoise_rms10GeVHitTime","", 100,0,1080);
@@ -613,8 +613,8 @@ int ScanChain( TChain* chain) {
     TH1F *h1D_hcalnoise_maxRBXHits_jet = new TH1F("h1D_hcalnoise_maxRBXHits_jet","", 76,0,76);
     h1D_hcalnoise_maxRBXHits_vec.push_back(h1D_hcalnoise_maxRBXHits);
     h1D_hcalnoise_maxRBXHits_vec.push_back(h1D_hcalnoise_maxRBXHits_jet);
-    TH1F *h1D_hcalnoise_maxZeros = new TH1F("h1D_hcalnoise_maxZeros","", 189,0,189);
-    TH1F *h1D_hcalnoise_maxZeros_jet = new TH1F("h1D_hcalnoise_maxZeros_jet","", 189,0,189);
+    TH1F *h1D_hcalnoise_maxZeros = new TH1F("h1D_hcalnoise_maxZeros","", 40,0,40);
+    TH1F *h1D_hcalnoise_maxZeros_jet = new TH1F("h1D_hcalnoise_maxZeros_jet","", 40,0,40);
     h1D_hcalnoise_maxZeros_vec.push_back(h1D_hcalnoise_maxZeros);
     h1D_hcalnoise_maxZeros_vec.push_back(h1D_hcalnoise_maxZeros_jet);
     TH1F *h1D_hcalnoise_noiseFilterStatus = new TH1F("h1D_hcalnoise_noiseFilterStatus","", 101,0,72720);
@@ -637,8 +637,8 @@ int ScanChain( TChain* chain) {
     TH1F *h1D_hcalnoise_numFlatNoiseChannels_jet = new TH1F("h1D_hcalnoise_numFlatNoiseChannels_jet","", 72,0,72);
     h1D_hcalnoise_numFlatNoiseChannels_vec.push_back(h1D_hcalnoise_numFlatNoiseChannels);
     h1D_hcalnoise_numFlatNoiseChannels_vec.push_back(h1D_hcalnoise_numFlatNoiseChannels_jet);
-    TH1F *h1D_hcalnoise_numIsolatedNoiseChannels = new TH1F("h1D_hcalnoise_numIsolatedNoiseChannels","", 75,0,75);
-    TH1F *h1D_hcalnoise_numIsolatedNoiseChannels_jet = new TH1F("h1D_hcalnoise_numIsolatedNoiseChannels_jet","", 75,0,75);
+    TH1F *h1D_hcalnoise_numIsolatedNoiseChannels = new TH1F("h1D_hcalnoise_numIsolatedNoiseChannels","", 30,0,30);
+    TH1F *h1D_hcalnoise_numIsolatedNoiseChannels_jet = new TH1F("h1D_hcalnoise_numIsolatedNoiseChannels_jet","", 30,0,30);
     h1D_hcalnoise_numIsolatedNoiseChannels_vec.push_back(h1D_hcalnoise_numIsolatedNoiseChannels);
     h1D_hcalnoise_numIsolatedNoiseChannels_vec.push_back(h1D_hcalnoise_numIsolatedNoiseChannels_jet);
     TH1F *h1D_hcalnoise_numProblematicRBXs = new TH1F("h1D_hcalnoise_numProblematicRBXs","", 4,70,74);
@@ -674,38 +674,48 @@ int ScanChain( TChain* chain) {
     TH1F *h1D_twrs_numBadEcalCells_jet = new TH1F("h1D_twrs_numBadEcalCells_jet","",100,0,30);
     h1D_twrs_numBadEcalCells_vec.push_back(h1D_twrs_numBadEcalCells);
     h1D_twrs_numBadEcalCells_vec.push_back(h1D_twrs_numBadEcalCells_jet);
-	TH1F *h1D_twrs_numRecoveredEcalCells = new TH1F("h1D_twrs_numRecoveredEcalCells","",100,0,30);
-	TH1F *h1D_twrs_numRecoveredEcalCells_jet = new TH1F("h1D_twrs_numRecoveredEcalCells_jet","",100,0,30);
-	h1D_twrs_numRecoveredEcalCells_vec.push_back(h1D_twrs_numRecoveredEcalCells);
-	h1D_twrs_numRecoveredEcalCells_vec.push_back(h1D_twrs_numRecoveredEcalCells_jet);
-	TH1F *h1D_twrs_numProblematicEcalCells = new TH1F("h1D_twrs_numProblematicEcalCells","",100,0,30);
-	TH1F *h1D_twrs_numProblematicEcalCells_jet = new TH1F("h1D_twrs_numProblematicEcalCells_jet","",100,0,30);
-	h1D_twrs_numProblematicEcalCells_vec.push_back(h1D_twrs_numProblematicEcalCells);
-	h1D_twrs_numProblematicEcalCells_vec.push_back(h1D_twrs_numProblematicEcalCells_jet);
-	TH1F *h1D_twrs_numBadHcalCells = new TH1F("h1D_twrs_numBadHcalCells","",100,0,30);
-	TH1F *h1D_twrs_numBadHcalCells_jet = new TH1F("h1D_twrs_numBadHcalCells_jet","",100,0,30);
-	h1D_twrs_numBadHcalCells_vec.push_back(h1D_twrs_numBadHcalCells);
-	h1D_twrs_numBadHcalCells_vec.push_back(h1D_twrs_numBadHcalCells_jet);
-	TH1F *h1D_twrs_numRecoveredHcalCells = new TH1F("h1D_twrs_numRecoveredHcalCells","",100,0,30);
-	TH1F *h1D_twrs_numRecoveredHcalCells_jet = new TH1F("h1D_twrs_numRecoveredHcalCells_jet","",100,0,30);
-	h1D_twrs_numRecoveredHcalCells_vec.push_back(h1D_twrs_numRecoveredHcalCells);
-	h1D_twrs_numRecoveredHcalCells_vec.push_back(h1D_twrs_numRecoveredHcalCells_jet);
-	TH1F *h1D_twrs_numProblematicHcalCells = new TH1F("h1D_twrs_numProblematicHcalCells","",100,0,30);
-	TH1F *h1D_twrs_numProblematicHcalCells_jet = new TH1F("h1D_twrs_numProblematicHcalCells_jet","",100,0,30);
-	h1D_twrs_numProblematicHcalCells_vec.push_back(h1D_twrs_numProblematicHcalCells);
-	h1D_twrs_numProblematicHcalCells_vec.push_back(h1D_twrs_numProblematicHcalCells_jet);
-	TH1F *h1D_twrs_numCrystals = new TH1F("h1D_twrs_numCrystals","",100,0,30);
-	TH1F *h1D_twrs_numCrystals_jet = new TH1F("h1D_twrs_numCrystals_jet","",100,0,30);
-	h1D_twrs_numCrystals_vec.push_back(h1D_twrs_numCrystals);
-	h1D_twrs_numCrystals_vec.push_back(h1D_twrs_numCrystals_jet);
+    TH1F *h1D_twrs_numRecoveredEcalCells = new TH1F("h1D_twrs_numRecoveredEcalCells","",100,0,30);
+    TH1F *h1D_twrs_numRecoveredEcalCells_jet = new TH1F("h1D_twrs_numRecoveredEcalCells_jet","",100,0,30);
+    h1D_twrs_numRecoveredEcalCells_vec.push_back(h1D_twrs_numRecoveredEcalCells);
+    h1D_twrs_numRecoveredEcalCells_vec.push_back(h1D_twrs_numRecoveredEcalCells_jet);
+    TH1F *h1D_twrs_numProblematicEcalCells = new TH1F("h1D_twrs_numProblematicEcalCells","",100,0,30);
+    TH1F *h1D_twrs_numProblematicEcalCells_jet = new TH1F("h1D_twrs_numProblematicEcalCells_jet","",100,0,30);
+    h1D_twrs_numProblematicEcalCells_vec.push_back(h1D_twrs_numProblematicEcalCells);
+    h1D_twrs_numProblematicEcalCells_vec.push_back(h1D_twrs_numProblematicEcalCells_jet);
+    TH1F *h1D_twrs_numBadHcalCells = new TH1F("h1D_twrs_numBadHcalCells","",100,0,30);
+    TH1F *h1D_twrs_numBadHcalCells_jet = new TH1F("h1D_twrs_numBadHcalCells_jet","",100,0,30);
+    h1D_twrs_numBadHcalCells_vec.push_back(h1D_twrs_numBadHcalCells);
+    h1D_twrs_numBadHcalCells_vec.push_back(h1D_twrs_numBadHcalCells_jet);
+    TH1F *h1D_twrs_numRecoveredHcalCells = new TH1F("h1D_twrs_numRecoveredHcalCells","",100,0,30);
+    TH1F *h1D_twrs_numRecoveredHcalCells_jet = new TH1F("h1D_twrs_numRecoveredHcalCells_jet","",100,0,30);
+    h1D_twrs_numRecoveredHcalCells_vec.push_back(h1D_twrs_numRecoveredHcalCells);
+    h1D_twrs_numRecoveredHcalCells_vec.push_back(h1D_twrs_numRecoveredHcalCells_jet);
+    TH1F *h1D_twrs_numProblematicHcalCells = new TH1F("h1D_twrs_numProblematicHcalCells","",100,0,30);
+    TH1F *h1D_twrs_numProblematicHcalCells_jet = new TH1F("h1D_twrs_numProblematicHcalCells_jet","",100,0,30);
+    h1D_twrs_numProblematicHcalCells_vec.push_back(h1D_twrs_numProblematicHcalCells);
+    h1D_twrs_numProblematicHcalCells_vec.push_back(h1D_twrs_numProblematicHcalCells_jet);
+    TH1F *h1D_twrs_numCrystals = new TH1F("h1D_twrs_numCrystals","",100,0,30);
+    TH1F *h1D_twrs_numCrystals_jet = new TH1F("h1D_twrs_numCrystals_jet","",100,0,30);
+    h1D_twrs_numCrystals_vec.push_back(h1D_twrs_numCrystals);
+    h1D_twrs_numCrystals_vec.push_back(h1D_twrs_numCrystals_jet);
 
     TH2F *h2D_twrs_numBadEcalCells = new TH2F("h2D_twrs_numBadEcalCells"                 , "" , 50, -maxEta,maxEta, 50, -3.15,3.15);
-	TH2F *h2D_twrs_numRecoveredEcalCells = new TH2F("h2D_twrs_numRecoveredEcalCells"     , "" , 50, -maxEta,maxEta, 50, -3.15,3.15);
-	TH2F *h2D_twrs_numProblematicEcalCells = new TH2F("h2D_twrs_numProblematicEcalCells" , "" , 50, -maxEta,maxEta, 50, -3.15,3.15);
-	TH2F *h2D_twrs_numBadHcalCells = new TH2F("h2D_twrs_numBadHcalCells"                 , "" , 50, -maxEta,maxEta, 50, -3.15,3.15);
-	TH2F *h2D_twrs_numRecoveredHcalCells = new TH2F("h2D_twrs_numRecoveredHcalCells"     , "" , 50, -maxEta,maxEta, 50, -3.15,3.15);
-	TH2F *h2D_twrs_numProblematicHcalCells = new TH2F("h2D_twrs_numProblematicHcalCells" , "" , 50, -maxEta,maxEta, 50, -3.15,3.15);
-	TH2F *h2D_twrs_numCrystals = new TH2F("h2D_twrs_numCrystals"                         , "" , 50, -maxEta,maxEta, 50, -3.15,3.15);
+    TH2F *h2D_twrs_numRecoveredEcalCells = new TH2F("h2D_twrs_numRecoveredEcalCells"     , "" , 50, -maxEta,maxEta, 50, -3.15,3.15);
+    TH2F *h2D_twrs_numProblematicEcalCells = new TH2F("h2D_twrs_numProblematicEcalCells" , "" , 50, -maxEta,maxEta, 50, -3.15,3.15);
+    TH2F *h2D_twrs_numBadHcalCells = new TH2F("h2D_twrs_numBadHcalCells"                 , "" , 50, -maxEta,maxEta, 50, -3.15,3.15);
+    TH2F *h2D_twrs_numRecoveredHcalCells = new TH2F("h2D_twrs_numRecoveredHcalCells"     , "" , 50, -maxEta,maxEta, 50, -3.15,3.15);
+    TH2F *h2D_twrs_numProblematicHcalCells = new TH2F("h2D_twrs_numProblematicHcalCells" , "" , 50, -maxEta,maxEta, 50, -3.15,3.15);
+    TH2F *h2D_twrs_numCrystals = new TH2F("h2D_twrs_numCrystals"                         , "" , 50, -maxEta,maxEta, 50, -3.15,3.15);
+
+    // max length of bad hcal cells
+    std::vector<std::string> titlesBadCells = {"match", "no match", "either"};
+    std::vector<TH1F*> h1D_lengthBadCells_vec;
+    TH1F *h1D_lengthBadCells_match = new TH1F("h1D_lengthBadCells_match","",30,0,30);
+    TH1F *h1D_lengthBadCells_nomatch = new TH1F("h1D_lengthBadCells_nomatch","",30,0,30);
+    TH1F *h1D_lengthBadCells_either = new TH1F("h1D_lengthBadCells_either","",30,0,30);
+    h1D_lengthBadCells_vec.push_back(h1D_lengthBadCells_match);
+    h1D_lengthBadCells_vec.push_back(h1D_lengthBadCells_nomatch);
+    h1D_lengthBadCells_vec.push_back(h1D_lengthBadCells_either);
 
 
     const char* json_file = "Run2015BGoldenPlus_v2.txt";
@@ -775,13 +785,75 @@ int ScanChain( TChain* chain) {
             if ( evt_isRealData() && !goodrun(evt_run(), evt_lumiBlock()) ) continue;
 
 
-            if ( evt_event() != 17498195 ) continue;
+            // if ( evt_event() != 17498195 ) continue;
             // if ( evt_trackingFailureFilter() && evt_cscTightHaloFilter() && hbheIsoNoiseFilter() && evt_EcalDeadCellTriggerPrimitiveFilter() && evt_eeBadScFilter() && hbheNoiseFilter() ) {
             //     // passed the filters
             // } else {
             //     debug << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event() << endl;
             //     // didn't pass
             // }
+
+            int maxIPhiHad = -1, maxIEtaHad = -1;
+            float maxHadEnergy = -1;
+            vector<int> badCellsPerPhiStrip(150,0); // there shouldn't be more than 150 iphi vals...
+            for(int i = 0; i < twrs_eta().size(); i++) {
+                float eta = twrs_etacorr().at(i);
+                float phi = twrs_phicorr().at(i);
+                int ieta = twrs_ieta().at(i);
+                int iphi = twrs_iphi().at(i);
+                int numProbHcalCells = twrs_numProblematicHcalCells().at(i);
+                if( abs(eta) > 3.0) continue; // don't deal with HF
+
+                if(twrs_hadEnergy().at(i) > maxHadEnergy) {
+                    maxIPhiHad = iphi;
+                    maxIEtaHad = ieta;
+                    maxHadEnergy = twrs_hadEnergy().at(i);
+                }
+                if(twrs_numProblematicHcalCells().at(i) > 0) {
+                    badCellsPerPhiStrip[iphi] += numProbHcalCells;
+                }
+            }
+
+            int maxIPhiBad = -1;
+            int maxBadCells = -1;
+            for(int iphi = 0; iphi < badCellsPerPhiStrip.size(); iphi++) {
+                if(badCellsPerPhiStrip[iphi] > maxBadCells) {
+                    maxBadCells = badCellsPerPhiStrip[iphi];
+                    maxIPhiBad = iphi;
+                }
+            }
+
+            // at this point, if maxIPhiBad != maxIPhiHad, then it's not a phi strip event
+            vector<int> badCellsAlongWorstPhiStrip(150,0); // there shouldn't be more than 150 ieta vals...
+            for(int i = 0; i < twrs_eta().size(); i++) {
+                int ieta = twrs_ieta().at(i);
+                int iphi = twrs_iphi().at(i);
+                if( abs(twrs_etacorr().at(i)) > 3.0) continue; // don't deal with HF
+                if( iphi != maxIPhiBad ) continue;
+
+
+                int numProbHcalCells = twrs_numProblematicHcalCells().at(i);
+
+                if(ieta > 0) ieta--; //ieta is never 0, so there will be a gap between negative ieta and positive ieta
+                badCellsAlongWorstPhiStrip.at(ieta+50) = numProbHcalCells;
+
+            }
+            // find length of longest contiguous segment of bad cells along the worst phi strip
+            int maxLengthBad = 0, maxEndingHere = 0;
+            for(int ieta = 0; ieta < badCellsAlongWorstPhiStrip.size(); ieta++) {
+                maxEndingHere += badCellsAlongWorstPhiStrip.at(ieta);
+                if(maxLengthBad < maxEndingHere) maxLengthBad = maxEndingHere;
+            }
+            // maxIPhiBad maxIPhiHad maxLengthBad
+            // std::cout << " maxIPhiBad: " << maxIPhiBad << " maxIPhiHad: " << maxIPhiHad << " maxLengthBad: " << maxLengthBad << std::endl;
+            if(maxIPhiHad == maxIPhiBad) {
+                // want to compare distribution of bad cell length when we match
+                // the two max phi strips and when we don't
+                h1D_lengthBadCells_match->Fill(maxLengthBad);
+            } else {
+                h1D_lengthBadCells_nomatch->Fill(maxLengthBad);
+            }
+            h1D_lengthBadCells_either->Fill(maxLengthBad);
 
 
             h1D_pfCaloMet->Fill(pfCaloMet);
@@ -1085,33 +1157,32 @@ int ScanChain( TChain* chain) {
                 h1D_hcalnoise_passLooseNoiseFilter_jet->Fill(hcalnoise_passLooseNoiseFilter());
                 h1D_hcalnoise_passTightNoiseFilter_jet->Fill(hcalnoise_passTightNoiseFilter());
 
+
+                for(int i = 0; i < twrs_eta().size(); i++) {
+                    float twrEta = twrs_etacorr().at(i);
+                    float twrPhi = twrs_phicorr().at(i);
+                    // h2D_towers_etaphi->Fill(twrEta, twrPhi);
+
+                    h2D_twrs_numBadEcalCells->Fill(twrEta,twrPhi,twrs_numBadEcalCells().at(i));
+                    h2D_twrs_numRecoveredEcalCells->Fill(twrEta,twrPhi,twrs_numRecoveredEcalCells().at(i));
+                    h2D_twrs_numProblematicEcalCells->Fill(twrEta,twrPhi,twrs_numProblematicEcalCells().at(i));
+                    h2D_twrs_numBadHcalCells->Fill(twrEta,twrPhi,twrs_numBadHcalCells().at(i));
+                    h2D_twrs_numRecoveredHcalCells->Fill(twrEta,twrPhi,twrs_numRecoveredHcalCells().at(i));
+                    h2D_twrs_numProblematicHcalCells->Fill(twrEta,twrPhi,twrs_numProblematicHcalCells().at(i));
+                    h2D_twrs_numCrystals->Fill(twrEta,twrPhi,twrs_numCrystals().at(i));
+
+                    h1D_twrs_numBadEcalCells_jet->Fill(twrs_numBadEcalCells().at(i));
+                    h1D_twrs_numRecoveredEcalCells_jet->Fill(twrs_numRecoveredEcalCells().at(i));
+                    h1D_twrs_numProblematicEcalCells_jet->Fill(twrs_numProblematicEcalCells().at(i));
+                    h1D_twrs_numBadHcalCells_jet->Fill(twrs_numBadHcalCells().at(i));
+                    h1D_twrs_numRecoveredHcalCells_jet->Fill(twrs_numRecoveredHcalCells().at(i));
+                    h1D_twrs_numProblematicHcalCells_jet->Fill(twrs_numProblematicHcalCells().at(i));
+                    h1D_twrs_numCrystals_jet->Fill(twrs_numCrystals().at(i));
+                }   
+
+
                 if(pfMet > 500) {
-
-                    for(int i = 0; i < twrs_eta().size(); i++) {
-                        float twrEta = twrs_etacorr().at(i);
-                        float twrPhi = twrs_phicorr().at(i);
-                        // h2D_towers_etaphi->Fill(twrEta, twrPhi);
-
-                        h2D_twrs_numBadEcalCells->Fill(twrEta,twrPhi,twrs_numBadEcalCells().at(i));
-                        h2D_twrs_numRecoveredEcalCells->Fill(twrEta,twrPhi,twrs_numRecoveredEcalCells().at(i));
-                        h2D_twrs_numProblematicEcalCells->Fill(twrEta,twrPhi,twrs_numProblematicEcalCells().at(i));
-                        h2D_twrs_numBadHcalCells->Fill(twrEta,twrPhi,twrs_numBadHcalCells().at(i));
-                        h2D_twrs_numRecoveredHcalCells->Fill(twrEta,twrPhi,twrs_numRecoveredHcalCells().at(i));
-                        h2D_twrs_numProblematicHcalCells->Fill(twrEta,twrPhi,twrs_numProblematicHcalCells().at(i));
-                        h2D_twrs_numCrystals->Fill(twrEta,twrPhi,twrs_numCrystals().at(i));
-
-                        h1D_twrs_numBadEcalCells_jet->Fill(twrs_numBadEcalCells().at(i));
-                        h1D_twrs_numRecoveredEcalCells_jet->Fill(twrs_numRecoveredEcalCells().at(i));
-                        h1D_twrs_numProblematicEcalCells_jet->Fill(twrs_numProblematicEcalCells().at(i));
-                        h1D_twrs_numBadHcalCells_jet->Fill(twrs_numBadHcalCells().at(i));
-                        h1D_twrs_numRecoveredHcalCells_jet->Fill(twrs_numRecoveredHcalCells().at(i));
-                        h1D_twrs_numProblematicHcalCells_jet->Fill(twrs_numProblematicHcalCells().at(i));
-                        h1D_twrs_numCrystals_jet->Fill(twrs_numCrystals().at(i));
-                    }   
-
-
                     std::cout << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event() << " pfCaloMet: " << pfCaloMet << " pfMet: " << pfMet << " pfChMet: " << pfChMet << " caloMet: " << caloMet << " pfClusterMet: " << pfClusterMet << std::endl;
-
 
                 }
 
@@ -1200,6 +1271,8 @@ int ScanChain( TChain* chain) {
             h1D_hcalnoise_passHighLevelNoiseFilter->Fill(hcalnoise_passHighLevelNoiseFilter());
             h1D_hcalnoise_passLooseNoiseFilter->Fill(hcalnoise_passLooseNoiseFilter());
             h1D_hcalnoise_passTightNoiseFilter->Fill(hcalnoise_passTightNoiseFilter());
+
+
 
 
             nEventsFiltered++;
@@ -1408,6 +1481,8 @@ int ScanChain( TChain* chain) {
         dataMCplotMaker(null,h1D_twrs_numRecoveredHcalCells_vec,titlesHcalnoise,"twrs_numRecoveredHcalCells_vec","",common+" --xAxisOverride [GeV] --outputName "+out+"twrs_numRecoveredHcalCells_vec.pdf");
         dataMCplotMaker(null,h1D_twrs_numProblematicHcalCells_vec,titlesHcalnoise,"twrs_numProblematicHcalCells_vec","",common+" --xAxisOverride [GeV] --outputName "+out+"twrs_numProblematicHcalCells_vec.pdf");
         dataMCplotMaker(null,h1D_twrs_numCrystals_vec,titlesHcalnoise,"twrs_numCrystals_vec","",common+" --xAxisOverride [GeV] --outputName "+out+"twrs_numCrystals_vec.pdf");
+
+        dataMCplotMaker(null,h1D_lengthBadCells_vec,titlesBadCells,"length bad HCAL cells","",common+" --xAxisOverride [GeV] --outputName "+out+"h1D_lengthBadCells_vec.pdf");
 
         drawHist2D(h2D_twrs_numBadEcalCells,out+"h2D_twrs_numBadEcalCells.pdf","--logscale --title  twrs_numBadEcalCells --xlabel #eta --ylabel #phi");
         drawHist2D(h2D_twrs_numRecoveredEcalCells,out+"h2D_twrs_numRecoveredEcalCells.pdf","--logscale --title  twrs_numRecoveredEcalCells --xlabel #eta --ylabel #phi");
