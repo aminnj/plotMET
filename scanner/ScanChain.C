@@ -154,7 +154,7 @@ int ScanChain( TChain* chain) {
     h1D_caloMet_filters_vec.push_back(h1D_caloMet_halonoisehbhe);
     h1D_caloMet_filters_vec.push_back(h1D_caloMet_halonoisehbheecal);
     h1D_caloMet_filters_vec.push_back(h1D_caloMet_halonoisehbheecaljet);
-    
+
     // caloMetPhi with filters layered
     std::vector<TH1F*> h1D_caloMetPhi_filters_vec;
     TH1F *h1D_caloMetPhi = new TH1F("h1D_caloMetPhi", "",                                           100,-3.14,3.14);
@@ -169,7 +169,7 @@ int ScanChain( TChain* chain) {
     h1D_caloMetPhi_filters_vec.push_back(h1D_caloMetPhi_halonoisehbhe);
     h1D_caloMetPhi_filters_vec.push_back(h1D_caloMetPhi_halonoisehbheecal);
     h1D_caloMetPhi_filters_vec.push_back(h1D_caloMetPhi_halonoisehbheecaljet);
-    
+
     // pfMetPhi with filters layered
     std::vector<TH1F*> h1D_pfMetPhi_filters_vec;
     TH1F *h1D_pfMetPhi = new TH1F("h1D_pfMetPhi", "",                                           100,-3.14,3.14);
@@ -389,12 +389,326 @@ int ScanChain( TChain* chain) {
     TH1F* h1D_towers_phi_outer = new TH1F("h2D_towers_phi_outer","",  30 ,-3.15,3.15);
     TH1F* h1D_pfclusters_phi = new TH1F("h2D_pfclusters_phi","",      30 ,-3.15,3.15);
     TH1F* h1D_calojets_phi = new TH1F("h2D_calojets_phi","",          30 ,-3.15,3.15);
-
     TH1F* h1D_caloMetNew = new TH1F("h1D_caloMetNew", "", metBins, lowerMet, upperMet);
     TH1F* h1D_caloMetPhiNew = new TH1F("h1D_caloMetPhiNew","",       100,-3.14,3.14 );
 
+    // hcalnoise
+    std::vector<std::string> titlesHcalnoise = {"passes all filters", "fails JetID"};
+    std::vector<TH1F*> h1D_hcalnoise_HasBadRBXTS4TS5_vec;
+    std::vector<TH1F*> h1D_hcalnoise_GetRecHitEnergy_vec;
+    std::vector<TH1F*> h1D_hcalnoise_GetRecHitEnergy15_vec;
+    std::vector<TH1F*> h1D_hcalnoise_GetTotalCalibCharge_vec;
+    std::vector<TH1F*> h1D_hcalnoise_TS4TS5NoiseSumE_vec;
+    std::vector<TH1F*> h1D_hcalnoise_TS4TS5NoiseSumEt_vec;
+    std::vector<TH1F*> h1D_hcalnoise_eventChargeFraction_vec;
+    std::vector<TH1F*> h1D_hcalnoise_eventEMEnergy_vec;
+    std::vector<TH1F*> h1D_hcalnoise_eventEMFraction_vec;
+    std::vector<TH1F*> h1D_hcalnoise_eventHadEnergy_vec;
+    std::vector<TH1F*> h1D_hcalnoise_eventTrackEnergy_vec;
+    std::vector<TH1F*> h1D_hcalnoise_flatNoiseSumE_vec;
+    std::vector<TH1F*> h1D_hcalnoise_flatNoiseSumEt_vec;
+    std::vector<TH1F*> h1D_hcalnoise_isolatedNoiseSumE_vec;
+    std::vector<TH1F*> h1D_hcalnoise_isolatedNoiseSumEt_vec;
+    std::vector<TH1F*> h1D_hcalnoise_max10GeVHitTime_vec;
+    std::vector<TH1F*> h1D_hcalnoise_max25GeVHitTime_vec;
+    std::vector<TH1F*> h1D_hcalnoise_maxE10TS_vec;
+    std::vector<TH1F*> h1D_hcalnoise_maxE2Over10TS_vec;
+    std::vector<TH1F*> h1D_hcalnoise_maxE2TS_vec;
+    std::vector<TH1F*> h1D_hcalnoise_min10GeVHitTime_vec;
+    std::vector<TH1F*> h1D_hcalnoise_min25GeVHitTime_vec;
+    std::vector<TH1F*> h1D_hcalnoise_minE10TS_vec;
+    std::vector<TH1F*> h1D_hcalnoise_minE2Over10TS_vec;
+    std::vector<TH1F*> h1D_hcalnoise_minE2TS_vec;
+    std::vector<TH1F*> h1D_hcalnoise_minHPDEMF_vec;
+    std::vector<TH1F*> h1D_hcalnoise_minRBXEMF_vec;
+    std::vector<TH1F*> h1D_hcalnoise_rms10GeVHitTime_vec;
+    std::vector<TH1F*> h1D_hcalnoise_rms25GeVHitTime_vec;
+    std::vector<TH1F*> h1D_hcalnoise_spikeNoiseSumE_vec;
+    std::vector<TH1F*> h1D_hcalnoise_spikeNoiseSumEt_vec;
+    std::vector<TH1F*> h1D_hcalnoise_triangleNoiseSumE_vec;
+    std::vector<TH1F*> h1D_hcalnoise_triangleNoiseSumEt_vec;
+    std::vector<TH1F*> h1D_hcalnoise_GetRecHitCount_vec;
+    std::vector<TH1F*> h1D_hcalnoise_GetRecHitCount15_vec;
+    std::vector<TH1F*> h1D_hcalnoise_hbheIsoNoiseFilter_vec;
+    std::vector<TH1F*> h1D_hcalnoise_maxHPDHits_vec;
+    std::vector<TH1F*> h1D_hcalnoise_maxHPDNoOtherHits_vec;
+    std::vector<TH1F*> h1D_hcalnoise_maxRBXHits_vec;
+    std::vector<TH1F*> h1D_hcalnoise_maxZeros_vec;
+    std::vector<TH1F*> h1D_hcalnoise_noiseFilterStatus_vec;
+    std::vector<TH1F*> h1D_hcalnoise_noiseType_vec;
+    std::vector<TH1F*> h1D_hcalnoise_num10GeVHits_vec;
+    std::vector<TH1F*> h1D_hcalnoise_num25GeVHits_vec;
+    std::vector<TH1F*> h1D_hcalnoise_numFlatNoiseChannels_vec;
+    std::vector<TH1F*> h1D_hcalnoise_numIsolatedNoiseChannels_vec;
+    std::vector<TH1F*> h1D_hcalnoise_numProblematicRBXs_vec;
+    std::vector<TH1F*> h1D_hcalnoise_numSpikeNoiseChannels_vec;
+    std::vector<TH1F*> h1D_hcalnoise_numTS4TS5NoiseChannels_vec;
+    std::vector<TH1F*> h1D_hcalnoise_numTriangleNoiseChannels_vec;
+    std::vector<TH1F*> h1D_hcalnoise_passHighLevelNoiseFilter_vec;
+    std::vector<TH1F*> h1D_hcalnoise_passLooseNoiseFilter_vec;
+    std::vector<TH1F*> h1D_hcalnoise_passTightNoiseFilter_vec;
 
-    const char* json_file = "Run2015BGoldenPlus.txt";
+    std::vector<TH1F*> h1D_twrs_numBadEcalCells_vec;
+	std::vector<TH1F*> h1D_twrs_numRecoveredEcalCells_vec;
+	std::vector<TH1F*> h1D_twrs_numProblematicEcalCells_vec;
+	std::vector<TH1F*> h1D_twrs_numBadHcalCells_vec;
+	std::vector<TH1F*> h1D_twrs_numRecoveredHcalCells_vec;
+	std::vector<TH1F*> h1D_twrs_numProblematicHcalCells_vec;
+	std::vector<TH1F*> h1D_twrs_numCrystals_vec;
+
+    // _jet means it doesn't pass jet id
+    TH1F *h1D_hcalnoise_HasBadRBXTS4TS5 = new TH1F("h1D_hcalnoise_HasBadRBXTS4TS5","", 2,0,2);
+    TH1F *h1D_hcalnoise_HasBadRBXTS4TS5_jet = new TH1F("h1D_hcalnoise_HasBadRBXTS4TS5_jet","", 2,0,2);
+    h1D_hcalnoise_HasBadRBXTS4TS5_vec.push_back(h1D_hcalnoise_HasBadRBXTS4TS5);
+    h1D_hcalnoise_HasBadRBXTS4TS5_vec.push_back(h1D_hcalnoise_HasBadRBXTS4TS5_jet);
+    TH1F *h1D_hcalnoise_GetRecHitEnergy = new TH1F("h1D_hcalnoise_GetRecHitEnergy","", 100,0,9100);
+    TH1F *h1D_hcalnoise_GetRecHitEnergy_jet = new TH1F("h1D_hcalnoise_GetRecHitEnergy_jet","", 100,0,9100);
+    h1D_hcalnoise_GetRecHitEnergy_vec.push_back(h1D_hcalnoise_GetRecHitEnergy);
+    h1D_hcalnoise_GetRecHitEnergy_vec.push_back(h1D_hcalnoise_GetRecHitEnergy_jet);
+    TH1F *h1D_hcalnoise_GetRecHitEnergy15 = new TH1F("h1D_hcalnoise_GetRecHitEnergy15","", 100,0,8600);
+    TH1F *h1D_hcalnoise_GetRecHitEnergy15_jet = new TH1F("h1D_hcalnoise_GetRecHitEnergy15_jet","", 100,0,8600);
+    h1D_hcalnoise_GetRecHitEnergy15_vec.push_back(h1D_hcalnoise_GetRecHitEnergy15);
+    h1D_hcalnoise_GetRecHitEnergy15_vec.push_back(h1D_hcalnoise_GetRecHitEnergy15_jet);
+    TH1F *h1D_hcalnoise_GetTotalCalibCharge = new TH1F("h1D_hcalnoise_GetTotalCalibCharge","", 100,0,200);
+    TH1F *h1D_hcalnoise_GetTotalCalibCharge_jet = new TH1F("h1D_hcalnoise_GetTotalCalibCharge_jet","", 100,0,200);
+    h1D_hcalnoise_GetTotalCalibCharge_vec.push_back(h1D_hcalnoise_GetTotalCalibCharge);
+    h1D_hcalnoise_GetTotalCalibCharge_vec.push_back(h1D_hcalnoise_GetTotalCalibCharge_jet);
+    TH1F *h1D_hcalnoise_TS4TS5NoiseSumE = new TH1F("h1D_hcalnoise_TS4TS5NoiseSumE","", 100,0,6400);
+    TH1F *h1D_hcalnoise_TS4TS5NoiseSumE_jet = new TH1F("h1D_hcalnoise_TS4TS5NoiseSumE_jet","", 100,0,6400);
+    h1D_hcalnoise_TS4TS5NoiseSumE_vec.push_back(h1D_hcalnoise_TS4TS5NoiseSumE);
+    h1D_hcalnoise_TS4TS5NoiseSumE_vec.push_back(h1D_hcalnoise_TS4TS5NoiseSumE_jet);
+    TH1F *h1D_hcalnoise_TS4TS5NoiseSumEt = new TH1F("h1D_hcalnoise_TS4TS5NoiseSumEt","", 100,0,6100);
+    TH1F *h1D_hcalnoise_TS4TS5NoiseSumEt_jet = new TH1F("h1D_hcalnoise_TS4TS5NoiseSumEt_jet","", 100,0,6100);
+    h1D_hcalnoise_TS4TS5NoiseSumEt_vec.push_back(h1D_hcalnoise_TS4TS5NoiseSumEt);
+    h1D_hcalnoise_TS4TS5NoiseSumEt_vec.push_back(h1D_hcalnoise_TS4TS5NoiseSumEt_jet);
+    TH1F *h1D_hcalnoise_eventChargeFraction = new TH1F("h1D_hcalnoise_eventChargeFraction","", 100,0,9.5);
+    TH1F *h1D_hcalnoise_eventChargeFraction_jet = new TH1F("h1D_hcalnoise_eventChargeFraction_jet","", 100,0,9.5);
+    h1D_hcalnoise_eventChargeFraction_vec.push_back(h1D_hcalnoise_eventChargeFraction);
+    h1D_hcalnoise_eventChargeFraction_vec.push_back(h1D_hcalnoise_eventChargeFraction_jet);
+    TH1F *h1D_hcalnoise_eventEMEnergy = new TH1F("h1D_hcalnoise_eventEMEnergy","", 100,0,29500);
+    TH1F *h1D_hcalnoise_eventEMEnergy_jet = new TH1F("h1D_hcalnoise_eventEMEnergy_jet","", 100,0,29500);
+    h1D_hcalnoise_eventEMEnergy_vec.push_back(h1D_hcalnoise_eventEMEnergy);
+    h1D_hcalnoise_eventEMEnergy_vec.push_back(h1D_hcalnoise_eventEMEnergy_jet);
+    TH1F *h1D_hcalnoise_eventEMFraction = new TH1F("h1D_hcalnoise_eventEMFraction","", 100,0,1.08);
+    TH1F *h1D_hcalnoise_eventEMFraction_jet = new TH1F("h1D_hcalnoise_eventEMFraction_jet","", 100,0,1.08);
+    h1D_hcalnoise_eventEMFraction_vec.push_back(h1D_hcalnoise_eventEMFraction);
+    h1D_hcalnoise_eventEMFraction_vec.push_back(h1D_hcalnoise_eventEMFraction_jet);
+    TH1F *h1D_hcalnoise_eventHadEnergy = new TH1F("h1D_hcalnoise_eventHadEnergy","", 100,0,19400);
+    TH1F *h1D_hcalnoise_eventHadEnergy_jet = new TH1F("h1D_hcalnoise_eventHadEnergy_jet","", 100,0,19400);
+    h1D_hcalnoise_eventHadEnergy_vec.push_back(h1D_hcalnoise_eventHadEnergy);
+    h1D_hcalnoise_eventHadEnergy_vec.push_back(h1D_hcalnoise_eventHadEnergy_jet);
+    TH1F *h1D_hcalnoise_eventTrackEnergy = new TH1F("h1D_hcalnoise_eventTrackEnergy","", 100,0,87000);
+    TH1F *h1D_hcalnoise_eventTrackEnergy_jet = new TH1F("h1D_hcalnoise_eventTrackEnergy_jet","", 100,0,87000);
+    h1D_hcalnoise_eventTrackEnergy_vec.push_back(h1D_hcalnoise_eventTrackEnergy);
+    h1D_hcalnoise_eventTrackEnergy_vec.push_back(h1D_hcalnoise_eventTrackEnergy_jet);
+    TH1F *h1D_hcalnoise_flatNoiseSumE = new TH1F("h1D_hcalnoise_flatNoiseSumE","", 100,0,20);
+    TH1F *h1D_hcalnoise_flatNoiseSumE_jet = new TH1F("h1D_hcalnoise_flatNoiseSumE_jet","", 100,0,20);
+    h1D_hcalnoise_flatNoiseSumE_vec.push_back(h1D_hcalnoise_flatNoiseSumE);
+    h1D_hcalnoise_flatNoiseSumE_vec.push_back(h1D_hcalnoise_flatNoiseSumE_jet);
+    TH1F *h1D_hcalnoise_flatNoiseSumEt = new TH1F("h1D_hcalnoise_flatNoiseSumEt","", 100,0,20);
+    TH1F *h1D_hcalnoise_flatNoiseSumEt_jet = new TH1F("h1D_hcalnoise_flatNoiseSumEt_jet","", 100,0,20);
+    h1D_hcalnoise_flatNoiseSumEt_vec.push_back(h1D_hcalnoise_flatNoiseSumEt);
+    h1D_hcalnoise_flatNoiseSumEt_vec.push_back(h1D_hcalnoise_flatNoiseSumEt_jet);
+    TH1F *h1D_hcalnoise_isolatedNoiseSumE = new TH1F("h1D_hcalnoise_isolatedNoiseSumE","", 100,0,1000);
+    TH1F *h1D_hcalnoise_isolatedNoiseSumE_jet = new TH1F("h1D_hcalnoise_isolatedNoiseSumE_jet","", 100,0,1000);
+    h1D_hcalnoise_isolatedNoiseSumE_vec.push_back(h1D_hcalnoise_isolatedNoiseSumE);
+    h1D_hcalnoise_isolatedNoiseSumE_vec.push_back(h1D_hcalnoise_isolatedNoiseSumE_jet);
+    TH1F *h1D_hcalnoise_isolatedNoiseSumEt = new TH1F("h1D_hcalnoise_isolatedNoiseSumEt","", 100,0,1000);
+    TH1F *h1D_hcalnoise_isolatedNoiseSumEt_jet = new TH1F("h1D_hcalnoise_isolatedNoiseSumEt_jet","", 100,0,1000);
+    h1D_hcalnoise_isolatedNoiseSumEt_vec.push_back(h1D_hcalnoise_isolatedNoiseSumEt);
+    h1D_hcalnoise_isolatedNoiseSumEt_vec.push_back(h1D_hcalnoise_isolatedNoiseSumEt_jet);
+    TH1F *h1D_hcalnoise_max10GeVHitTime = new TH1F("h1D_hcalnoise_max10GeVHitTime","", 100,-1,100);
+    TH1F *h1D_hcalnoise_max10GeVHitTime_jet = new TH1F("h1D_hcalnoise_max10GeVHitTime_jet","", 100,-1,100);
+    h1D_hcalnoise_max10GeVHitTime_vec.push_back(h1D_hcalnoise_max10GeVHitTime);
+    h1D_hcalnoise_max10GeVHitTime_vec.push_back(h1D_hcalnoise_max10GeVHitTime_jet);
+    TH1F *h1D_hcalnoise_max25GeVHitTime = new TH1F("h1D_hcalnoise_max25GeVHitTime","", 100,-1,100);
+    TH1F *h1D_hcalnoise_max25GeVHitTime_jet = new TH1F("h1D_hcalnoise_max25GeVHitTime_jet","", 100,-1,100);
+    h1D_hcalnoise_max25GeVHitTime_vec.push_back(h1D_hcalnoise_max25GeVHitTime);
+    h1D_hcalnoise_max25GeVHitTime_vec.push_back(h1D_hcalnoise_max25GeVHitTime_jet);
+    TH1F *h1D_hcalnoise_maxE10TS = new TH1F("h1D_hcalnoise_maxE10TS","", 100,0,5000);
+    TH1F *h1D_hcalnoise_maxE10TS_jet = new TH1F("h1D_hcalnoise_maxE10TS_jet","", 100,0,5000);
+    h1D_hcalnoise_maxE10TS_vec.push_back(h1D_hcalnoise_maxE10TS);
+    h1D_hcalnoise_maxE10TS_vec.push_back(h1D_hcalnoise_maxE10TS_jet);
+    TH1F *h1D_hcalnoise_maxE2Over10TS = new TH1F("h1D_hcalnoise_maxE2Over10TS","", 100,0,1);
+    TH1F *h1D_hcalnoise_maxE2Over10TS_jet = new TH1F("h1D_hcalnoise_maxE2Over10TS_jet","", 100,0,1);
+    h1D_hcalnoise_maxE2Over10TS_vec.push_back(h1D_hcalnoise_maxE2Over10TS);
+    h1D_hcalnoise_maxE2Over10TS_vec.push_back(h1D_hcalnoise_maxE2Over10TS_jet);
+    TH1F *h1D_hcalnoise_maxE2TS = new TH1F("h1D_hcalnoise_maxE2TS","", 100,0,5000);
+    TH1F *h1D_hcalnoise_maxE2TS_jet = new TH1F("h1D_hcalnoise_maxE2TS_jet","", 100,0,5000);
+    h1D_hcalnoise_maxE2TS_vec.push_back(h1D_hcalnoise_maxE2TS);
+    h1D_hcalnoise_maxE2TS_vec.push_back(h1D_hcalnoise_maxE2TS_jet);
+    TH1F *h1D_hcalnoise_min10GeVHitTime = new TH1F("h1D_hcalnoise_min10GeVHitTime","", 100,-1,110000);
+    TH1F *h1D_hcalnoise_min10GeVHitTime_jet = new TH1F("h1D_hcalnoise_min10GeVHitTime_jet","", 100,-1,110000);
+    h1D_hcalnoise_min10GeVHitTime_vec.push_back(h1D_hcalnoise_min10GeVHitTime);
+    h1D_hcalnoise_min10GeVHitTime_vec.push_back(h1D_hcalnoise_min10GeVHitTime_jet);
+    TH1F *h1D_hcalnoise_min25GeVHitTime = new TH1F("h1D_hcalnoise_min25GeVHitTime","", 100,-1,110000);
+    TH1F *h1D_hcalnoise_min25GeVHitTime_jet = new TH1F("h1D_hcalnoise_min25GeVHitTime_jet","", 100,-1,110000);
+    h1D_hcalnoise_min25GeVHitTime_vec.push_back(h1D_hcalnoise_min25GeVHitTime);
+    h1D_hcalnoise_min25GeVHitTime_vec.push_back(h1D_hcalnoise_min25GeVHitTime_jet);
+    TH1F *h1D_hcalnoise_minE10TS = new TH1F("h1D_hcalnoise_minE10TS","", 100,0,5000);
+    TH1F *h1D_hcalnoise_minE10TS_jet = new TH1F("h1D_hcalnoise_minE10TS_jet","", 100,0,5000);
+    h1D_hcalnoise_minE10TS_vec.push_back(h1D_hcalnoise_minE10TS);
+    h1D_hcalnoise_minE10TS_vec.push_back(h1D_hcalnoise_minE10TS_jet);
+    TH1F *h1D_hcalnoise_minE2Over10TS = new TH1F("h1D_hcalnoise_minE2Over10TS","", 100,0,3);
+    TH1F *h1D_hcalnoise_minE2Over10TS_jet = new TH1F("h1D_hcalnoise_minE2Over10TS_jet","", 100,0,3);
+    h1D_hcalnoise_minE2Over10TS_vec.push_back(h1D_hcalnoise_minE2Over10TS);
+    h1D_hcalnoise_minE2Over10TS_vec.push_back(h1D_hcalnoise_minE2Over10TS_jet);
+    TH1F *h1D_hcalnoise_minE2TS = new TH1F("h1D_hcalnoise_minE2TS","", 100,0,5000);
+    TH1F *h1D_hcalnoise_minE2TS_jet = new TH1F("h1D_hcalnoise_minE2TS_jet","", 100,0,5000);
+    h1D_hcalnoise_minE2TS_vec.push_back(h1D_hcalnoise_minE2TS);
+    h1D_hcalnoise_minE2TS_vec.push_back(h1D_hcalnoise_minE2TS_jet);
+    TH1F *h1D_hcalnoise_minHPDEMF = new TH1F("h1D_hcalnoise_minHPDEMF","", 100,0,1.08e+06);
+    TH1F *h1D_hcalnoise_minHPDEMF_jet = new TH1F("h1D_hcalnoise_minHPDEMF_jet","", 100,0,1.08e+06);
+    h1D_hcalnoise_minHPDEMF_vec.push_back(h1D_hcalnoise_minHPDEMF);
+    h1D_hcalnoise_minHPDEMF_vec.push_back(h1D_hcalnoise_minHPDEMF_jet);
+    TH1F *h1D_hcalnoise_minRBXEMF = new TH1F("h1D_hcalnoise_minRBXEMF","", 100,0,1.1e+06);
+    TH1F *h1D_hcalnoise_minRBXEMF_jet = new TH1F("h1D_hcalnoise_minRBXEMF_jet","", 100,0,1.1e+06);
+    h1D_hcalnoise_minRBXEMF_vec.push_back(h1D_hcalnoise_minRBXEMF);
+    h1D_hcalnoise_minRBXEMF_vec.push_back(h1D_hcalnoise_minRBXEMF_jet);
+    TH1F *h1D_hcalnoise_rms10GeVHitTime = new TH1F("h1D_hcalnoise_rms10GeVHitTime","", 100,0,1080);
+    TH1F *h1D_hcalnoise_rms10GeVHitTime_jet = new TH1F("h1D_hcalnoise_rms10GeVHitTime_jet","", 100,0,1080);
+    h1D_hcalnoise_rms10GeVHitTime_vec.push_back(h1D_hcalnoise_rms10GeVHitTime);
+    h1D_hcalnoise_rms10GeVHitTime_vec.push_back(h1D_hcalnoise_rms10GeVHitTime_jet);
+    TH1F *h1D_hcalnoise_rms25GeVHitTime = new TH1F("h1D_hcalnoise_rms25GeVHitTime","", 100,0,1080);
+    TH1F *h1D_hcalnoise_rms25GeVHitTime_jet = new TH1F("h1D_hcalnoise_rms25GeVHitTime_jet","", 100,0,1080);
+    h1D_hcalnoise_rms25GeVHitTime_vec.push_back(h1D_hcalnoise_rms25GeVHitTime);
+    h1D_hcalnoise_rms25GeVHitTime_vec.push_back(h1D_hcalnoise_rms25GeVHitTime_jet);
+    TH1F *h1D_hcalnoise_spikeNoiseSumE = new TH1F("h1D_hcalnoise_spikeNoiseSumE","", 100,0,6300);
+    TH1F *h1D_hcalnoise_spikeNoiseSumE_jet = new TH1F("h1D_hcalnoise_spikeNoiseSumE_jet","", 100,0,6300);
+    h1D_hcalnoise_spikeNoiseSumE_vec.push_back(h1D_hcalnoise_spikeNoiseSumE);
+    h1D_hcalnoise_spikeNoiseSumE_vec.push_back(h1D_hcalnoise_spikeNoiseSumE_jet);
+    TH1F *h1D_hcalnoise_spikeNoiseSumEt = new TH1F("h1D_hcalnoise_spikeNoiseSumEt","", 100,0,6000);
+    TH1F *h1D_hcalnoise_spikeNoiseSumEt_jet = new TH1F("h1D_hcalnoise_spikeNoiseSumEt_jet","", 100,0,6000);
+    h1D_hcalnoise_spikeNoiseSumEt_vec.push_back(h1D_hcalnoise_spikeNoiseSumEt);
+    h1D_hcalnoise_spikeNoiseSumEt_vec.push_back(h1D_hcalnoise_spikeNoiseSumEt_jet);
+    TH1F *h1D_hcalnoise_triangleNoiseSumE = new TH1F("h1D_hcalnoise_triangleNoiseSumE","", 100,0,4050);
+    TH1F *h1D_hcalnoise_triangleNoiseSumE_jet = new TH1F("h1D_hcalnoise_triangleNoiseSumE_jet","", 100,0,4050);
+    h1D_hcalnoise_triangleNoiseSumE_vec.push_back(h1D_hcalnoise_triangleNoiseSumE);
+    h1D_hcalnoise_triangleNoiseSumE_vec.push_back(h1D_hcalnoise_triangleNoiseSumE_jet);
+    TH1F *h1D_hcalnoise_triangleNoiseSumEt = new TH1F("h1D_hcalnoise_triangleNoiseSumEt","", 100,0,2100);
+    TH1F *h1D_hcalnoise_triangleNoiseSumEt_jet = new TH1F("h1D_hcalnoise_triangleNoiseSumEt_jet","", 100,0,2100);
+    h1D_hcalnoise_triangleNoiseSumEt_vec.push_back(h1D_hcalnoise_triangleNoiseSumEt);
+    h1D_hcalnoise_triangleNoiseSumEt_vec.push_back(h1D_hcalnoise_triangleNoiseSumEt_jet);
+    TH1F *h1D_hcalnoise_GetRecHitCount = new TH1F("h1D_hcalnoise_GetRecHitCount","", 107,685,2290);
+    TH1F *h1D_hcalnoise_GetRecHitCount_jet = new TH1F("h1D_hcalnoise_GetRecHitCount_jet","", 107,685,2290);
+    h1D_hcalnoise_GetRecHitCount_vec.push_back(h1D_hcalnoise_GetRecHitCount);
+    h1D_hcalnoise_GetRecHitCount_vec.push_back(h1D_hcalnoise_GetRecHitCount_jet);
+    TH1F *h1D_hcalnoise_GetRecHitCount15 = new TH1F("h1D_hcalnoise_GetRecHitCount15","", 114,0,684);
+    TH1F *h1D_hcalnoise_GetRecHitCount15_jet = new TH1F("h1D_hcalnoise_GetRecHitCount15_jet","", 114,0,684);
+    h1D_hcalnoise_GetRecHitCount15_vec.push_back(h1D_hcalnoise_GetRecHitCount15);
+    h1D_hcalnoise_GetRecHitCount15_vec.push_back(h1D_hcalnoise_GetRecHitCount15_jet);
+    TH1F *h1D_hcalnoise_hbheIsoNoiseFilter = new TH1F("h1D_hcalnoise_hbheIsoNoiseFilter","", 2,0,2);
+    TH1F *h1D_hcalnoise_hbheIsoNoiseFilter_jet = new TH1F("h1D_hcalnoise_hbheIsoNoiseFilter_jet","", 2,0,2);
+    h1D_hcalnoise_hbheIsoNoiseFilter_vec.push_back(h1D_hcalnoise_hbheIsoNoiseFilter);
+    h1D_hcalnoise_hbheIsoNoiseFilter_vec.push_back(h1D_hcalnoise_hbheIsoNoiseFilter_jet);
+    TH1F *h1D_hcalnoise_maxHPDHits = new TH1F("h1D_hcalnoise_maxHPDHits","", 19,0,19);
+    TH1F *h1D_hcalnoise_maxHPDHits_jet = new TH1F("h1D_hcalnoise_maxHPDHits_jet","", 19,0,19);
+    h1D_hcalnoise_maxHPDHits_vec.push_back(h1D_hcalnoise_maxHPDHits);
+    h1D_hcalnoise_maxHPDHits_vec.push_back(h1D_hcalnoise_maxHPDHits_jet);
+    TH1F *h1D_hcalnoise_maxHPDNoOtherHits = new TH1F("h1D_hcalnoise_maxHPDNoOtherHits","", 19,0,19);
+    TH1F *h1D_hcalnoise_maxHPDNoOtherHits_jet = new TH1F("h1D_hcalnoise_maxHPDNoOtherHits_jet","", 19,0,19);
+    h1D_hcalnoise_maxHPDNoOtherHits_vec.push_back(h1D_hcalnoise_maxHPDNoOtherHits);
+    h1D_hcalnoise_maxHPDNoOtherHits_vec.push_back(h1D_hcalnoise_maxHPDNoOtherHits_jet);
+    TH1F *h1D_hcalnoise_maxRBXHits = new TH1F("h1D_hcalnoise_maxRBXHits","", 76,0,76);
+    TH1F *h1D_hcalnoise_maxRBXHits_jet = new TH1F("h1D_hcalnoise_maxRBXHits_jet","", 76,0,76);
+    h1D_hcalnoise_maxRBXHits_vec.push_back(h1D_hcalnoise_maxRBXHits);
+    h1D_hcalnoise_maxRBXHits_vec.push_back(h1D_hcalnoise_maxRBXHits_jet);
+    TH1F *h1D_hcalnoise_maxZeros = new TH1F("h1D_hcalnoise_maxZeros","", 189,0,189);
+    TH1F *h1D_hcalnoise_maxZeros_jet = new TH1F("h1D_hcalnoise_maxZeros_jet","", 189,0,189);
+    h1D_hcalnoise_maxZeros_vec.push_back(h1D_hcalnoise_maxZeros);
+    h1D_hcalnoise_maxZeros_vec.push_back(h1D_hcalnoise_maxZeros_jet);
+    TH1F *h1D_hcalnoise_noiseFilterStatus = new TH1F("h1D_hcalnoise_noiseFilterStatus","", 101,0,72720);
+    TH1F *h1D_hcalnoise_noiseFilterStatus_jet = new TH1F("h1D_hcalnoise_noiseFilterStatus_jet","", 101,0,72720);
+    h1D_hcalnoise_noiseFilterStatus_vec.push_back(h1D_hcalnoise_noiseFilterStatus);
+    h1D_hcalnoise_noiseFilterStatus_vec.push_back(h1D_hcalnoise_noiseFilterStatus_jet);
+    TH1F *h1D_hcalnoise_noiseType = new TH1F("h1D_hcalnoise_noiseType","", 4,0,4);
+    TH1F *h1D_hcalnoise_noiseType_jet = new TH1F("h1D_hcalnoise_noiseType_jet","", 4,0,4);
+    h1D_hcalnoise_noiseType_vec.push_back(h1D_hcalnoise_noiseType);
+    h1D_hcalnoise_noiseType_vec.push_back(h1D_hcalnoise_noiseType_jet);
+    TH1F *h1D_hcalnoise_num10GeVHits = new TH1F("h1D_hcalnoise_num10GeVHits","", 45,0,45);
+    TH1F *h1D_hcalnoise_num10GeVHits_jet = new TH1F("h1D_hcalnoise_num10GeVHits_jet","", 45,0,45);
+    h1D_hcalnoise_num10GeVHits_vec.push_back(h1D_hcalnoise_num10GeVHits);
+    h1D_hcalnoise_num10GeVHits_vec.push_back(h1D_hcalnoise_num10GeVHits_jet);
+    TH1F *h1D_hcalnoise_num25GeVHits = new TH1F("h1D_hcalnoise_num25GeVHits","", 20,0,20);
+    TH1F *h1D_hcalnoise_num25GeVHits_jet = new TH1F("h1D_hcalnoise_num25GeVHits_jet","", 20,0,20);
+    h1D_hcalnoise_num25GeVHits_vec.push_back(h1D_hcalnoise_num25GeVHits);
+    h1D_hcalnoise_num25GeVHits_vec.push_back(h1D_hcalnoise_num25GeVHits_jet);
+    TH1F *h1D_hcalnoise_numFlatNoiseChannels = new TH1F("h1D_hcalnoise_numFlatNoiseChannels","", 72,0,72);
+    TH1F *h1D_hcalnoise_numFlatNoiseChannels_jet = new TH1F("h1D_hcalnoise_numFlatNoiseChannels_jet","", 72,0,72);
+    h1D_hcalnoise_numFlatNoiseChannels_vec.push_back(h1D_hcalnoise_numFlatNoiseChannels);
+    h1D_hcalnoise_numFlatNoiseChannels_vec.push_back(h1D_hcalnoise_numFlatNoiseChannels_jet);
+    TH1F *h1D_hcalnoise_numIsolatedNoiseChannels = new TH1F("h1D_hcalnoise_numIsolatedNoiseChannels","", 75,0,75);
+    TH1F *h1D_hcalnoise_numIsolatedNoiseChannels_jet = new TH1F("h1D_hcalnoise_numIsolatedNoiseChannels_jet","", 75,0,75);
+    h1D_hcalnoise_numIsolatedNoiseChannels_vec.push_back(h1D_hcalnoise_numIsolatedNoiseChannels);
+    h1D_hcalnoise_numIsolatedNoiseChannels_vec.push_back(h1D_hcalnoise_numIsolatedNoiseChannels_jet);
+    TH1F *h1D_hcalnoise_numProblematicRBXs = new TH1F("h1D_hcalnoise_numProblematicRBXs","", 4,70,74);
+    TH1F *h1D_hcalnoise_numProblematicRBXs_jet = new TH1F("h1D_hcalnoise_numProblematicRBXs_jet","", 4,70,74);
+    h1D_hcalnoise_numProblematicRBXs_vec.push_back(h1D_hcalnoise_numProblematicRBXs);
+    h1D_hcalnoise_numProblematicRBXs_vec.push_back(h1D_hcalnoise_numProblematicRBXs_jet);
+    TH1F *h1D_hcalnoise_numSpikeNoiseChannels = new TH1F("h1D_hcalnoise_numSpikeNoiseChannels","", 17,0,17);
+    TH1F *h1D_hcalnoise_numSpikeNoiseChannels_jet = new TH1F("h1D_hcalnoise_numSpikeNoiseChannels_jet","", 17,0,17);
+    h1D_hcalnoise_numSpikeNoiseChannels_vec.push_back(h1D_hcalnoise_numSpikeNoiseChannels);
+    h1D_hcalnoise_numSpikeNoiseChannels_vec.push_back(h1D_hcalnoise_numSpikeNoiseChannels_jet);
+    TH1F *h1D_hcalnoise_numTS4TS5NoiseChannels = new TH1F("h1D_hcalnoise_numTS4TS5NoiseChannels","", 20,0,20);
+    TH1F *h1D_hcalnoise_numTS4TS5NoiseChannels_jet = new TH1F("h1D_hcalnoise_numTS4TS5NoiseChannels_jet","", 20,0,20);
+    h1D_hcalnoise_numTS4TS5NoiseChannels_vec.push_back(h1D_hcalnoise_numTS4TS5NoiseChannels);
+    h1D_hcalnoise_numTS4TS5NoiseChannels_vec.push_back(h1D_hcalnoise_numTS4TS5NoiseChannels_jet);
+    TH1F *h1D_hcalnoise_numTriangleNoiseChannels = new TH1F("h1D_hcalnoise_numTriangleNoiseChannels","", 4,0,4);
+    TH1F *h1D_hcalnoise_numTriangleNoiseChannels_jet = new TH1F("h1D_hcalnoise_numTriangleNoiseChannels_jet","", 4,0,4);
+    h1D_hcalnoise_numTriangleNoiseChannels_vec.push_back(h1D_hcalnoise_numTriangleNoiseChannels);
+    h1D_hcalnoise_numTriangleNoiseChannels_vec.push_back(h1D_hcalnoise_numTriangleNoiseChannels_jet);
+    TH1F *h1D_hcalnoise_passHighLevelNoiseFilter = new TH1F("h1D_hcalnoise_passHighLevelNoiseFilter","", 2,0,2);
+    TH1F *h1D_hcalnoise_passHighLevelNoiseFilter_jet = new TH1F("h1D_hcalnoise_passHighLevelNoiseFilter_jet","", 2,0,2);
+    h1D_hcalnoise_passHighLevelNoiseFilter_vec.push_back(h1D_hcalnoise_passHighLevelNoiseFilter);
+    h1D_hcalnoise_passHighLevelNoiseFilter_vec.push_back(h1D_hcalnoise_passHighLevelNoiseFilter_jet);
+    TH1F *h1D_hcalnoise_passLooseNoiseFilter = new TH1F("h1D_hcalnoise_passLooseNoiseFilter","", 2,0,2);
+    TH1F *h1D_hcalnoise_passLooseNoiseFilter_jet = new TH1F("h1D_hcalnoise_passLooseNoiseFilter_jet","", 2,0,2);
+    h1D_hcalnoise_passLooseNoiseFilter_vec.push_back(h1D_hcalnoise_passLooseNoiseFilter);
+    h1D_hcalnoise_passLooseNoiseFilter_vec.push_back(h1D_hcalnoise_passLooseNoiseFilter_jet);
+    TH1F *h1D_hcalnoise_passTightNoiseFilter = new TH1F("h1D_hcalnoise_passTightNoiseFilter","", 2,0,2);
+    TH1F *h1D_hcalnoise_passTightNoiseFilter_jet = new TH1F("h1D_hcalnoise_passTightNoiseFilter_jet","", 2,0,2);
+    h1D_hcalnoise_passTightNoiseFilter_vec.push_back(h1D_hcalnoise_passTightNoiseFilter);
+    h1D_hcalnoise_passTightNoiseFilter_vec.push_back(h1D_hcalnoise_passTightNoiseFilter_jet);
+
+    TH1F *h1D_twrs_numBadEcalCells = new TH1F("h1D_twrs_numBadEcalCells","",100,0,30);
+    TH1F *h1D_twrs_numBadEcalCells_jet = new TH1F("h1D_twrs_numBadEcalCells_jet","",100,0,30);
+    h1D_twrs_numBadEcalCells_vec.push_back(h1D_twrs_numBadEcalCells);
+    h1D_twrs_numBadEcalCells_vec.push_back(h1D_twrs_numBadEcalCells_jet);
+	TH1F *h1D_twrs_numRecoveredEcalCells = new TH1F("h1D_twrs_numRecoveredEcalCells","",100,0,30);
+	TH1F *h1D_twrs_numRecoveredEcalCells_jet = new TH1F("h1D_twrs_numRecoveredEcalCells_jet","",100,0,30);
+	h1D_twrs_numRecoveredEcalCells_vec.push_back(h1D_twrs_numRecoveredEcalCells);
+	h1D_twrs_numRecoveredEcalCells_vec.push_back(h1D_twrs_numRecoveredEcalCells_jet);
+	TH1F *h1D_twrs_numProblematicEcalCells = new TH1F("h1D_twrs_numProblematicEcalCells","",100,0,30);
+	TH1F *h1D_twrs_numProblematicEcalCells_jet = new TH1F("h1D_twrs_numProblematicEcalCells_jet","",100,0,30);
+	h1D_twrs_numProblematicEcalCells_vec.push_back(h1D_twrs_numProblematicEcalCells);
+	h1D_twrs_numProblematicEcalCells_vec.push_back(h1D_twrs_numProblematicEcalCells_jet);
+	TH1F *h1D_twrs_numBadHcalCells = new TH1F("h1D_twrs_numBadHcalCells","",100,0,30);
+	TH1F *h1D_twrs_numBadHcalCells_jet = new TH1F("h1D_twrs_numBadHcalCells_jet","",100,0,30);
+	h1D_twrs_numBadHcalCells_vec.push_back(h1D_twrs_numBadHcalCells);
+	h1D_twrs_numBadHcalCells_vec.push_back(h1D_twrs_numBadHcalCells_jet);
+	TH1F *h1D_twrs_numRecoveredHcalCells = new TH1F("h1D_twrs_numRecoveredHcalCells","",100,0,30);
+	TH1F *h1D_twrs_numRecoveredHcalCells_jet = new TH1F("h1D_twrs_numRecoveredHcalCells_jet","",100,0,30);
+	h1D_twrs_numRecoveredHcalCells_vec.push_back(h1D_twrs_numRecoveredHcalCells);
+	h1D_twrs_numRecoveredHcalCells_vec.push_back(h1D_twrs_numRecoveredHcalCells_jet);
+	TH1F *h1D_twrs_numProblematicHcalCells = new TH1F("h1D_twrs_numProblematicHcalCells","",100,0,30);
+	TH1F *h1D_twrs_numProblematicHcalCells_jet = new TH1F("h1D_twrs_numProblematicHcalCells_jet","",100,0,30);
+	h1D_twrs_numProblematicHcalCells_vec.push_back(h1D_twrs_numProblematicHcalCells);
+	h1D_twrs_numProblematicHcalCells_vec.push_back(h1D_twrs_numProblematicHcalCells_jet);
+	TH1F *h1D_twrs_numCrystals = new TH1F("h1D_twrs_numCrystals","",100,0,30);
+	TH1F *h1D_twrs_numCrystals_jet = new TH1F("h1D_twrs_numCrystals_jet","",100,0,30);
+	h1D_twrs_numCrystals_vec.push_back(h1D_twrs_numCrystals);
+	h1D_twrs_numCrystals_vec.push_back(h1D_twrs_numCrystals_jet);
+
+    TH2F *h2D_twrs_numBadEcalCells = new TH2F("h2D_twrs_numBadEcalCells"                 , "" , 50, -maxEta,maxEta, 50, -3.15,3.15);
+	TH2F *h2D_twrs_numRecoveredEcalCells = new TH2F("h2D_twrs_numRecoveredEcalCells"     , "" , 50, -maxEta,maxEta, 50, -3.15,3.15);
+	TH2F *h2D_twrs_numProblematicEcalCells = new TH2F("h2D_twrs_numProblematicEcalCells" , "" , 50, -maxEta,maxEta, 50, -3.15,3.15);
+	TH2F *h2D_twrs_numBadHcalCells = new TH2F("h2D_twrs_numBadHcalCells"                 , "" , 50, -maxEta,maxEta, 50, -3.15,3.15);
+	TH2F *h2D_twrs_numRecoveredHcalCells = new TH2F("h2D_twrs_numRecoveredHcalCells"     , "" , 50, -maxEta,maxEta, 50, -3.15,3.15);
+	TH2F *h2D_twrs_numProblematicHcalCells = new TH2F("h2D_twrs_numProblematicHcalCells" , "" , 50, -maxEta,maxEta, 50, -3.15,3.15);
+	TH2F *h2D_twrs_numCrystals = new TH2F("h2D_twrs_numCrystals"                         , "" , 50, -maxEta,maxEta, 50, -3.15,3.15);
+
+
+    const char* json_file = "Run2015BGoldenPlus_v2.txt";
     // const char* json_file = "Run2015BGolden.txt";
     set_goodrun_file(json_file);
 
@@ -421,7 +735,7 @@ int ScanChain( TChain* chain) {
         tree->SetCacheSize(128*1024*1024);
         cms3.Init(tree);
 
-        bool fast = true;
+        bool fast = false;
         int iCut = 0;
 
         // Loop over Events in current file
@@ -459,6 +773,15 @@ int ScanChain( TChain* chain) {
 
             // use golden json file 
             if ( evt_isRealData() && !goodrun(evt_run(), evt_lumiBlock()) ) continue;
+
+
+            if ( evt_event() != 17498195 ) continue;
+            // if ( evt_trackingFailureFilter() && evt_cscTightHaloFilter() && hbheIsoNoiseFilter() && evt_EcalDeadCellTriggerPrimitiveFilter() && evt_eeBadScFilter() && hbheNoiseFilter() ) {
+            //     // passed the filters
+            // } else {
+            //     debug << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event() << endl;
+            //     // didn't pass
+            // }
 
 
             h1D_pfCaloMet->Fill(pfCaloMet);
@@ -526,7 +849,7 @@ int ScanChain( TChain* chain) {
                         caloMetNewX -= (twrs_hadEtcorr().at(i) + twrs_emEtcorr().at(i))*cos(twrPhi);
                         caloMetNewY -= (twrs_hadEtcorr().at(i) + twrs_emEtcorr().at(i))*sin(twrPhi);
                     }
-                    
+
                     h2D_towers_etaphi->Fill(twrEta, twrPhi);
                     h2D_towers_etaphi_em->Fill(twrEta, twrPhi, twrs_emEnergy().at(i));
                     h2D_towers_etaphi_had->Fill(twrEta, twrPhi, twrs_hadEnergy().at(i));
@@ -703,6 +1026,97 @@ int ScanChain( TChain* chain) {
                 }
             }
 
+            if (! passJetID ) {
+                // passed all the other filters, but not JetID
+                // print out these events
+
+
+                h1D_hcalnoise_HasBadRBXTS4TS5_jet->Fill(hcalnoise_HasBadRBXTS4TS5());
+                h1D_hcalnoise_GetRecHitEnergy_jet->Fill(hcalnoise_GetRecHitEnergy());
+                h1D_hcalnoise_GetRecHitEnergy15_jet->Fill(hcalnoise_GetRecHitEnergy15());
+                h1D_hcalnoise_GetTotalCalibCharge_jet->Fill(hcalnoise_GetTotalCalibCharge());
+                h1D_hcalnoise_TS4TS5NoiseSumE_jet->Fill(hcalnoise_TS4TS5NoiseSumE());
+                h1D_hcalnoise_TS4TS5NoiseSumEt_jet->Fill(hcalnoise_TS4TS5NoiseSumEt());
+                h1D_hcalnoise_eventChargeFraction_jet->Fill(hcalnoise_eventChargeFraction());
+                h1D_hcalnoise_eventEMEnergy_jet->Fill(hcalnoise_eventEMEnergy());
+                h1D_hcalnoise_eventEMFraction_jet->Fill(hcalnoise_eventEMFraction());
+                h1D_hcalnoise_eventHadEnergy_jet->Fill(hcalnoise_eventHadEnergy());
+                h1D_hcalnoise_eventTrackEnergy_jet->Fill(hcalnoise_eventTrackEnergy());
+                h1D_hcalnoise_flatNoiseSumE_jet->Fill(hcalnoise_flatNoiseSumE());
+                h1D_hcalnoise_flatNoiseSumEt_jet->Fill(hcalnoise_flatNoiseSumEt());
+                h1D_hcalnoise_isolatedNoiseSumE_jet->Fill(hcalnoise_isolatedNoiseSumE());
+                h1D_hcalnoise_isolatedNoiseSumEt_jet->Fill(hcalnoise_isolatedNoiseSumEt());
+                h1D_hcalnoise_max10GeVHitTime_jet->Fill(hcalnoise_max10GeVHitTime());
+                h1D_hcalnoise_max25GeVHitTime_jet->Fill(hcalnoise_max25GeVHitTime());
+                h1D_hcalnoise_maxE10TS_jet->Fill(hcalnoise_maxE10TS());
+                h1D_hcalnoise_maxE2Over10TS_jet->Fill(hcalnoise_maxE2Over10TS());
+                h1D_hcalnoise_maxE2TS_jet->Fill(hcalnoise_maxE2TS());
+                h1D_hcalnoise_min10GeVHitTime_jet->Fill(hcalnoise_min10GeVHitTime());
+                h1D_hcalnoise_min25GeVHitTime_jet->Fill(hcalnoise_min25GeVHitTime());
+                h1D_hcalnoise_minE10TS_jet->Fill(hcalnoise_minE10TS());
+                h1D_hcalnoise_minE2Over10TS_jet->Fill(hcalnoise_minE2Over10TS());
+                h1D_hcalnoise_minE2TS_jet->Fill(hcalnoise_minE2TS());
+                h1D_hcalnoise_minHPDEMF_jet->Fill(hcalnoise_minHPDEMF());
+                h1D_hcalnoise_minRBXEMF_jet->Fill(hcalnoise_minRBXEMF());
+                h1D_hcalnoise_rms10GeVHitTime_jet->Fill(hcalnoise_rms10GeVHitTime());
+                h1D_hcalnoise_rms25GeVHitTime_jet->Fill(hcalnoise_rms25GeVHitTime());
+                h1D_hcalnoise_spikeNoiseSumE_jet->Fill(hcalnoise_spikeNoiseSumE());
+                h1D_hcalnoise_spikeNoiseSumEt_jet->Fill(hcalnoise_spikeNoiseSumEt());
+                h1D_hcalnoise_triangleNoiseSumE_jet->Fill(hcalnoise_triangleNoiseSumE());
+                h1D_hcalnoise_triangleNoiseSumEt_jet->Fill(hcalnoise_triangleNoiseSumEt());
+                h1D_hcalnoise_GetRecHitCount_jet->Fill(hcalnoise_GetRecHitCount());
+                h1D_hcalnoise_GetRecHitCount15_jet->Fill(hcalnoise_GetRecHitCount15());
+                h1D_hcalnoise_hbheIsoNoiseFilter_jet->Fill(hcalnoise_hbheIsoNoiseFilter());
+                h1D_hcalnoise_maxHPDHits_jet->Fill(hcalnoise_maxHPDHits());
+                h1D_hcalnoise_maxHPDNoOtherHits_jet->Fill(hcalnoise_maxHPDNoOtherHits());
+                h1D_hcalnoise_maxRBXHits_jet->Fill(hcalnoise_maxRBXHits());
+                h1D_hcalnoise_maxZeros_jet->Fill(hcalnoise_maxZeros());
+                h1D_hcalnoise_noiseFilterStatus_jet->Fill(hcalnoise_noiseFilterStatus());
+                h1D_hcalnoise_noiseType_jet->Fill(hcalnoise_noiseType());
+                h1D_hcalnoise_num10GeVHits_jet->Fill(hcalnoise_num10GeVHits());
+                h1D_hcalnoise_num25GeVHits_jet->Fill(hcalnoise_num25GeVHits());
+                h1D_hcalnoise_numFlatNoiseChannels_jet->Fill(hcalnoise_numFlatNoiseChannels());
+                h1D_hcalnoise_numIsolatedNoiseChannels_jet->Fill(hcalnoise_numIsolatedNoiseChannels());
+                h1D_hcalnoise_numProblematicRBXs_jet->Fill(hcalnoise_numProblematicRBXs());
+                h1D_hcalnoise_numSpikeNoiseChannels_jet->Fill(hcalnoise_numSpikeNoiseChannels());
+                h1D_hcalnoise_numTS4TS5NoiseChannels_jet->Fill(hcalnoise_numTS4TS5NoiseChannels());
+                h1D_hcalnoise_numTriangleNoiseChannels_jet->Fill(hcalnoise_numTriangleNoiseChannels());
+                h1D_hcalnoise_passHighLevelNoiseFilter_jet->Fill(hcalnoise_passHighLevelNoiseFilter());
+                h1D_hcalnoise_passLooseNoiseFilter_jet->Fill(hcalnoise_passLooseNoiseFilter());
+                h1D_hcalnoise_passTightNoiseFilter_jet->Fill(hcalnoise_passTightNoiseFilter());
+
+                if(pfMet > 500) {
+
+                    for(int i = 0; i < twrs_eta().size(); i++) {
+                        float twrEta = twrs_etacorr().at(i);
+                        float twrPhi = twrs_phicorr().at(i);
+                        // h2D_towers_etaphi->Fill(twrEta, twrPhi);
+
+                        h2D_twrs_numBadEcalCells->Fill(twrEta,twrPhi,twrs_numBadEcalCells().at(i));
+                        h2D_twrs_numRecoveredEcalCells->Fill(twrEta,twrPhi,twrs_numRecoveredEcalCells().at(i));
+                        h2D_twrs_numProblematicEcalCells->Fill(twrEta,twrPhi,twrs_numProblematicEcalCells().at(i));
+                        h2D_twrs_numBadHcalCells->Fill(twrEta,twrPhi,twrs_numBadHcalCells().at(i));
+                        h2D_twrs_numRecoveredHcalCells->Fill(twrEta,twrPhi,twrs_numRecoveredHcalCells().at(i));
+                        h2D_twrs_numProblematicHcalCells->Fill(twrEta,twrPhi,twrs_numProblematicHcalCells().at(i));
+                        h2D_twrs_numCrystals->Fill(twrEta,twrPhi,twrs_numCrystals().at(i));
+
+                        h1D_twrs_numBadEcalCells_jet->Fill(twrs_numBadEcalCells().at(i));
+                        h1D_twrs_numRecoveredEcalCells_jet->Fill(twrs_numRecoveredEcalCells().at(i));
+                        h1D_twrs_numProblematicEcalCells_jet->Fill(twrs_numProblematicEcalCells().at(i));
+                        h1D_twrs_numBadHcalCells_jet->Fill(twrs_numBadHcalCells().at(i));
+                        h1D_twrs_numRecoveredHcalCells_jet->Fill(twrs_numRecoveredHcalCells().at(i));
+                        h1D_twrs_numProblematicHcalCells_jet->Fill(twrs_numProblematicHcalCells().at(i));
+                        h1D_twrs_numCrystals_jet->Fill(twrs_numCrystals().at(i));
+                    }   
+
+
+                    std::cout << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event() << " pfCaloMet: " << pfCaloMet << " pfMet: " << pfMet << " pfChMet: " << pfChMet << " caloMet: " << caloMet << " pfClusterMet: " << pfClusterMet << std::endl;
+
+
+                }
+
+            } 
+
             if( !passJetID ) continue;
             addToCounter(to_string(++iCut)+" passJetID");
 
@@ -733,6 +1147,61 @@ int ScanChain( TChain* chain) {
             h2D_caloMet_pfMet->Fill(caloMet, pfMet);
             h2D_jetPt_caloMet->Fill(leadingJetPt, caloMet);
 
+            h1D_hcalnoise_HasBadRBXTS4TS5->Fill(hcalnoise_HasBadRBXTS4TS5());
+            h1D_hcalnoise_GetRecHitEnergy->Fill(hcalnoise_GetRecHitEnergy());
+            h1D_hcalnoise_GetRecHitEnergy15->Fill(hcalnoise_GetRecHitEnergy15());
+            h1D_hcalnoise_GetTotalCalibCharge->Fill(hcalnoise_GetTotalCalibCharge());
+            h1D_hcalnoise_TS4TS5NoiseSumE->Fill(hcalnoise_TS4TS5NoiseSumE());
+            h1D_hcalnoise_TS4TS5NoiseSumEt->Fill(hcalnoise_TS4TS5NoiseSumEt());
+            h1D_hcalnoise_eventChargeFraction->Fill(hcalnoise_eventChargeFraction());
+            h1D_hcalnoise_eventEMEnergy->Fill(hcalnoise_eventEMEnergy());
+            h1D_hcalnoise_eventEMFraction->Fill(hcalnoise_eventEMFraction());
+            h1D_hcalnoise_eventHadEnergy->Fill(hcalnoise_eventHadEnergy());
+            h1D_hcalnoise_eventTrackEnergy->Fill(hcalnoise_eventTrackEnergy());
+            h1D_hcalnoise_flatNoiseSumE->Fill(hcalnoise_flatNoiseSumE());
+            h1D_hcalnoise_flatNoiseSumEt->Fill(hcalnoise_flatNoiseSumEt());
+            h1D_hcalnoise_isolatedNoiseSumE->Fill(hcalnoise_isolatedNoiseSumE());
+            h1D_hcalnoise_isolatedNoiseSumEt->Fill(hcalnoise_isolatedNoiseSumEt());
+            h1D_hcalnoise_max10GeVHitTime->Fill(hcalnoise_max10GeVHitTime());
+            h1D_hcalnoise_max25GeVHitTime->Fill(hcalnoise_max25GeVHitTime());
+            h1D_hcalnoise_maxE10TS->Fill(hcalnoise_maxE10TS());
+            h1D_hcalnoise_maxE2Over10TS->Fill(hcalnoise_maxE2Over10TS());
+            h1D_hcalnoise_maxE2TS->Fill(hcalnoise_maxE2TS());
+            h1D_hcalnoise_min10GeVHitTime->Fill(hcalnoise_min10GeVHitTime());
+            h1D_hcalnoise_min25GeVHitTime->Fill(hcalnoise_min25GeVHitTime());
+            h1D_hcalnoise_minE10TS->Fill(hcalnoise_minE10TS());
+            h1D_hcalnoise_minE2Over10TS->Fill(hcalnoise_minE2Over10TS());
+            h1D_hcalnoise_minE2TS->Fill(hcalnoise_minE2TS());
+            h1D_hcalnoise_minHPDEMF->Fill(hcalnoise_minHPDEMF());
+            h1D_hcalnoise_minRBXEMF->Fill(hcalnoise_minRBXEMF());
+            h1D_hcalnoise_rms10GeVHitTime->Fill(hcalnoise_rms10GeVHitTime());
+            h1D_hcalnoise_rms25GeVHitTime->Fill(hcalnoise_rms25GeVHitTime());
+            h1D_hcalnoise_spikeNoiseSumE->Fill(hcalnoise_spikeNoiseSumE());
+            h1D_hcalnoise_spikeNoiseSumEt->Fill(hcalnoise_spikeNoiseSumEt());
+            h1D_hcalnoise_triangleNoiseSumE->Fill(hcalnoise_triangleNoiseSumE());
+            h1D_hcalnoise_triangleNoiseSumEt->Fill(hcalnoise_triangleNoiseSumEt());
+            h1D_hcalnoise_GetRecHitCount->Fill(hcalnoise_GetRecHitCount());
+            h1D_hcalnoise_GetRecHitCount15->Fill(hcalnoise_GetRecHitCount15());
+            h1D_hcalnoise_hbheIsoNoiseFilter->Fill(hcalnoise_hbheIsoNoiseFilter());
+            h1D_hcalnoise_maxHPDHits->Fill(hcalnoise_maxHPDHits());
+            h1D_hcalnoise_maxHPDNoOtherHits->Fill(hcalnoise_maxHPDNoOtherHits());
+            h1D_hcalnoise_maxRBXHits->Fill(hcalnoise_maxRBXHits());
+            h1D_hcalnoise_maxZeros->Fill(hcalnoise_maxZeros());
+            h1D_hcalnoise_noiseFilterStatus->Fill(hcalnoise_noiseFilterStatus());
+            h1D_hcalnoise_noiseType->Fill(hcalnoise_noiseType());
+            h1D_hcalnoise_num10GeVHits->Fill(hcalnoise_num10GeVHits());
+            h1D_hcalnoise_num25GeVHits->Fill(hcalnoise_num25GeVHits());
+            h1D_hcalnoise_numFlatNoiseChannels->Fill(hcalnoise_numFlatNoiseChannels());
+            h1D_hcalnoise_numIsolatedNoiseChannels->Fill(hcalnoise_numIsolatedNoiseChannels());
+            h1D_hcalnoise_numProblematicRBXs->Fill(hcalnoise_numProblematicRBXs());
+            h1D_hcalnoise_numSpikeNoiseChannels->Fill(hcalnoise_numSpikeNoiseChannels());
+            h1D_hcalnoise_numTS4TS5NoiseChannels->Fill(hcalnoise_numTS4TS5NoiseChannels());
+            h1D_hcalnoise_numTriangleNoiseChannels->Fill(hcalnoise_numTriangleNoiseChannels());
+            h1D_hcalnoise_passHighLevelNoiseFilter->Fill(hcalnoise_passHighLevelNoiseFilter());
+            h1D_hcalnoise_passLooseNoiseFilter->Fill(hcalnoise_passLooseNoiseFilter());
+            h1D_hcalnoise_passTightNoiseFilter->Fill(hcalnoise_passTightNoiseFilter());
+
+
             nEventsFiltered++;
 
 
@@ -745,8 +1214,8 @@ int ScanChain( TChain* chain) {
             if( passHLTTrigger("HLT_PFMET170_v1") ) h1D_trig_pfMet->Fill(pfMet);
             if( passHLTTrigger("HLT_PFMET170_NoiseCleaned_v2") ) h1D_trig_pfMet_clean->Fill(pfMet);
             if( passHLTTrigger("HLT_PFMET170_v1") && passHLTTrigger("HLT_PFMET170_NoiseCleaned_v2") ) h1D_trig_pfMet_both->Fill(pfMet);
-                    
-            
+
+
             h1D_maxZeros_filt->Fill(hcalnoise_maxZeros());
             h1D_effbyrun_filt->Fill(runToBinMap[evt_run()]);
 
@@ -754,9 +1223,9 @@ int ScanChain( TChain* chain) {
             // At this point, we've passed all the filters
             // and are now in the region of interest
 
-            if(pfMet > 500) {
-                std::cout << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event() << " pfCaloMet: " << pfCaloMet << " pfMet: " << pfMet << " pfChMet: " << pfChMet << " caloMet: " << caloMet << " pfClusterMet: " << pfClusterMet << std::endl;
-            }
+            // if(pfMet > 500) {
+            // std::cout << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event() << " pfCaloMet: " << pfCaloMet << " pfMet: " << pfMet << " pfChMet: " << pfChMet << " caloMet: " << caloMet << " pfClusterMet: " << pfClusterMet << std::endl;
+            // }
 
         }
 
@@ -764,120 +1233,191 @@ int ScanChain( TChain* chain) {
         delete tree;
         file->Close();
         delete file;
-    }
+        }
 
-    runLumiOutput.close();
-    debug.close();
-    printCounter();
+        runLumiOutput.close();
+        debug.close();
+        printCounter();
 
-    std::cout << " nEventsChain: " << nEventsChain << " nEventsFiltered: " << nEventsFiltered << std::endl;
-
-
-    std::cout << "ALL: " << passFilters.at(0) << std::endl
-              << "trackingFailure: " << passFilters.at(1) << std::endl
-              << "cscTightHalo: " << passFilters.at(2) << std::endl
-              << "hbheIsoNoise: " << passFilters.at(3) << std::endl
-              << "hbheFilterRun1: " << passFilters.at(4) << std::endl
-              << "ecalDeadCell: " << passFilters.at(5) << std::endl
-              << "eeBadSc: " << passFilters.at(6) << std::endl
-              << "passTightNoise: " << passFilters.at(7) << std::endl;
+        std::cout << " nEventsChain: " << nEventsChain << " nEventsFiltered: " << nEventsFiltered << std::endl;
 
 
-    std::string out = "pdfs/";
-    std::string common = "--noStack --noFill --xAxisOverride [GeV] --type --preserveBackgroundOrder --legendTextSize 0.03 --legendRight -0.05";
-    dataMCplotMaker(null, h1D_met_vec, titlesMet, "", "", common+" --overrideHeader MET (after filters) --outputName "+out+"h1D_met.pdf");
+        std::cout << "ALL: " << passFilters.at(0) << std::endl
+            << "trackingFailure: " << passFilters.at(1) << std::endl
+            << "cscTightHalo: " << passFilters.at(2) << std::endl
+            << "hbheIsoNoise: " << passFilters.at(3) << std::endl
+            << "hbheFilterRun1: " << passFilters.at(4) << std::endl
+            << "ecalDeadCell: " << passFilters.at(5) << std::endl
+            << "eeBadSc: " << passFilters.at(6) << std::endl
+            << "passTightNoise: " << passFilters.at(7) << std::endl;
 
-    dataMCplotMaker(null, h1D_caloMet_filters_vec, titlesFilters, "", "", common+" --overrideHeader caloMet (cumulative filters) --outputName "+out+"h1D_caloMet_filters.pdf");
-    dataMCplotMaker(null, h1D_pfMet_filters_vec, titlesFilters, "", "", common+" --overrideHeader pfMet (cumulative filters) --outputName "+out+"h1D_pfMet_filters.pdf");
-    dataMCplotMaker(null, h1D_pfClusterMet_filters_vec, titlesFilters, "", "", common+" --overrideHeader pfClusterMet (cumulative filters) --outputName "+out+"h1D_pfClusterMet_filters.pdf");
-    dataMCplotMaker(null, h1D_pfChMet_filters_vec, titlesFilters, "", "", common+" --overrideHeader pfChMet (cumulative filters) --outputName "+out+"h1D_pfChMet_filters.pdf");
-    dataMCplotMaker(null, h1D_pfCaloMet_filters_vec, titlesFilters, "", "", common+" --overrideHeader pfCaloMet (cumulative filters) --outputName "+out+"h1D_pfCaloMet_filters.pdf");
 
-    dataMCplotMaker(null, h1D_caloMetPhi_filters_vec, titlesFilters, "", "", common+" --setMaximum 5000 --isLinear --overrideHeader caloMetPhi (cumulative filters) --outputName "+out+"h1D_caloMetPhi_filters.pdf");
-    dataMCplotMaker(null, h1D_pfMetPhi_filters_vec, titlesFilters, "", "", common+" --isLinear --overrideHeader pfMetPhi (cumulative filters) --outputName "+out+"h1D_pfMetPhi_filters.pdf");
+        std::string out = "pdfs/";
+        std::string common = "--noStack --noFill --xAxisOverride [GeV] --type --preserveBackgroundOrder --legendTextSize 0.03 --legendRight -0.05 ";
+        dataMCplotMaker(null, h1D_met_vec, titlesMet, "", "", common+" --overrideHeader MET (after filters) --outputName "+out+"h1D_met.pdf");
 
-    dataMCplotMaker(null, h1D_jetCaloMetPhi_filters_vec, titlesFilters, "", "", common+"  --overrideHeader #Delta#phi(j,caloMet) (cumulative filters) --xAxisOverride #phi --outputName "+out+"h1D_jetCaloMetPhi_filters.pdf");
+        dataMCplotMaker(null, h1D_caloMet_filters_vec, titlesFilters, "", "", common+" --overrideHeader caloMet (cumulative filters) --outputName "+out+"h1D_caloMet_filters.pdf");
+        dataMCplotMaker(null, h1D_pfMet_filters_vec, titlesFilters, "", "", common+" --overrideHeader pfMet (cumulative filters) --outputName "+out+"h1D_pfMet_filters.pdf");
+        dataMCplotMaker(null, h1D_pfClusterMet_filters_vec, titlesFilters, "", "", common+" --overrideHeader pfClusterMet (cumulative filters) --outputName "+out+"h1D_pfClusterMet_filters.pdf");
+        dataMCplotMaker(null, h1D_pfChMet_filters_vec, titlesFilters, "", "", common+" --overrideHeader pfChMet (cumulative filters) --outputName "+out+"h1D_pfChMet_filters.pdf");
+        dataMCplotMaker(null, h1D_pfCaloMet_filters_vec, titlesFilters, "", "", common+" --overrideHeader pfCaloMet (cumulative filters) --outputName "+out+"h1D_pfCaloMet_filters.pdf");
 
-    dataMCplotMaker(null, h1D_caloMet_filt_track_vec, titlesOneFilt, "", "", common+" --overrideHeader caloMet: trackingFailureFilter --outputName "+out+"h1D_caloMet_filt_track.pdf");
-    dataMCplotMaker(null, h1D_caloMet_filt_halo_vec, titlesOneFilt, "", "", common+" --overrideHeader caloMet: cscTightHaloFilter --outputName "+out+"h1D_caloMet_filt_halo.pdf");
-    dataMCplotMaker(null, h1D_caloMet_filt_isonoise_vec, titlesOneFilt, "", "", common+" --overrideHeader caloMet: hbheIsoNoiseFilter --outputName "+out+"h1D_caloMet_filt_isonoise.pdf");
-    dataMCplotMaker(null, h1D_caloMet_filt_tightnoise_vec, titlesOneFilt, "", "", common+" --overrideHeader caloMet: passTightNoiseFilter --outputName "+out+"h1D_caloMet_filt_tightnoise.pdf");
-    dataMCplotMaker(null, h1D_caloMet_filt_hbherun1_vec, titlesOneFilt, "", "", common+" --overrideHeader caloMet: hbheFilterRun1 --outputName "+out+"h1D_caloMet_filt_hbherun1.pdf");
-    dataMCplotMaker(null, h1D_caloMet_filt_ecalcell_vec, titlesOneFilt, "", "", common+" --overrideHeader caloMet: EcalDeadCellFilter --outputName "+out+"h1D_caloMet_filt_ecalcell.pdf");
-    dataMCplotMaker(null, h1D_caloMet_filt_eebadsc_vec, titlesOneFilt, "", "", common+" --overrideHeader caloMet: eeBadScFilter --outputName "+out+"h1D_caloMet_filt_eebadsc.pdf");
+        dataMCplotMaker(null, h1D_caloMetPhi_filters_vec, titlesFilters, "", "", common+" --setMaximum 5000 --isLinear --overrideHeader caloMetPhi (cumulative filters) --outputName "+out+"h1D_caloMetPhi_filters.pdf");
+        dataMCplotMaker(null, h1D_pfMetPhi_filters_vec, titlesFilters, "", "", common+" --isLinear --overrideHeader pfMetPhi (cumulative filters) --outputName "+out+"h1D_pfMetPhi_filters.pdf");
 
-    dataMCplotMaker(null, h1D_maxZeros_vec, titlesOnesFilt, "", "", common+" --overrideHeader maxZeros in RBX --outputName "+out+"h1D_maxZeros.pdf");
+        dataMCplotMaker(null, h1D_jetCaloMetPhi_filters_vec, titlesFilters, "", "", common+"  --overrideHeader #Delta#phi(j,caloMet) (cumulative filters) --xAxisOverride #phi --outputName "+out+"h1D_jetCaloMetPhi_filters.pdf");
 
-    dataMCplotMaker(null, h1D_leadingJet_chf_vec, titlesLeadingJet, "", "", common+"  --overrideHeader charged hadron fraction (no filters) --xAxisOverride fraction --outputName "+out+"h1D_leadingJet_chf.pdf");
-    dataMCplotMaker(null, h1D_leadingJet_nhf_vec, titlesLeadingJet, "", "", common+"  --overrideHeader neutral hadron fraction (no filters) --xAxisOverride fraction --outputName "+out+"h1D_leadingJet_nhf.pdf");
-    dataMCplotMaker(null, h1D_leadingJet_cef_vec, titlesLeadingJet, "", "", common+"  --overrideHeader charged EM fraction (no filters) --xAxisOverride fraction --outputName "+out+"h1D_leadingJet_cef.pdf");
-    dataMCplotMaker(null, h1D_leadingJet_nef_vec, titlesLeadingJet, "", "", common+"  --overrideHeader neutral EM fraction (no filters) --xAxisOverride fraction --outputName "+out+"h1D_leadingJet_nef.pdf");
-    dataMCplotMaker(null, h1D_leadingJet_cm_vec,  titlesLeadingJet, "", "", common+"  --overrideHeader charged multiplicity  (no filters) --xAxisOverride --outputName "+out+"h1D_leadingJet_cm.pdf");
+        dataMCplotMaker(null, h1D_caloMet_filt_track_vec, titlesOneFilt, "", "", common+" --overrideHeader caloMet: trackingFailureFilter --outputName "+out+"h1D_caloMet_filt_track.pdf");
+        dataMCplotMaker(null, h1D_caloMet_filt_halo_vec, titlesOneFilt, "", "", common+" --overrideHeader caloMet: cscTightHaloFilter --outputName "+out+"h1D_caloMet_filt_halo.pdf");
+        dataMCplotMaker(null, h1D_caloMet_filt_isonoise_vec, titlesOneFilt, "", "", common+" --overrideHeader caloMet: hbheIsoNoiseFilter --outputName "+out+"h1D_caloMet_filt_isonoise.pdf");
+        dataMCplotMaker(null, h1D_caloMet_filt_tightnoise_vec, titlesOneFilt, "", "", common+" --overrideHeader caloMet: passTightNoiseFilter --outputName "+out+"h1D_caloMet_filt_tightnoise.pdf");
+        dataMCplotMaker(null, h1D_caloMet_filt_hbherun1_vec, titlesOneFilt, "", "", common+" --overrideHeader caloMet: hbheFilterRun1 --outputName "+out+"h1D_caloMet_filt_hbherun1.pdf");
+        dataMCplotMaker(null, h1D_caloMet_filt_ecalcell_vec, titlesOneFilt, "", "", common+" --overrideHeader caloMet: EcalDeadCellFilter --outputName "+out+"h1D_caloMet_filt_ecalcell.pdf");
+        dataMCplotMaker(null, h1D_caloMet_filt_eebadsc_vec, titlesOneFilt, "", "", common+" --overrideHeader caloMet: eeBadScFilter --outputName "+out+"h1D_caloMet_filt_eebadsc.pdf");
 
-    dataMCplotMaker(null, h1D_nm1_maxHPDHits_vec, titlesNm1, "", "", common+"  --overrideHeader maxHPDHits N-1 before other filters --xAxisOverride n --vLine 17 --outputName "+out+"h1D_nm1_maxHPDHits.pdf");
-    dataMCplotMaker(null, h1D_nm1_maxHPDNoOtherHits_vec, titlesNm1, "", "", common+"  --overrideHeader maxHPDNoOtherHits N-1 before other filters --xAxisOverride n --vLine 10 --outputName "+out+"h1D_nm1_maxHPDNoOtherHits.pdf");
-    dataMCplotMaker(null, h1D_nm1_numIsolatedNoiseChannels_vec, titlesNm1, "", "", common+"  --overrideHeader numIsolatedNoiseChannels N-1 before other filters --vLine 10 --xAxisOverride n --outputName "+out+"h1D_nm1_numIsolatedNoiseChannels.pdf");
-    dataMCplotMaker(null, h1D_nm1_isolatedNoiseSumE_vec, titlesNm1, "", "", common+"  --overrideHeader isolatedNoiseSumE N-1 before other filters --vLine 50 --xAxisOverride [GeV] --outputName "+out+"h1D_nm1_isolatedNoiseSumE.pdf");
-    dataMCplotMaker(null, h1D_nm1_isolatedNoiseSumEt_vec,  titlesNm1, "", "", common+"  --overrideHeader isolatedNoiseSumEt N-1 before other filters --vLine 25 --xAxisOverride [GeV] --outputName "+out+"h1D_nm1_isolatedNoiseSumEt.pdf");
+        dataMCplotMaker(null, h1D_maxZeros_vec, titlesOnesFilt, "", "", common+" --overrideHeader maxZeros in RBX --outputName "+out+"h1D_maxZeros.pdf");
 
-    dataMCplotMaker(null, h1D_trig_pfMet_vec,  titlesTrig, "", "", common+"  --overrideHeader pfMet (after filters) --xAxisOverride [GeV] --outputName "+out+"h1D_trig_pfMet.pdf");
+        dataMCplotMaker(null, h1D_leadingJet_chf_vec, titlesLeadingJet, "", "", common+"  --overrideHeader charged hadron fraction (no filters) --xAxisOverride fraction --outputName "+out+"h1D_leadingJet_chf.pdf");
+        dataMCplotMaker(null, h1D_leadingJet_nhf_vec, titlesLeadingJet, "", "", common+"  --overrideHeader neutral hadron fraction (no filters) --xAxisOverride fraction --outputName "+out+"h1D_leadingJet_nhf.pdf");
+        dataMCplotMaker(null, h1D_leadingJet_cef_vec, titlesLeadingJet, "", "", common+"  --overrideHeader charged EM fraction (no filters) --xAxisOverride fraction --outputName "+out+"h1D_leadingJet_cef.pdf");
+        dataMCplotMaker(null, h1D_leadingJet_nef_vec, titlesLeadingJet, "", "", common+"  --overrideHeader neutral EM fraction (no filters) --xAxisOverride fraction --outputName "+out+"h1D_leadingJet_nef.pdf");
+        dataMCplotMaker(null, h1D_leadingJet_cm_vec,  titlesLeadingJet, "", "", common+"  --overrideHeader charged multiplicity  (no filters) --xAxisOverride --outputName "+out+"h1D_leadingJet_cm.pdf");
 
-    drawHist2D(h2D_pfClusterMet_pfCaloMet,out+"h2D_pfClusterMet_pfCaloMet.pdf",    "--logscale --title pfCaloMet vs pfClusterMet --xlabel pfClusterMet --ylabel pfCaloMet");
-    drawHist2D(h2D_pfClusterMet_caloMet,out+"h2D_pfClusterMet_caloMet.pdf","--logscale --title caloMet vs pfClusterMet --xlabel pfClusterMet --ylabel caloMet");
-    drawHist2D(h2D_pfClusterMet_pfMet,out+"h2D_pfClusterMet_pfMet.pdf","--logscale --title pfMet vs pfClusterMet --xlabel  pfClusterMet --ylabel pfMet");
-    drawHist2D(h2D_pfCaloMet_pfMet,out+"h2D_pfCaloMet_pfMet.pdf",    "--logscale --title pfMet vs pfCaloMet --xlabel pfCaloMet_met --ylabel pfMet_met");
-    drawHist2D(h2D_pfCaloMet_caloMet,out+"h2D_pfCaloMet_caloMet.pdf","--logscale --title caloMet vs pfCaloMet --xlabel pfCaloMet_met --ylabel caloMet");
-    drawHist2D(h2D_caloMet_pfMet,out+"h2D_caloMet_pfMet.pdf","--logscale --title pfMet vs caloMet --xlabel  caloMet --ylabel pfMet");
+        dataMCplotMaker(null, h1D_nm1_maxHPDHits_vec, titlesNm1, "", "", common+"  --overrideHeader maxHPDHits N-1 before other filters --xAxisOverride n --vLine 17 --outputName "+out+"h1D_nm1_maxHPDHits.pdf");
+        dataMCplotMaker(null, h1D_nm1_maxHPDNoOtherHits_vec, titlesNm1, "", "", common+"  --overrideHeader maxHPDNoOtherHits N-1 before other filters --xAxisOverride n --vLine 10 --outputName "+out+"h1D_nm1_maxHPDNoOtherHits.pdf");
+        dataMCplotMaker(null, h1D_nm1_numIsolatedNoiseChannels_vec, titlesNm1, "", "", common+"  --overrideHeader numIsolatedNoiseChannels N-1 before other filters --vLine 10 --xAxisOverride n --outputName "+out+"h1D_nm1_numIsolatedNoiseChannels.pdf");
+        dataMCplotMaker(null, h1D_nm1_isolatedNoiseSumE_vec, titlesNm1, "", "", common+"  --overrideHeader isolatedNoiseSumE N-1 before other filters --vLine 50 --xAxisOverride [GeV] --outputName "+out+"h1D_nm1_isolatedNoiseSumE.pdf");
+        dataMCplotMaker(null, h1D_nm1_isolatedNoiseSumEt_vec,  titlesNm1, "", "", common+"  --overrideHeader isolatedNoiseSumEt N-1 before other filters --vLine 25 --xAxisOverride [GeV] --outputName "+out+"h1D_nm1_isolatedNoiseSumEt.pdf");
 
-    drawHist2D(h2D_jetPt_caloMet,out+"h2D_jetPt_caloMet.pdf","--logscale --title caloMet vs leading jet pT --xlabel  jetPt --ylabel caloMet");
+        dataMCplotMaker(null, h1D_trig_pfMet_vec,  titlesTrig, "", "", common+"  --overrideHeader pfMet (after filters) --xAxisOverride [GeV] --outputName "+out+"h1D_trig_pfMet.pdf");
 
-    drawHist2D(h2D_towers_etaphi,out+"h2D_towers_etaphi.pdf","--logscale --title towers --xlabel  #eta --ylabel #phi");
-    drawHist2D(h2D_towers_etaphi_em,out+"h2D_towers_etaphi_em.pdf","--logscale --title towers (EM weighted) --xlabel  #eta --ylabel #phi");
-    drawHist2D(h2D_towers_etaphi_had,out+"h2D_towers_etaphi_had.pdf","--logscale --title towers (HCAL weighted) --xlabel  #eta --ylabel #phi");
-    drawHist2D(h2D_towers_etaphi_outer,out+"h2D_towers_etaphi_outer.pdf","--logscale --title towers (HO weighted) --xlabel  #eta --ylabel #phi");
-    drawHist2D(h2D_pfclusters_etaphi,out+"h2D_pfclusters_etaphi.pdf","--logscale --title pfclusters --xlabel  #eta --ylabel #phi");
-    drawHist2D(h2D_calojets_etaphi,out+"h2D_calojets_etaphi.pdf","--logscale --title calojets --xlabel  #eta --ylabel #phi");
+        drawHist2D(h2D_pfClusterMet_pfCaloMet,out+"h2D_pfClusterMet_pfCaloMet.pdf",    "--logscale --title pfCaloMet vs pfClusterMet --xlabel pfClusterMet --ylabel pfCaloMet");
+        drawHist2D(h2D_pfClusterMet_caloMet,out+"h2D_pfClusterMet_caloMet.pdf","--logscale --title caloMet vs pfClusterMet --xlabel pfClusterMet --ylabel caloMet");
+        drawHist2D(h2D_pfClusterMet_pfMet,out+"h2D_pfClusterMet_pfMet.pdf","--logscale --title pfMet vs pfClusterMet --xlabel  pfClusterMet --ylabel pfMet");
+        drawHist2D(h2D_pfCaloMet_pfMet,out+"h2D_pfCaloMet_pfMet.pdf",    "--logscale --title pfMet vs pfCaloMet --xlabel pfCaloMet_met --ylabel pfMet_met");
+        drawHist2D(h2D_pfCaloMet_caloMet,out+"h2D_pfCaloMet_caloMet.pdf","--logscale --title caloMet vs pfCaloMet --xlabel pfCaloMet_met --ylabel caloMet");
+        drawHist2D(h2D_caloMet_pfMet,out+"h2D_caloMet_pfMet.pdf","--logscale --title pfMet vs caloMet --xlabel  caloMet --ylabel pfMet");
 
-    TH2F *h2D_towers_etaphi_em_avg = (TH2F*)h2D_towers_etaphi_em->Clone();
-    TH2F *h2D_towers_etaphi_had_avg = (TH2F*)h2D_towers_etaphi_had->Clone();
-    h2D_towers_etaphi_em_avg->Divide(h2D_towers_etaphi);
-    h2D_towers_etaphi_had_avg->Divide(h2D_towers_etaphi);
+        drawHist2D(h2D_jetPt_caloMet,out+"h2D_jetPt_caloMet.pdf","--logscale --title caloMet vs leading jet pT --xlabel  jetPt --ylabel caloMet");
 
-    h2D_towers_etaphi_em->Divide(h2D_towers_etaphi);
-    h2D_towers_etaphi_had->Divide(h2D_towers_etaphi);
+        drawHist2D(h2D_towers_etaphi,out+"h2D_towers_etaphi.pdf","--logscale --title towers --xlabel  #eta --ylabel #phi");
+        drawHist2D(h2D_towers_etaphi_em,out+"h2D_towers_etaphi_em.pdf","--logscale --title towers (EM weighted) --xlabel  #eta --ylabel #phi");
+        drawHist2D(h2D_towers_etaphi_had,out+"h2D_towers_etaphi_had.pdf","--logscale --title towers (HCAL weighted) --xlabel  #eta --ylabel #phi");
+        drawHist2D(h2D_towers_etaphi_outer,out+"h2D_towers_etaphi_outer.pdf","--logscale --title towers (HO weighted) --xlabel  #eta --ylabel #phi");
+        drawHist2D(h2D_pfclusters_etaphi,out+"h2D_pfclusters_etaphi.pdf","--logscale --title pfclusters --xlabel  #eta --ylabel #phi");
+        drawHist2D(h2D_calojets_etaphi,out+"h2D_calojets_etaphi.pdf","--logscale --title calojets --xlabel  #eta --ylabel #phi");
 
-    drawHist2D(h2D_towers_etaphi_em,out+"h2D_towers_etaphi_em_avg.pdf","--logscale --title towers (EM weighted,avg per bin) --xlabel  #eta --ylabel #phi");
-    drawHist2D(h2D_towers_etaphi_had,out+"h2D_towers_etaphi_had_avg.pdf","--logscale --title towers (HCAL weighted,avg per bin) --xlabel  #eta --ylabel #phi");
+        TH2F *h2D_towers_etaphi_em_avg = (TH2F*)h2D_towers_etaphi_em->Clone();
+        TH2F *h2D_towers_etaphi_had_avg = (TH2F*)h2D_towers_etaphi_had->Clone();
+        h2D_towers_etaphi_em_avg->Divide(h2D_towers_etaphi);
+        h2D_towers_etaphi_had_avg->Divide(h2D_towers_etaphi);
 
-    h1D_trig_pfMet_clean->Divide(h1D_trig_pfMet);
+        h2D_towers_etaphi_em->Divide(h2D_towers_etaphi);
+        h2D_towers_etaphi_had->Divide(h2D_towers_etaphi);
 
-    singlePlotMaker(h1D_trig_pfMet_clean, "",common+" --overrideHeader clean/normal --outputName "+out+"h1D_trig_pfMet_clean_ratio.pdf");
+        drawHist2D(h2D_towers_etaphi_em,out+"h2D_towers_etaphi_em_avg.pdf","--logscale --title towers (EM weighted,avg per bin) --xlabel  #eta --ylabel #phi");
+        drawHist2D(h2D_towers_etaphi_had,out+"h2D_towers_etaphi_had_avg.pdf","--logscale --title towers (HCAL weighted,avg per bin) --xlabel  #eta --ylabel #phi");
 
-    singlePlotMaker(h1D_towers_phi, "",common+" --overrideHeader towers phi occupancy --outputName "+out+"h1D_towers_phi.pdf");
-    singlePlotMaker(h1D_towers_phi_em, "",common+" --overrideHeader towers phi occupancy (ECAL weighted) --outputName "+out+"h1D_towers_phi_em.pdf");
-    singlePlotMaker(h1D_towers_phi_had, "",common+" --overrideHeader towers phi occupancy (HCAL weighted) --outputName "+out+"h1D_towers_phi_had.pdf");
-    singlePlotMaker(h1D_towers_phi_outer, "",common+" --overrideHeader towers phi occupancy (HO weighted) --outputName "+out+"h1D_towers_phi_outer.pdf");
+        h1D_trig_pfMet_clean->Divide(h1D_trig_pfMet);
 
-    h1D_towers_phi_em->Divide(h1D_towers_phi);
-    h1D_towers_phi_had->Divide(h1D_towers_phi);
+        singlePlotMaker(h1D_trig_pfMet_clean, "",common+" --overrideHeader clean/normal --outputName "+out+"h1D_trig_pfMet_clean_ratio.pdf");
 
-    singlePlotMaker(h1D_towers_phi_em, "",common+" --histoErrors --overrideHeader towers phi occupancy (ECAL weighted, avg per bin) --outputName "+out+"h1D_towers_phi_em_avg.pdf");
-    singlePlotMaker(h1D_towers_phi_had, "",common+" --histoErrors --overrideHeader towers phi occupancy (HCAL weighted, avg per bin) --outputName "+out+"h1D_towers_phi_had_avg.pdf");
+        singlePlotMaker(h1D_towers_phi, "",common+" --overrideHeader towers phi occupancy --outputName "+out+"h1D_towers_phi.pdf");
+        singlePlotMaker(h1D_towers_phi_em, "",common+" --overrideHeader towers phi occupancy (ECAL weighted) --outputName "+out+"h1D_towers_phi_em.pdf");
+        singlePlotMaker(h1D_towers_phi_had, "",common+" --overrideHeader towers phi occupancy (HCAL weighted) --outputName "+out+"h1D_towers_phi_had.pdf");
+        singlePlotMaker(h1D_towers_phi_outer, "",common+" --overrideHeader towers phi occupancy (HO weighted) --outputName "+out+"h1D_towers_phi_outer.pdf");
 
-    // singlePlotMaker(h1D_caloMetNew, "",common+" --overrideHeader caloMet tower eta-phi corrected --outputName "+out+"h1D_caloMetNew.pdf");
-    // singlePlotMaker(h1D_caloMetPhiNew, "",common+" --isLinear --overrideHeader caloMetPhi tower eta-phi corrected --outputName "+out+"h1D_caloMetPhiNew.pdf");
+        h1D_towers_phi_em->Divide(h1D_towers_phi);
+        h1D_towers_phi_had->Divide(h1D_towers_phi);
 
-    std::string runBinLabels = "";
-    for(int i = 0; i < binToRunMap.size(); i++) {
+        singlePlotMaker(h1D_towers_phi_em, "",common+" --histoErrors --overrideHeader towers phi occupancy (ECAL weighted, avg per bin) --outputName "+out+"h1D_towers_phi_em_avg.pdf");
+        singlePlotMaker(h1D_towers_phi_had, "",common+" --histoErrors --overrideHeader towers phi occupancy (HCAL weighted, avg per bin) --outputName "+out+"h1D_towers_phi_had_avg.pdf");
+
+        // singlePlotMaker(h1D_caloMetNew, "",common+" --overrideHeader caloMet tower eta-phi corrected --outputName "+out+"h1D_caloMetNew.pdf");
+        // singlePlotMaker(h1D_caloMetPhiNew, "",common+" --isLinear --overrideHeader caloMetPhi tower eta-phi corrected --outputName "+out+"h1D_caloMetPhiNew.pdf");
+
+        std::string runBinLabels = "";
+        for(int i = 0; i < binToRunMap.size(); i++) {
             runBinLabels += to_string(binToRunMap[i]) + ",";
+        }
+        dataMCplotMaker(null, h1D_effbyrun_vec, titlesOnesFilt, "", "", common+" --overrideHeader filter efficiency by run  --xAxisVerticalBinLabels --xAxisBinLabels "+runBinLabels+" --outputName "+out+"h1D_effbyrun.pdf");
+
+        std::string binLabels = "EBp,EBm,EEp,EEm,_,HBHEa,HBHEb,HBHEc,HF,HO,_,_,RPC,DT0,DTp,DTm,CSCp,CSCm,_,_,CASTOR,_,ZDC,_,TIBTID,TOB,TECp,TECm,BPIX,FPIX,ESp,ESm";
+        dataMCplotMaker(null, h1D_detectorStatus_vec, titlesDCS, "", "", common+"  --overrideHeader DCS bits --nDivisions 216 --xAxisVerticalBinLabels --xAxisBinLabels "+binLabels+" --outputName "+out+"h1D_detectorStatus.pdf");
+
+
+        // hcalnoise plots
+        dataMCplotMaker(null,h1D_hcalnoise_HasBadRBXTS4TS5_vec,titlesHcalnoise,"hcalnoise_HasBadRBXTS4TS5","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_HasBadRBXTS4TS5.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_GetRecHitEnergy_vec,titlesHcalnoise,"hcalnoise_GetRecHitEnergy","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_GetRecHitEnergy.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_GetRecHitEnergy15_vec,titlesHcalnoise,"hcalnoise_GetRecHitEnergy15","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_GetRecHitEnergy15.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_GetTotalCalibCharge_vec,titlesHcalnoise,"hcalnoise_GetTotalCalibCharge","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_GetTotalCalibCharge.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_TS4TS5NoiseSumE_vec,titlesHcalnoise,"hcalnoise_TS4TS5NoiseSumE","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_TS4TS5NoiseSumE.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_TS4TS5NoiseSumEt_vec,titlesHcalnoise,"hcalnoise_TS4TS5NoiseSumEt","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_TS4TS5NoiseSumEt.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_eventChargeFraction_vec,titlesHcalnoise,"hcalnoise_eventChargeFraction","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_eventChargeFraction.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_eventEMEnergy_vec,titlesHcalnoise,"hcalnoise_eventEMEnergy","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_eventEMEnergy.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_eventEMFraction_vec,titlesHcalnoise,"hcalnoise_eventEMFraction","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_eventEMFraction.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_eventHadEnergy_vec,titlesHcalnoise,"hcalnoise_eventHadEnergy","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_eventHadEnergy.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_eventTrackEnergy_vec,titlesHcalnoise,"hcalnoise_eventTrackEnergy","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_eventTrackEnergy.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_flatNoiseSumE_vec,titlesHcalnoise,"hcalnoise_flatNoiseSumE","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_flatNoiseSumE.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_flatNoiseSumEt_vec,titlesHcalnoise,"hcalnoise_flatNoiseSumEt","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_flatNoiseSumEt.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_isolatedNoiseSumE_vec,titlesHcalnoise,"hcalnoise_isolatedNoiseSumE","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_isolatedNoiseSumE.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_isolatedNoiseSumEt_vec,titlesHcalnoise,"hcalnoise_isolatedNoiseSumEt","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_isolatedNoiseSumEt.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_max10GeVHitTime_vec,titlesHcalnoise,"hcalnoise_max10GeVHitTime","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_max10GeVHitTime.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_max25GeVHitTime_vec,titlesHcalnoise,"hcalnoise_max25GeVHitTime","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_max25GeVHitTime.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_maxE10TS_vec,titlesHcalnoise,"hcalnoise_maxE10TS","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_maxE10TS.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_maxE2Over10TS_vec,titlesHcalnoise,"hcalnoise_maxE2Over10TS","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_maxE2Over10TS.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_maxE2TS_vec,titlesHcalnoise,"hcalnoise_maxE2TS","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_maxE2TS.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_min10GeVHitTime_vec,titlesHcalnoise,"hcalnoise_min10GeVHitTime","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_min10GeVHitTime.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_min25GeVHitTime_vec,titlesHcalnoise,"hcalnoise_min25GeVHitTime","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_min25GeVHitTime.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_minE10TS_vec,titlesHcalnoise,"hcalnoise_minE10TS","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_minE10TS.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_minE2Over10TS_vec,titlesHcalnoise,"hcalnoise_minE2Over10TS","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_minE2Over10TS.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_minE2TS_vec,titlesHcalnoise,"hcalnoise_minE2TS","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_minE2TS.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_minHPDEMF_vec,titlesHcalnoise,"hcalnoise_minHPDEMF","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_minHPDEMF.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_minRBXEMF_vec,titlesHcalnoise,"hcalnoise_minRBXEMF","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_minRBXEMF.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_rms10GeVHitTime_vec,titlesHcalnoise,"hcalnoise_rms10GeVHitTime","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_rms10GeVHitTime.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_rms25GeVHitTime_vec,titlesHcalnoise,"hcalnoise_rms25GeVHitTime","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_rms25GeVHitTime.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_spikeNoiseSumE_vec,titlesHcalnoise,"hcalnoise_spikeNoiseSumE","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_spikeNoiseSumE.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_spikeNoiseSumEt_vec,titlesHcalnoise,"hcalnoise_spikeNoiseSumEt","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_spikeNoiseSumEt.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_triangleNoiseSumE_vec,titlesHcalnoise,"hcalnoise_triangleNoiseSumE","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_triangleNoiseSumE.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_triangleNoiseSumEt_vec,titlesHcalnoise,"hcalnoise_triangleNoiseSumEt","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_triangleNoiseSumEt.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_GetRecHitCount_vec,titlesHcalnoise,"hcalnoise_GetRecHitCount","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_GetRecHitCount.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_GetRecHitCount15_vec,titlesHcalnoise,"hcalnoise_GetRecHitCount15","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_GetRecHitCount15.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_hbheIsoNoiseFilter_vec,titlesHcalnoise,"hcalnoise_hbheIsoNoiseFilter","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_hbheIsoNoiseFilter.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_maxHPDHits_vec,titlesHcalnoise,"hcalnoise_maxHPDHits","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_maxHPDHits.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_maxHPDNoOtherHits_vec,titlesHcalnoise,"hcalnoise_maxHPDNoOtherHits","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_maxHPDNoOtherHits.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_maxRBXHits_vec,titlesHcalnoise,"hcalnoise_maxRBXHits","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_maxRBXHits.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_maxZeros_vec,titlesHcalnoise,"hcalnoise_maxZeros","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_maxZeros.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_noiseFilterStatus_vec,titlesHcalnoise,"hcalnoise_noiseFilterStatus","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_noiseFilterStatus.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_noiseType_vec,titlesHcalnoise,"hcalnoise_noiseType","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_noiseType.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_num10GeVHits_vec,titlesHcalnoise,"hcalnoise_num10GeVHits","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_num10GeVHits.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_num25GeVHits_vec,titlesHcalnoise,"hcalnoise_num25GeVHits","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_num25GeVHits.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_numFlatNoiseChannels_vec,titlesHcalnoise,"hcalnoise_numFlatNoiseChannels","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_numFlatNoiseChannels.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_numIsolatedNoiseChannels_vec,titlesHcalnoise,"hcalnoise_numIsolatedNoiseChannels","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_numIsolatedNoiseChannels.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_numProblematicRBXs_vec,titlesHcalnoise,"hcalnoise_numProblematicRBXs","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_numProblematicRBXs.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_numSpikeNoiseChannels_vec,titlesHcalnoise,"hcalnoise_numSpikeNoiseChannels","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_numSpikeNoiseChannels.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_numTS4TS5NoiseChannels_vec,titlesHcalnoise,"hcalnoise_numTS4TS5NoiseChannels","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_numTS4TS5NoiseChannels.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_numTriangleNoiseChannels_vec,titlesHcalnoise,"hcalnoise_numTriangleNoiseChannels","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_numTriangleNoiseChannels.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_passHighLevelNoiseFilter_vec,titlesHcalnoise,"hcalnoise_passHighLevelNoiseFilter","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_passHighLevelNoiseFilter.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_passLooseNoiseFilter_vec,titlesHcalnoise,"hcalnoise_passLooseNoiseFilter","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_passLooseNoiseFilter.pdf");
+        dataMCplotMaker(null,h1D_hcalnoise_passTightNoiseFilter_vec,titlesHcalnoise,"hcalnoise_passTightNoiseFilter","",common+"  --xAxisOverride [GeV] --outputName "+out+"hcalnoise_passTightNoiseFilter.pdf");
+
+        dataMCplotMaker(null,h1D_twrs_numBadEcalCells_vec,titlesHcalnoise,"twrs_numBadEcalCells_vec","",common+" --xAxisOverride [GeV] --outputName "+out+"twrs_numBadEcalCells_vec.pdf");
+        dataMCplotMaker(null,h1D_twrs_numRecoveredEcalCells_vec,titlesHcalnoise,"twrs_numRecoveredEcalCells_vec","",common+" --xAxisOverride [GeV] --outputName "+out+"twrs_numRecoveredEcalCells_vec.pdf");
+        dataMCplotMaker(null,h1D_twrs_numProblematicEcalCells_vec,titlesHcalnoise,"twrs_numProblematicEcalCells_vec","",common+" --xAxisOverride [GeV] --outputName "+out+"twrs_numProblematicEcalCells_vec.pdf");
+        dataMCplotMaker(null,h1D_twrs_numBadHcalCells_vec,titlesHcalnoise,"twrs_numBadHcalCells_vec","",common+" --xAxisOverride [GeV] --outputName "+out+"twrs_numBadHcalCells_vec.pdf");
+        dataMCplotMaker(null,h1D_twrs_numRecoveredHcalCells_vec,titlesHcalnoise,"twrs_numRecoveredHcalCells_vec","",common+" --xAxisOverride [GeV] --outputName "+out+"twrs_numRecoveredHcalCells_vec.pdf");
+        dataMCplotMaker(null,h1D_twrs_numProblematicHcalCells_vec,titlesHcalnoise,"twrs_numProblematicHcalCells_vec","",common+" --xAxisOverride [GeV] --outputName "+out+"twrs_numProblematicHcalCells_vec.pdf");
+        dataMCplotMaker(null,h1D_twrs_numCrystals_vec,titlesHcalnoise,"twrs_numCrystals_vec","",common+" --xAxisOverride [GeV] --outputName "+out+"twrs_numCrystals_vec.pdf");
+
+        drawHist2D(h2D_twrs_numBadEcalCells,out+"h2D_twrs_numBadEcalCells.pdf","--logscale --title  twrs_numBadEcalCells --xlabel #eta --ylabel #phi");
+        drawHist2D(h2D_twrs_numRecoveredEcalCells,out+"h2D_twrs_numRecoveredEcalCells.pdf","--logscale --title  twrs_numRecoveredEcalCells --xlabel #eta --ylabel #phi");
+        drawHist2D(h2D_twrs_numProblematicEcalCells,out+"h2D_twrs_numProblematicEcalCells.pdf","--logscale --title twrs_numProblematicEcalCells  --xlabel #eta --ylabel #phi");
+        drawHist2D(h2D_twrs_numBadHcalCells,out+"h2D_twrs_numBadHcalCells.pdf","--logscale --title twrs_numBadHcalCells  --xlabel #eta --ylabel #phi");
+        drawHist2D(h2D_twrs_numRecoveredHcalCells,out+"h2D_twrs_numRecoveredHcalCells.pdf","--logscale --title twrs_numRecoveredHcalCells  --xlabel #eta --ylabel #phi");
+        drawHist2D(h2D_twrs_numProblematicHcalCells,out+"h2D_twrs_numProblematicHcalCells.pdf","--logscale --title twrs_numProblematicHcalCells  --xlabel #eta --ylabel #phi");
+        drawHist2D(h2D_twrs_numCrystals,out+"h2D_twrs_numCrystals.pdf","--logscale --title twrs_numCrystals  --xlabel #eta --ylabel #phi");
+
+        f.Write();
+
+        return 0;
     }
-    dataMCplotMaker(null, h1D_effbyrun_vec, titlesOnesFilt, "", "", common+" --overrideHeader filter efficiency by run  --xAxisVerticalBinLabels --xAxisBinLabels "+runBinLabels+" --outputName "+out+"h1D_effbyrun.pdf");
-
-    std::string binLabels = "EBp,EBm,EEp,EEm,_,HBHEa,HBHEb,HBHEc,HF,HO,_,_,RPC,DT0,DTp,DTm,CSCp,CSCm,_,_,CASTOR,_,ZDC,_,TIBTID,TOB,TECp,TECm,BPIX,FPIX,ESp,ESm";
-    dataMCplotMaker(null, h1D_detectorStatus_vec, titlesDCS, "", "", common+"  --overrideHeader DCS bits --nDivisions 216 --xAxisVerticalBinLabels --xAxisBinLabels "+binLabels+" --outputName "+out+"h1D_detectorStatus.pdf");
-
-
-    f.Write();
-
-    return 0;
-}
