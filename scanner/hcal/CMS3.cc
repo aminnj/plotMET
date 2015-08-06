@@ -5,6 +5,7 @@ namespace tas {
 	const vector<TString> &hlt_trigNames() { return cms3.hlt_trigNames(); }
 	const vector<TString> &pfjets_bDiscriminatorNames() { return cms3.pfjets_bDiscriminatorNames(); }
 	const bool &hcalnoise_HasBadRBXTS4TS5() { return cms3.hcalnoise_HasBadRBXTS4TS5(); }
+	const bool &evt_EcalDeadCellBoundaryEnergyFilter() { return cms3.evt_EcalDeadCellBoundaryEnergyFilter(); }
 	const bool &evt_EcalDeadCellTriggerPrimitiveFilter() { return cms3.evt_EcalDeadCellTriggerPrimitiveFilter(); }
 	const bool &evt_cscTightHaloFilter() { return cms3.evt_cscTightHaloFilter(); }
 	const bool &evt_eeBadScFilter() { return cms3.evt_eeBadScFilter(); }

@@ -30,6 +30,9 @@ protected:
 	bool hcalnoise_HasBadRBXTS4TS5_;
 	TBranch *hcalnoise_HasBadRBXTS4TS5_branch;
 	bool hcalnoise_HasBadRBXTS4TS5_isLoaded;
+	bool evt_EcalDeadCellBoundaryEnergyFilter_;
+	TBranch *evt_EcalDeadCellBoundaryEnergyFilter_branch;
+	bool evt_EcalDeadCellBoundaryEnergyFilter_isLoaded;
 	bool evt_EcalDeadCellTriggerPrimitiveFilter_;
 	TBranch *evt_EcalDeadCellTriggerPrimitiveFilter_branch;
 	bool evt_EcalDeadCellTriggerPrimitiveFilter_isLoaded;
@@ -758,6 +761,11 @@ void Init(TTree *tree) {
 	if (tree->GetAlias("hcalnoise_HasBadRBXTS4TS5") != 0) {
 		hcalnoise_HasBadRBXTS4TS5_branch = tree->GetBranch(tree->GetAlias("hcalnoise_HasBadRBXTS4TS5"));
 		if (hcalnoise_HasBadRBXTS4TS5_branch) {hcalnoise_HasBadRBXTS4TS5_branch->SetAddress(&hcalnoise_HasBadRBXTS4TS5_);}
+	}
+	evt_EcalDeadCellBoundaryEnergyFilter_branch = 0;
+	if (tree->GetAlias("evt_EcalDeadCellBoundaryEnergyFilter") != 0) {
+		evt_EcalDeadCellBoundaryEnergyFilter_branch = tree->GetBranch(tree->GetAlias("evt_EcalDeadCellBoundaryEnergyFilter"));
+		if (evt_EcalDeadCellBoundaryEnergyFilter_branch) {evt_EcalDeadCellBoundaryEnergyFilter_branch->SetAddress(&evt_EcalDeadCellBoundaryEnergyFilter_);}
 	}
 	evt_EcalDeadCellTriggerPrimitiveFilter_branch = 0;
 	if (tree->GetAlias("evt_EcalDeadCellTriggerPrimitiveFilter") != 0) {
@@ -1919,6 +1927,7 @@ void GetEntry(unsigned int idx)
 		hlt_trigNames_isLoaded = false;
 		pfjets_bDiscriminatorNames_isLoaded = false;
 		hcalnoise_HasBadRBXTS4TS5_isLoaded = false;
+		evt_EcalDeadCellBoundaryEnergyFilter_isLoaded = false;
 		evt_EcalDeadCellTriggerPrimitiveFilter_isLoaded = false;
 		evt_cscTightHaloFilter_isLoaded = false;
 		evt_eeBadScFilter_isLoaded = false;
@@ -2160,6 +2169,7 @@ void LoadAllBranches()
 	if (hlt_trigNames_branch != 0) hlt_trigNames();
 	if (pfjets_bDiscriminatorNames_branch != 0) pfjets_bDiscriminatorNames();
 	if (hcalnoise_HasBadRBXTS4TS5_branch != 0) hcalnoise_HasBadRBXTS4TS5();
+	if (evt_EcalDeadCellBoundaryEnergyFilter_branch != 0) evt_EcalDeadCellBoundaryEnergyFilter();
 	if (evt_EcalDeadCellTriggerPrimitiveFilter_branch != 0) evt_EcalDeadCellTriggerPrimitiveFilter();
 	if (evt_cscTightHaloFilter_branch != 0) evt_cscTightHaloFilter();
 	if (evt_eeBadScFilter_branch != 0) evt_eeBadScFilter();
@@ -2445,6 +2455,19 @@ void LoadAllBranches()
 			hcalnoise_HasBadRBXTS4TS5_isLoaded = true;
 		}
 		return hcalnoise_HasBadRBXTS4TS5_;
+	}
+	bool &evt_EcalDeadCellBoundaryEnergyFilter()
+	{
+		if (not evt_EcalDeadCellBoundaryEnergyFilter_isLoaded) {
+			if (evt_EcalDeadCellBoundaryEnergyFilter_branch != 0) {
+				evt_EcalDeadCellBoundaryEnergyFilter_branch->GetEntry(index);
+			} else { 
+				printf("branch evt_EcalDeadCellBoundaryEnergyFilter_branch does not exist!\n");
+				exit(1);
+			}
+			evt_EcalDeadCellBoundaryEnergyFilter_isLoaded = true;
+		}
+		return evt_EcalDeadCellBoundaryEnergyFilter_;
 	}
 	bool &evt_EcalDeadCellTriggerPrimitiveFilter()
 	{
@@ -5527,6 +5550,7 @@ namespace tas {
 	const vector<TString> &hlt_trigNames();
 	const vector<TString> &pfjets_bDiscriminatorNames();
 	const bool &hcalnoise_HasBadRBXTS4TS5();
+	const bool &evt_EcalDeadCellBoundaryEnergyFilter();
 	const bool &evt_EcalDeadCellTriggerPrimitiveFilter();
 	const bool &evt_cscTightHaloFilter();
 	const bool &evt_eeBadScFilter();
