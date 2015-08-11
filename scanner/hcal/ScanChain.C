@@ -51,73 +51,11 @@ bool passesLoosePFJetID(int pfJetIdx) {
     return true;
 }
 
-int lengthBadCells() {
-    int maxIPhiHad = -1, maxIEtaHad = -1;
-    float maxHadEnergy = -1;
-    vector<int> badCellsPerPhiStrip(150,0); // there shouldn't be more than 150 iphi vals...
-    for(int i = 0; i < twrs_eta().size(); i++) {
-        float eta = twrs_etacorr().at(i);
-        float phi = twrs_phicorr().at(i);
-        int ieta = twrs_ieta().at(i);
-        int iphi = twrs_iphi().at(i);
-        int numProbHcalCells = twrs_numProblematicHcalCells().at(i);
-
-        if( abs(eta) > 3.0) continue; // don't deal with HF
-
-        if(twrs_hadEnergy().at(i) > maxHadEnergy) {
-            maxIPhiHad = iphi;
-            maxIEtaHad = ieta;
-            maxHadEnergy = twrs_hadEnergy().at(i);
-        }
-        if(twrs_numProblematicHcalCells().at(i) > 0) badCellsPerPhiStrip[iphi] += numProbHcalCells;
-    }
-
-    int maxIPhiBad = -1;
-    int maxBadCells = -1;
-    for(int iphi = 0; iphi < badCellsPerPhiStrip.size(); iphi++) {
-        if(badCellsPerPhiStrip[iphi] > maxBadCells) {
-            maxBadCells = badCellsPerPhiStrip[iphi];
-            maxIPhiBad = iphi;
-        }
-    }
-
-    // at this point, if maxIPhiBad != maxIPhiHad, then it's not a phi strip event
-    vector<int> badCellsAlongWorstPhiStrip(150,0); // there shouldn't be more than 150 ieta vals...
-    for(int i = 0; i < twrs_eta().size(); i++) {
-        int ieta = twrs_ieta().at(i);
-        int iphi = twrs_iphi().at(i);
-
-        // don't deal with HF
-        if( abs(twrs_etacorr().at(i)) > 3.0) continue;
-        if( iphi != maxIPhiBad ) continue;
-
-        int numProbHcalCells = twrs_numProblematicHcalCells().at(i);
-
-        if(ieta > 0) ieta--; //ieta is never 0, so there will be a gap between negative ieta and positive ieta
-        badCellsAlongWorstPhiStrip.at(ieta+50) = numProbHcalCells;
-
-    }
-
-
-    // find length of longest contiguous segment of bad cells along the worst phi strip
-    int maxLengthBad = 0, maxEndingHere = 0;
-    for(int ieta = 0; ieta < badCellsAlongWorstPhiStrip.size(); ieta++) {
-        if(badCellsAlongWorstPhiStrip.at(ieta) > 0) {
-            maxEndingHere++;
-        } else {
-            if(maxEndingHere > maxLengthBad) maxLengthBad = maxEndingHere;
-            maxEndingHere = 0;
-        }
-    }
-
-    return 0;
-}
 
 int ScanChain( TChain* chain) {
     initCounter();
 
     TH1F* null = new TH1F("","",1,0,1);
-
 
     TH1F *h1D_energyRatio_A = new TH1F("h1D_energyRatio_A","",50,0,2.2);
     TH1F *h1D_energyRatio_B = new TH1F("h1D_energyRatio_B","",50,0,2.2);
@@ -127,55 +65,42 @@ int ScanChain( TChain* chain) {
     TH2F* h2D_energyRatio_lengthBad_B = new TH2F("h2D_energyRatio_lengthBad_B","",50,0,2.2, 30,0,30);
     TH2F* h2D_energyRatio_lengthBad_C = new TH2F("h2D_energyRatio_lengthBad_C","",50,0,2.2, 30,0,30);
     TH2F* h2D_energyRatio_lengthBad_D = new TH2F("h2D_energyRatio_lengthBad_D","",50,0,2.2, 30,0,30);
+    TH2F* h2D_energyRatio_lengthBad_E = new TH2F("h2D_energyRatio_lengthBad_E","",50,0,2.2, 30,0,30);
+
+    TH2F* h2D_badPhi_pfMetPhi_1 = new TH2F("h2D_badPhi_pfMetPhi_1","",50,-3.15,3.15, 50,-3.15,3.15);
+    TH2F* h2D_badPhi_pfMetPhi_2 = new TH2F("h2D_badPhi_pfMetPhi_2","",50,-3.15,3.15, 50,-3.15,3.15);
+    TH2F* h2D_badPhi_pfMetPhi_3 = new TH2F("h2D_badPhi_pfMetPhi_3","",50,-3.15,3.15, 50,-3.15,3.15);
+    TH2F* h2D_badPhi_pfMetPhi_4 = new TH2F("h2D_badPhi_pfMetPhi_4","",50,-3.15,3.15, 50,-3.15,3.15);
+    TH2F* h2D_badPhi_pfMetPhi_5 = new TH2F("h2D_badPhi_pfMetPhi_5","",50,-3.15,3.15, 50,-3.15,3.15);
+    TH2F* h2D_badPhi_pfMetPhi_6 = new TH2F("h2D_badPhi_pfMetPhi_6","",50,-3.15,3.15, 50,-3.15,3.15);
 
     TH2F* h2D_pfMet_lengthBad_A = new TH2F("h2D_pfMet_lengthBad_A","",50,0,500, 30,0,30);
     TH2F* h2D_pfMet_lengthBad_B = new TH2F("h2D_pfMet_lengthBad_B","",50,0,500, 30,0,30);
     TH2F* h2D_pfMet_lengthBad_C = new TH2F("h2D_pfMet_lengthBad_C","",50,0,500, 30,0,30);
     TH2F* h2D_pfMet_lengthBad_D = new TH2F("h2D_pfMet_lengthBad_D","",50,0,500, 30,0,30);
 
+    TH2F* h2D_maxEnergy_lengthBad = new TH2F("h2D_maxEnergy_lengthBad","",80,0,800, 30,0,30);
+
     // eta-phi of towers, pfclusters, and calojets
     TH2F* h2D_towers = new TH2F("h2D_towers"                                       , "" , 90 , -45     , 45     , 75 , 0     , 75);
     TH2F* h2D_twrs_numProblematicHcalCells = new TH2F("h2D_twrs_numProblematicHcalCells"             , "" , 90 , -45     , 45     , 75 , 0     , 75);
+    TH2F* h2D_twrs_numProblematicHcalCellsEtaPhi = new TH2F("h2D_twrs_numProblematicHcalCellsEtaPhi"             , "" , 50,-3,3, 50, -3.2, 3.2);
 
     // max length of bad hcal cells
-    std::vector<std::string> titlesBadCells = {"match", "no match", "either"};
+    // std::vector<std::string> titlesBadCells = {"match", "no match", "either"};
     std::vector<std::string> titlesLengthBadCells = {"all","all, fails jetID", "filts + jetID", "filts + fail jetID"};
 
-    // no filt requirement ==> A
-    std::vector<TH1F*> h1D_lengthBadCells_vec_A;
-    TH1F *h1D_lengthBadCells_A_match = new TH1F("h1D_lengthBadCells_A_match","",50,0,50);
-    TH1F *h1D_lengthBadCells_A_nomatch = new TH1F("h1D_lengthBadCells_A_nomatch","",50,0,50);
+    // // no filt requirement ==> A
     TH1F *h1D_lengthBadCells_A_either = new TH1F("h1D_lengthBadCells_A_either","",50,0,50);
-    h1D_lengthBadCells_vec_A.push_back(h1D_lengthBadCells_A_match);
-    h1D_lengthBadCells_vec_A.push_back(h1D_lengthBadCells_A_nomatch);
-    h1D_lengthBadCells_vec_A.push_back(h1D_lengthBadCells_A_either);
 
-    // no filt requirement, fails jet ID ==> B
-    std::vector<TH1F*> h1D_lengthBadCells_vec_B;
-    TH1F *h1D_lengthBadCells_B_match = new TH1F("h1D_lengthBadCells_B_match","",50,0,50);
-    TH1F *h1D_lengthBadCells_B_nomatch = new TH1F("h1D_lengthBadCells_B_nomatch","",50,0,50);
+    // // no filt requirement, fails jet ID ==> B
     TH1F *h1D_lengthBadCells_B_either = new TH1F("h1D_lengthBadCells_B_either","",50,0,50);
-    h1D_lengthBadCells_vec_B.push_back(h1D_lengthBadCells_B_match);
-    h1D_lengthBadCells_vec_B.push_back(h1D_lengthBadCells_B_nomatch);
-    h1D_lengthBadCells_vec_B.push_back(h1D_lengthBadCells_B_either);
 
-    // passes all filt (including jet ID) ==> C
-    std::vector<TH1F*> h1D_lengthBadCells_vec_C;
-    TH1F *h1D_lengthBadCells_C_match = new TH1F("h1D_lengthBadCells_C_match","",50,0,50);
-    TH1F *h1D_lengthBadCells_C_nomatch = new TH1F("h1D_lengthBadCells_C_nomatch","",50,0,50);
+    // // passes all filt (including jet ID) ==> C
     TH1F *h1D_lengthBadCells_C_either = new TH1F("h1D_lengthBadCells_C_either","",50,0,50);
-    h1D_lengthBadCells_vec_C.push_back(h1D_lengthBadCells_C_match);
-    h1D_lengthBadCells_vec_C.push_back(h1D_lengthBadCells_C_nomatch);
-    h1D_lengthBadCells_vec_C.push_back(h1D_lengthBadCells_C_either);
 
-    // passes filts but fails jet ID ==> D
-    std::vector<TH1F*> h1D_lengthBadCells_vec_D;
-    TH1F *h1D_lengthBadCells_D_match = new TH1F("h1D_lengthBadCells_D_match","",50,0,50);
-    TH1F *h1D_lengthBadCells_D_nomatch = new TH1F("h1D_lengthBadCells_D_nomatch","",50,0,50);
+    // // passes filts but fails jet ID ==> D
     TH1F *h1D_lengthBadCells_D_either = new TH1F("h1D_lengthBadCells_D_either","",50,0,50);
-    h1D_lengthBadCells_vec_D.push_back(h1D_lengthBadCells_D_match);
-    h1D_lengthBadCells_vec_D.push_back(h1D_lengthBadCells_D_nomatch);
-    h1D_lengthBadCells_vec_D.push_back(h1D_lengthBadCells_D_either);
 
     std::vector<TH1F*> h1D_lengthBadCells_vec;
     h1D_lengthBadCells_vec.push_back(h1D_lengthBadCells_A_either);
@@ -184,7 +109,6 @@ int ScanChain( TChain* chain) {
     h1D_lengthBadCells_vec.push_back(h1D_lengthBadCells_D_either);
 
     const char* json_file = "Run2015BGoldenPlus_v2.txt";
-    // const char* json_file = "Run2015BGolden.txt";
     set_goodrun_file(json_file);
 
     unsigned int nEventsTotal = 0;
@@ -234,6 +158,7 @@ int ScanChain( TChain* chain) {
             // std::cout << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event() << std::endl;
 
             float pfMet = pfMet_met();
+            float pfMetPhi = pfMet_metPhi();
 
             int maxIPhiHad = -1, maxIEtaHad = -1;
             float maxHadEnergy = -1;
@@ -263,41 +188,9 @@ int ScanChain( TChain* chain) {
                 // plots
                 h2D_towers->Fill(ieta, iphi,twrs_hadEnergy().at(i));
                 h2D_twrs_numProblematicHcalCells->Fill(ieta, iphi, numProbHcalCells);
-
-
-
+                h2D_twrs_numProblematicHcalCellsEtaPhi->Fill(eta, phi, numProbHcalCells);
 
             }
-
-            // start ratio calculation
-            vector<int> energyPerPhiStrip(150,0); // there shouldn't be more than 150 iphi vals...
-            for(int i = 0; i < twrs_eta().size(); i++) {
-                // I want to get a distribution of the ratio of energy in the neighboring iphi strips
-                // to the energy of the iphi strip with the max energy
-
-                int ieta = twrs_ieta().at(i);
-                int iphi = twrs_iphi().at(i);
-
-                if( abs(ieta) > 20 ) continue; // ignore the double spaced phi strips (see the 2D plots)
-
-                energyPerPhiStrip[iphi] += twrs_hadEnergy().at(i)+twrs_emEnergy().at(i);
-            }
-            int maxIPhiEnergy = -1;
-            float maxEnergy = -1;
-            for(int iphi = 1; iphi < energyPerPhiStrip.size(); iphi++) {
-                if(energyPerPhiStrip.at(iphi) > maxEnergy) {
-                    maxEnergy = energyPerPhiStrip.at(iphi);
-                    maxIPhiEnergy = iphi;
-                }
-            }
-            float neighborEnergyRatio = 999;
-            // if iphi is 71, then its neighbor is 1 (and vice versa)
-            int lowerIPhi = (maxIPhiEnergy == 1) ? 71 : maxIPhiEnergy - 1;
-            int upperIPhi = (maxIPhiEnergy == 71) ? 1 : maxIPhiEnergy + 1;
-            float energyRatio = (energyPerPhiStrip.at(lowerIPhi) + energyPerPhiStrip.at(upperIPhi) ) / maxEnergy;
-
-
-            // end ratio calculation
 
             int maxIPhiBad = -1;
             int maxBadCells = -1;
@@ -328,24 +221,57 @@ int ScanChain( TChain* chain) {
 
             // find length of longest contiguous segment of bad cells along the worst phi strip
             int maxLengthBad = 0, maxEndingHere = 0;
+            int iEtaLast = 0;
             for(int ieta = 0; ieta < badCellsAlongWorstPhiStrip.size(); ieta++) {
                 if(badCellsAlongWorstPhiStrip.at(ieta) > 0) {
                     maxEndingHere++;
+                    iEtaLast = ieta;
                 } else {
                     if(maxEndingHere > maxLengthBad) maxLengthBad = maxEndingHere;
                     maxEndingHere = 0;
                 }
             }
 
-            // // find number of bad cells along worst phi strip (not necessarily contiguous)
-            // int maxLengthBad = 0; maxEndingHere = 0;
-            // for(int ieta = 0; ieta < badCellsAlongWorstPhiStrip.size(); ieta++) {
-            //     maxEndingHere += badCellsAlongWorstPhiStrip.at(ieta) > 0;
-            //     maxLengthBad = max(maxLengthBad, maxEndingHere);
-            // }
+            // start ratio calculation
+            vector<int> energyPerPhiStrip(150,0); // there shouldn't be more than 150 iphi vals...
+            for(int i = 0; i < twrs_eta().size(); i++) {
+                // I want to get a distribution of the ratio of energy in the neighboring iphi strips
+                // to the energy of the iphi strip with the max energy
 
+                int ieta = twrs_ieta().at(i);
+                int iphi = twrs_iphi().at(i);
+
+                if( abs(ieta) > 20 ) continue; // ignore the double spaced phi strips (see the 2D plots)
+
+                // since we need to convert to original ieta
+                float iEtaIndex = ieta;
+                if(iEtaIndex > 0) iEtaIndex--;
+                iEtaIndex += 50;
+                // only consider the part of the strip that we called problematic
+                if(iEtaIndex <= iEtaLast && iEtaIndex > iEtaLast - maxLengthBad) {
+                    energyPerPhiStrip[iphi] += twrs_hadEnergy().at(i)+twrs_emEnergy().at(i);
+                }
+            }
+            int maxIPhiEnergy = -1;
+            float maxEnergy = -1;
+            for(int iphi = 1; iphi < energyPerPhiStrip.size(); iphi++) {
+                if(energyPerPhiStrip.at(iphi) > maxEnergy) {
+                    maxEnergy = energyPerPhiStrip.at(iphi);
+                    maxIPhiEnergy = iphi;
+                }
+            }
+            float neighborEnergyRatio = 999;
+            // if iphi is 71, then its neighbor is 1 (and vice versa)
+            int lowerIPhi = (maxIPhiEnergy == 1) ? 71 : maxIPhiEnergy - 1;
+            int upperIPhi = (maxIPhiEnergy == 71) ? 1 : maxIPhiEnergy + 1;
+            float energyRatio = (energyPerPhiStrip.at(lowerIPhi) + energyPerPhiStrip.at(upperIPhi) ) / maxEnergy;
+
+
+            // if( evt_cscTightHaloFilter() ) continue; // now we want to look at events that FAIL cscTightHaloFilter
+            // end ratio calculation
 
             bool passAllFiltersWithoutJetID = evt_trackingFailureFilter() && evt_cscTightHaloFilter() && evt_EcalDeadCellTriggerPrimitiveFilter() && evt_eeBadScFilter() && hbheNoiseFilter() && evt_EcalDeadCellBoundaryEnergyFilter();
+            // bool passAllFiltersWithoutJetID = evt_trackingFailureFilter() && evt_EcalDeadCellTriggerPrimitiveFilter() && evt_eeBadScFilter() && hbheNoiseFilter() && evt_EcalDeadCellBoundaryEnergyFilter();
             bool passJetID = true;
             for(int iJet = 0; iJet < pfjets_p4().size(); iJet++) {
                 if(pfjets_p4().at(iJet).pt() > 100) {
@@ -355,63 +281,71 @@ int ScanChain( TChain* chain) {
                 }
             }
 
-            // if(maxLengthBad < 14 || maxLengthBad > 16) continue;
-            // if() continue;
+
             // std::cout << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event() << "  " << maxLengthBad << " " << energyRatio << std::endl;
 
             // no filters applied
-            if(maxIPhiHad == maxIPhiBad) { h1D_lengthBadCells_A_match->Fill(maxLengthBad); }
-            else { h1D_lengthBadCells_A_nomatch->Fill(maxLengthBad); }
+
+            float badPhi = 2.0*3.141592*maxIPhiBad/72;
+            if(badPhi > 3.141592) badPhi -= 2.0*3.141592;
+
+            if(maxLengthBad < 5) {
+                h2D_badPhi_pfMetPhi_1->Fill(badPhi, pfMetPhi);
+            } else if(maxLengthBad >= 5 && maxLengthBad < 10) {
+                h2D_badPhi_pfMetPhi_2->Fill(badPhi, pfMetPhi);
+            } else if(maxLengthBad >= 10) {
+                h2D_badPhi_pfMetPhi_3->Fill(badPhi, pfMetPhi);
+            }
+
+            if(maxEnergy < 150) {
+                h2D_badPhi_pfMetPhi_6->Fill(badPhi,pfMetPhi);
+            } else if(maxEnergy < 500 && maxEnergy > 150) {
+                h2D_badPhi_pfMetPhi_5->Fill(badPhi,pfMetPhi);
+            } else if(maxEnergy > 500) {
+                h2D_badPhi_pfMetPhi_4->Fill(badPhi,pfMetPhi);
+            }
+
+            h2D_maxEnergy_lengthBad->Fill(maxEnergy,maxLengthBad);
+
             h1D_lengthBadCells_A_either->Fill(maxLengthBad);
-
             h2D_pfMet_lengthBad_A->Fill(pfMet,maxLengthBad);
-
             h1D_energyRatio_A->Fill(energyRatio);
             h2D_energyRatio_lengthBad_A->Fill(energyRatio, maxLengthBad);
 
             // no filters applied, fails jetID
             if( !passJetID ) {
-                if(maxIPhiHad == maxIPhiBad) { h1D_lengthBadCells_B_match->Fill(maxLengthBad); }
-                else { h1D_lengthBadCells_B_nomatch->Fill(maxLengthBad); }
                 h1D_lengthBadCells_B_either->Fill(maxLengthBad);
-
                 h2D_pfMet_lengthBad_B->Fill(pfMet,maxLengthBad);
-
                 h1D_energyRatio_B->Fill(energyRatio);
                 h2D_energyRatio_lengthBad_B->Fill(energyRatio, maxLengthBad);
 
             }
 
             if(passAllFiltersWithoutJetID) {
+
+                h2D_energyRatio_lengthBad_E->Fill(energyRatio, maxLengthBad);
+
                 if( passJetID ) {
                     // pass all filters (including jetID)
-                    if(maxIPhiHad == maxIPhiBad) { h1D_lengthBadCells_C_match->Fill(maxLengthBad); }
-                    else { h1D_lengthBadCells_C_nomatch->Fill(maxLengthBad); }
+
                     h1D_lengthBadCells_C_either->Fill(maxLengthBad);
-
                     h2D_pfMet_lengthBad_C->Fill(pfMet,maxLengthBad);
-
                     h1D_energyRatio_C->Fill(energyRatio);
                     h2D_energyRatio_lengthBad_C->Fill(energyRatio, maxLengthBad);
 
 
+
                 } else {
                     // pass all filters but fail jetID
-                    if(maxIPhiHad == maxIPhiBad) { h1D_lengthBadCells_D_match->Fill(maxLengthBad); }
-                    else { h1D_lengthBadCells_D_nomatch->Fill(maxLengthBad); }
+
                     h1D_lengthBadCells_D_either->Fill(maxLengthBad);
-
                     h2D_pfMet_lengthBad_D->Fill(pfMet,maxLengthBad);
-
                     h1D_energyRatio_D->Fill(energyRatio);
                     h2D_energyRatio_lengthBad_D->Fill(energyRatio, maxLengthBad);
 
                 }
             }
-
-
         }
-
 
         // Clean Up
         delete tree;
@@ -426,29 +360,33 @@ int ScanChain( TChain* chain) {
     std::string out = "pdfs/";
     std::string common = "--noStack --noFill --xAxisOverride [GeV] --noType --preserveBackgroundOrder --legendTextSize 0.03 --legendUp -0.03 --legendRight -0.05 ";
 
-    drawHist2D(h2D_towers,out+"h2D_towers.pdf","--logscale --title towers weighted by HCAL (i#eta i#phi) --xlabel  #eta --ylabel #phi");
-    drawHist2D(h2D_twrs_numProblematicHcalCells,out+"h2D_twrs_numProblematicHcalCells.pdf","--logscale --title twrs_numProblematicHcalCells(i#eta i#phi) --xlabel #eta --ylabel #phi");
-
-    dataMCplotMaker(null,h1D_lengthBadCells_vec_A,titlesBadCells,"length bad HCAL cells (all)","",common+" --xAxisOverride [GeV] --outputName "+out+"h1D_lengthBadCells_vec_A.pdf");
-    dataMCplotMaker(null,h1D_lengthBadCells_vec_B,titlesBadCells,"length bad HCAL cells (all, fails jetID)","",common+" --xAxisOverride [GeV] --outputName "+out+"h1D_lengthBadCells_vec_B.pdf");
-    dataMCplotMaker(null,h1D_lengthBadCells_vec_C,titlesBadCells,"length bad HCAL cells (passes filts + jetID)","",common+" --xAxisOverride [GeV] --outputName "+out+"h1D_lengthBadCells_vec_C.pdf");
-    dataMCplotMaker(null,h1D_lengthBadCells_vec_D,titlesBadCells,"length bad HCAL cells (passes filts, fails jetID)","",common+" --xAxisOverride [GeV] --outputName "+out+"h1D_lengthBadCells_vec_D.pdf");
+    drawHist2D(h2D_towers,out+"h2D_towers.pdf","--logscale --title towers weighted by HCAL (i#eta i#phi) --xlabel  i#eta --ylabel i#phi");
+    drawHist2D(h2D_twrs_numProblematicHcalCells,out+"h2D_twrs_numProblematicHcalCells.pdf","--logscale --title twrs_numProblematicHcalCells(i#eta i#phi) --xlabel i#eta --ylabel i#phi");
+    drawHist2D(h2D_twrs_numProblematicHcalCellsEtaPhi,out+"h2D_twrs_numProblematicHcalCellsEtaPhi.pdf","--logscale --title twrs_numProblematicHcalCells(#eta #phi) --xlabel #eta --ylabel #phi");
 
     dataMCplotMaker(null,h1D_lengthBadCells_vec,titlesLengthBadCells,"length bad HCAL cells (either)","",common+" --xAxisOverride [GeV] --outputName "+out+"h1D_lengthBadCells_vec.pdf");
 
     singlePlotMaker(h1D_energyRatio_A, "energy ratio", common+" --xAxisOverride [GeV] --isLinear --outputName "+out+"h1D_energyRatio_A.pdf");
 
+    drawHist2D(h2D_maxEnergy_lengthBad,out+"h2D_maxEnergy_lengthBad.pdf","--logscale --title max strip energy vs length bad cells (all) --xlabel max energy --ylabel length bad cells");
 
     drawHist2D(h2D_pfMet_lengthBad_A,out+"h2D_pfMet_lengthBad_A.pdf","--logscale --title pfMet vs length bad cells (all) --xlabel pfMet --ylabel length bad cells");
     drawHist2D(h2D_pfMet_lengthBad_B,out+"h2D_pfMet_lengthBad_B.pdf","--logscale --title pfMet vs length bad cells (all, fails jetID) --xlabel pfMet --ylabel length bad cells");
     drawHist2D(h2D_pfMet_lengthBad_C,out+"h2D_pfMet_lengthBad_C.pdf","--logscale --title pfMet vs length bad cells (passes filts+jetID) --xlabel pfMet --ylabel length bad cells");
     drawHist2D(h2D_pfMet_lengthBad_D,out+"h2D_pfMet_lengthBad_D.pdf","--logscale --title pfMet vs length bad cells (passes filts, fails jetID) --xlabel pfMet --ylabel length bad cells");
 
+    drawHist2D(h2D_energyRatio_lengthBad_A,out+"h2D_energyRatio_lengthBad_A.pdf","--logscale --title energy ratio vs length prob cells (all) --xlabel energy ratio --ylabel length prob cells");
+    drawHist2D(h2D_energyRatio_lengthBad_B,out+"h2D_energyRatio_lengthBad_B.pdf","--logscale --title energy ratio vs length prob cells (all, fails jetID) --xlabel energy ratio --ylabel length prob cells");
+    drawHist2D(h2D_energyRatio_lengthBad_C,out+"h2D_energyRatio_lengthBad_C.pdf","--logscale --title energy ratio vs length prob cells (passes filts + jetID) --xlabel energy ratio --ylabel length prob cells");
+    drawHist2D(h2D_energyRatio_lengthBad_D,out+"h2D_energyRatio_lengthBad_D.pdf","--logscale --title energy ratio vs length prob cells (passes filts, fails jetID) --xlabel energy ratio --ylabel length prob cells");
+    drawHist2D(h2D_energyRatio_lengthBad_E,out+"h2D_energyRatio_lengthBad_E.pdf","--logscale --title energy ratio vs length prob cells (passes filts) --xlabel energy ratio --ylabel length prob cells");
 
-    drawHist2D(h2D_energyRatio_lengthBad_A,out+"h2D_energyRatio_lengthBad_A.pdf","--logscale --title energy ratio vs length bad cells (all) --xlabel energy ratio --ylabel length bad cells");
-    drawHist2D(h2D_energyRatio_lengthBad_B,out+"h2D_energyRatio_lengthBad_B.pdf","--logscale --title energy ratio vs length bad cells (all, fails jetID) --xlabel energy ratio --ylabel length bad cells");
-    drawHist2D(h2D_energyRatio_lengthBad_C,out+"h2D_energyRatio_lengthBad_C.pdf","--logscale --title energy ratio vs length bad cells (passes filts + jetID) --xlabel energy ratio --ylabel length bad cells");
-    drawHist2D(h2D_energyRatio_lengthBad_D,out+"h2D_energyRatio_lengthBad_D.pdf","--logscale --title energy ratio vs length bad cells (passes filts, fails jetID) --xlabel energy ratio --ylabel length bad cells");
+    drawHist2D(h2D_badPhi_pfMetPhi_1,out+"h2D_badPhi_pfMetPhi_1.pdf","--logscale --title problematic strip #phi vs pfMet #phi (length < 5) --xlabel strip phi --ylabel pfMetPhi");
+    drawHist2D(h2D_badPhi_pfMetPhi_2,out+"h2D_badPhi_pfMetPhi_2.pdf","--logscale --title problematic strip #phi vs pfMet #phi (5 <= length < 10) --xlabel strip phi --ylabel pfMetPhi");
+    drawHist2D(h2D_badPhi_pfMetPhi_3,out+"h2D_badPhi_pfMetPhi_3.pdf","--logscale --title problematic strip #phi vs pfMet #phi (length >= 10) --xlabel strip phi --ylabel pfMetPhi");
 
+    drawHist2D(h2D_badPhi_pfMetPhi_4,out+"h2D_badPhi_pfMetPhi_4.pdf","--logscale --title problematic strip #phi vs pfMet #phi (E > 500) --xlabel strip phi --ylabel pfMetPhi");
+    drawHist2D(h2D_badPhi_pfMetPhi_5,out+"h2D_badPhi_pfMetPhi_5.pdf","--logscale --title problematic strip #phi vs pfMet #phi (150 < E < 500) --xlabel strip phi --ylabel pfMetPhi");
+    drawHist2D(h2D_badPhi_pfMetPhi_6,out+"h2D_badPhi_pfMetPhi_6.pdf","--logscale --title problematic strip #phi vs pfMet #phi (E < 150) --xlabel strip phi --ylabel pfMetPhi");
     return 0;
 }
