@@ -13,6 +13,7 @@
 #include "TROOT.h"
 #include "TCanvas.h"
 #include "TH2.h"
+#include "TProfile.h"
 
 #include "utils.C"
 #include "CMS3.cc"
@@ -85,6 +86,8 @@ int ScanChain( TChain* chain) {
     TH2F* h2D_towers = new TH2F("h2D_towers"                                       , "" , 90 , -45     , 45     , 75 , 0     , 75);
     TH2F* h2D_twrs_numProblematicHcalCells = new TH2F("h2D_twrs_numProblematicHcalCells"             , "" , 90 , -45     , 45     , 75 , 0     , 75);
     TH2F* h2D_twrs_numProblematicHcalCellsEtaPhi = new TH2F("h2D_twrs_numProblematicHcalCellsEtaPhi"             , "" , 50,-3,3, 50, -3.2, 3.2);
+
+    TProfile* h1D_efficiency = new TProfile("h1D_efficiency", "" , 30,0,30, 0,1);
 
     // max length of bad hcal cells
     // std::vector<std::string> titlesBadCells = {"match", "no match", "either"};
@@ -193,7 +196,7 @@ int ScanChain( TChain* chain) {
             }
 
             int maxIPhiBad = -1;
-            int maxBadCells = -1;
+            int maxBadCells = 0;
             for(int iphi = 0; iphi < badCellsPerPhiStrip.size(); iphi++) {
                 if(badCellsPerPhiStrip[iphi] > maxBadCells) {
                     maxBadCells = badCellsPerPhiStrip[iphi];
@@ -286,23 +289,39 @@ int ScanChain( TChain* chain) {
 
             // no filters applied
 
+
+            // bool num = evt_cscTightHaloFilter() && (maxLengthBad > i);
+            // bool denom = evt_cscTightHaloFilter();
+            if( evt_trackingFailureFilter() && evt_EcalDeadCellTriggerPrimitiveFilter() && evt_eeBadScFilter() && hbheNoiseFilter() && evt_EcalDeadCellBoundaryEnergyFilter() ) {
+                float eff = evt_cscTightHaloFilter();
+                h1D_efficiency->Fill(maxLengthBad,eff);
+            }
+
+
             float badPhi = 2.0*3.141592*maxIPhiBad/72;
             if(badPhi > 3.141592) badPhi -= 2.0*3.141592;
 
-            if(maxLengthBad < 5) {
-                h2D_badPhi_pfMetPhi_1->Fill(badPhi, pfMetPhi);
-            } else if(maxLengthBad >= 5 && maxLengthBad < 10) {
-                h2D_badPhi_pfMetPhi_2->Fill(badPhi, pfMetPhi);
-            } else if(maxLengthBad >= 10) {
-                h2D_badPhi_pfMetPhi_3->Fill(badPhi, pfMetPhi);
+            if(badPhi > 0 && badPhi < 0.15 && pfMetPhi > -0.05 && pfMetPhi < 0.05) {
+                std::cout << " maxLengthBad: " << maxLengthBad << " energyRatio: " << energyRatio << " maxIPhiBad: " << maxIPhiBad << " badPhi: " << badPhi << " pfMetPhi: " << pfMetPhi << std::endl;
+
             }
 
-            if(maxEnergy < 150) {
-                h2D_badPhi_pfMetPhi_6->Fill(badPhi,pfMetPhi);
-            } else if(maxEnergy < 500 && maxEnergy > 150) {
-                h2D_badPhi_pfMetPhi_5->Fill(badPhi,pfMetPhi);
-            } else if(maxEnergy > 500) {
-                h2D_badPhi_pfMetPhi_4->Fill(badPhi,pfMetPhi);
+            if(maxIPhiBad > -1) {
+                if(maxLengthBad < 5 && maxLengthBad > 1) {
+                    h2D_badPhi_pfMetPhi_1->Fill(badPhi, pfMetPhi);
+                } else if(maxLengthBad >= 5 && maxLengthBad < 10) {
+                    h2D_badPhi_pfMetPhi_2->Fill(badPhi, pfMetPhi);
+                } else if(maxLengthBad >= 10) {
+                    h2D_badPhi_pfMetPhi_3->Fill(badPhi, pfMetPhi);
+                }
+
+                if(maxEnergy < 150 && maxLengthBad > 1) {
+                    h2D_badPhi_pfMetPhi_6->Fill(badPhi,pfMetPhi);
+                } else if(maxEnergy < 500 && maxEnergy > 150) {
+                    h2D_badPhi_pfMetPhi_5->Fill(badPhi,pfMetPhi);
+                } else if(maxEnergy > 500) {
+                    h2D_badPhi_pfMetPhi_4->Fill(badPhi,pfMetPhi);
+                }
             }
 
             h2D_maxEnergy_lengthBad->Fill(maxEnergy,maxLengthBad);
@@ -333,6 +352,9 @@ int ScanChain( TChain* chain) {
                     h1D_energyRatio_C->Fill(energyRatio);
                     h2D_energyRatio_lengthBad_C->Fill(energyRatio, maxLengthBad);
 
+                    if(maxLengthBad > 11) {
+                        std::cout << evt_run() << ":" << evt_lumiBlock() << ":" << evt_event() << "  " << maxLengthBad << " " << energyRatio << std::endl;
+                    }
 
 
                 } else {
@@ -342,6 +364,7 @@ int ScanChain( TChain* chain) {
                     h2D_pfMet_lengthBad_D->Fill(pfMet,maxLengthBad);
                     h1D_energyRatio_D->Fill(energyRatio);
                     h2D_energyRatio_lengthBad_D->Fill(energyRatio, maxLengthBad);
+
 
                 }
             }
@@ -381,12 +404,22 @@ int ScanChain( TChain* chain) {
     drawHist2D(h2D_energyRatio_lengthBad_D,out+"h2D_energyRatio_lengthBad_D.pdf","--logscale --title energy ratio vs length prob cells (passes filts, fails jetID) --xlabel energy ratio --ylabel length prob cells");
     drawHist2D(h2D_energyRatio_lengthBad_E,out+"h2D_energyRatio_lengthBad_E.pdf","--logscale --title energy ratio vs length prob cells (passes filts) --xlabel energy ratio --ylabel length prob cells");
 
-    drawHist2D(h2D_badPhi_pfMetPhi_1,out+"h2D_badPhi_pfMetPhi_1.pdf","--logscale --title problematic strip #phi vs pfMet #phi (length < 5) --xlabel strip phi --ylabel pfMetPhi");
+    drawHist2D(h2D_badPhi_pfMetPhi_1,out+"h2D_badPhi_pfMetPhi_1.pdf","--logscale --title problematic strip #phi vs pfMet #phi (1 < length < 5) --xlabel strip phi --ylabel pfMetPhi");
     drawHist2D(h2D_badPhi_pfMetPhi_2,out+"h2D_badPhi_pfMetPhi_2.pdf","--logscale --title problematic strip #phi vs pfMet #phi (5 <= length < 10) --xlabel strip phi --ylabel pfMetPhi");
     drawHist2D(h2D_badPhi_pfMetPhi_3,out+"h2D_badPhi_pfMetPhi_3.pdf","--logscale --title problematic strip #phi vs pfMet #phi (length >= 10) --xlabel strip phi --ylabel pfMetPhi");
 
     drawHist2D(h2D_badPhi_pfMetPhi_4,out+"h2D_badPhi_pfMetPhi_4.pdf","--logscale --title problematic strip #phi vs pfMet #phi (E > 500) --xlabel strip phi --ylabel pfMetPhi");
     drawHist2D(h2D_badPhi_pfMetPhi_5,out+"h2D_badPhi_pfMetPhi_5.pdf","--logscale --title problematic strip #phi vs pfMet #phi (150 < E < 500) --xlabel strip phi --ylabel pfMetPhi");
     drawHist2D(h2D_badPhi_pfMetPhi_6,out+"h2D_badPhi_pfMetPhi_6.pdf","--logscale --title problematic strip #phi vs pfMet #phi (E < 150) --xlabel strip phi --ylabel pfMetPhi");
+
+    TCanvas * c2 = new TCanvas("c2");
+    h1D_efficiency->SetLineColor(kRed);
+    h1D_efficiency->SetLineWidth(2);
+    h1D_efficiency->SetMarkerStyle(20);
+    h1D_efficiency->SetMarkerSize(1.0);
+    h1D_efficiency->SetMarkerColor(kRed);
+    h1D_efficiency->SetStats(false);
+    h1D_efficiency->Draw();
+    c2->SaveAs(out+"h1D_efficiency.pdf");
     return 0;
 }
